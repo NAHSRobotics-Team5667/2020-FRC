@@ -71,4 +71,13 @@ public class RobotState {
 	public States getCurrentState() {
 		return currentState;
 	}
+
+	/**
+	 * Set the current state of the robot
+	 * 
+	 * @param state - The state the robot should be in
+	 */
+	public void setState(States state) {
+		currentState = state;
+	}
 }
