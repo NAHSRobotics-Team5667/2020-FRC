@@ -49,4 +49,16 @@ public final class Constants {
         public static final int button_Start_Port = 7; // Start button
 
     }
+
+    public final static class ShooterConstants {
+        public static final int RightShooter_Port = 4;
+        public static final int LeftShooter_Port = 5;
+        public static final int AngleShooter_Port = 6;
+        public static final int RightEncoder_Port_A = 8;
+        public static final int RightEncoder_Port_B = 9;
+        public static final int LeftEncoder_Port_A = 10;
+        public static final int LeftEncoder_Port_B = 11;
+        public static final int AngleEncoder_Port_A = 12;
+        public static final int AngleEncoder_Port_B = 13;
+    }
 }
