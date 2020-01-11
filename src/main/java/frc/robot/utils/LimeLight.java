@@ -126,7 +126,7 @@ public class LimeLight {
         tx = table.getEntry("tx");
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
-        setLightState(LIGHT_ON);
+        setLightState(LIGHT_OFF);
     }
 
     /**

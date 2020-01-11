@@ -20,7 +20,7 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	Controller controller = new Controller(Constants.ControllerConstants.controllerPort);
+	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -47,5 +47,14 @@ public class RobotContainer {
 	public Command getAutonomousCommand() {
 		// An ExampleCommand will run in autonomous
 		return null;
+	}
+
+	/**
+	 * Get the controller instance
+	 * 
+	 * @return The controller instance
+	 */
+	public static Controller getController() {
+		return m_controller;
 	}
 }
