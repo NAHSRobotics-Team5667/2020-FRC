@@ -49,4 +49,10 @@ public final class Constants {
         public static final int button_Start_Port = 7; // Start button
 
     }
+
+    public final static class VisionConstants {
+        public static final double H1 = 0; // Height of limelight from the ground
+        public static final double H2 = 0; // Height of target
+        public static final double A1 = 0; // Limelight mounting angle
+    }
 }

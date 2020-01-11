@@ -16,13 +16,15 @@ import frc.robot.utils.LimeLight;
 import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
-	private PIDFController throttleController = new PIDFController("Throttle", 0, 0, 0, 0);
+
 	private PIDFController angleController = new PIDFController("Angle", 0, 0, 0, 0);
 
 	private DriveTrainSubsystem m_drive;
 
 	/**
-	 * Creates a new DriveTrain.
+	 * Create a Drive Train Subsystem
+	 * 
+	 * @param DriveTrain - The Drive Train Subsystem
 	 */
 	public DriveTrainCommand(DriveTrainSubsystem DriveTrain) {
 		// Use addRequirements() here to declare subsystem dependencies.
@@ -33,7 +35,12 @@ public class DriveTrainCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+		m_drive.stop();
+	}
 
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
 
 		if (RobotContainer.getController().getYButton()) {
@@ -47,23 +54,18 @@ public class DriveTrainCommand extends CommandBase {
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
 
 			double angle = angleController.calculate(LimeLight.getInstance().getXAngle());
-			double throttle = throttleController.calculate(LimeLight.getInstance().calculateDistance());
+			m_drive.drive(sticks.get("LSY"), angle);
 
 		} else {
 			// Drive using joysticks
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
 		}
-
-	}
-
-	// Called every time the scheduler runs while the command is scheduled.
-	@Override
-	public void execute() {
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
+		m_drive.stop();
 	}
 
 	// Returns true when the command should end.
