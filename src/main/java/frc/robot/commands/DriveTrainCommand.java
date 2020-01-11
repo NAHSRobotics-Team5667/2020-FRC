@@ -46,14 +46,8 @@ public class DriveTrainCommand extends CommandBase {
 
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
 
-			double[] yCorners = LimeLight.getInstance().getYCorners();
-
-			double leftCorner = yCorners[1];
-			double rightCorner = yCorners[0];
-
 			double angle = angleController.calculate(LimeLight.getInstance().getXAngle());
-			// double throttle =
-			// throttleController.calculate(LimeLight.getInstance().calculateDistance());
+			double throttle = throttleController.calculate(LimeLight.getInstance().calculateDistance());
 
 		} else {
 			// Drive using joysticks
