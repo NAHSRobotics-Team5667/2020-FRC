@@ -8,22 +8,22 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 	/**
 	 * Creates a new ShooterSubsystem.
 	 */
-	SpeedController m_rightWheel, m_leftWheel, m_angleWheel;
-	Encoder m_rightEncoder, m_leftEncoder, m_angleEncoder;
+	private PWMTalonSRX m_rightWheel, m_leftWheel, m_angleWheel;
+	private Encoder m_rightEncoder, m_leftEncoder, m_angleEncoder;
 
-	double rightShooterSpeed = .1;
-	double leftShooterSpeed = .1;
+	private double rightShooterSpeed = .1;
+	private double leftShooterSpeed = -.1;
 	private final double angleWheelSpeed = .1;
 
-	public ShooterSubsystem(SpeedController rightWheel, SpeedController leftWheel, SpeedController angleWheel,
-			Encoder rightEncoder, Encoder leftEncoder, Encoder angleEncoder) {
+	public ShooterSubsystem(PWMTalonSRX rightWheel, PWMTalonSRX leftWheel, PWMTalonSRX angleWheel, Encoder rightEncoder,
+			Encoder leftEncoder, Encoder angleEncoder) {
 		m_rightWheel = rightWheel;
 		m_leftWheel = leftWheel;
 		m_angleWheel = angleWheel;
@@ -36,9 +36,9 @@ public class ShooterSubsystem extends SubsystemBase {
 		// to calculate the different speeds of the right and left motors based on angle
 	}
 
-	public void fire() {
-		m_rightWheel.set(rightShooterSpeed);
-		m_leftWheel.set(leftShooterSpeed);
+	public void fire(double rightSpeed, double leftSpeed) {
+		m_rightWheel.set(rightSpeed);
+		m_leftWheel.set(leftSpeed);
 	}
 
 	public void stopFire() {
