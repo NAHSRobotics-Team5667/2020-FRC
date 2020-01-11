@@ -28,6 +28,22 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 	private DifferentialDrive m_drive;
 
+	private DriveModes m_driveMode = DriveModes.MANUAL;
+
+	public static enum DriveModes {
+		MANUAL(0), AUTO(1);
+
+		private int mode;
+
+		private DriveModes(int mode) {
+			this.mode = mode;
+		}
+
+		public int getMode() {
+			return mode;
+		}
+	}
+
 	/**
 	 * Drive Train Subsystem
 	 * 
@@ -99,6 +115,24 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public int getLeftEncoderRaw() {
 		return m_lEncoder.get();
+	}
+
+	/**
+	 * Get the current drive mode
+	 * 
+	 * @return - The current drive mode
+	 */
+	public DriveModes getDriveMode() {
+		return m_driveMode;
+	}
+
+	/**
+	 * Set the current drive mode
+	 * 
+	 * @param mode - The current drive train mode
+	 */
+	public void setDriveMode(DriveModes mode) {
+		m_driveMode = mode;
 	}
 
 	@Override

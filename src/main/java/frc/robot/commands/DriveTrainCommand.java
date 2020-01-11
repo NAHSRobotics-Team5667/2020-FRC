@@ -7,8 +7,12 @@
 
 package frc.robot.commands;
 
+import java.util.Map;
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.utils.LimeLight;
 import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
@@ -29,6 +33,32 @@ public class DriveTrainCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+
+		Map<String, Double> sticks = RobotContainer.getController().getSticks();
+
+		if (RobotContainer.getController().getYButton()) {
+			LimeLight.getInstance().turnLightOn();
+			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
+		} else {
+			LimeLight.getInstance().turnLightOff();
+			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
+		}
+
+		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
+
+			double[] yCorners = LimeLight.getInstance().getYCorners();
+
+			double leftCorner = yCorners[1];
+			double rightCorner = yCorners[0];
+
+			double angle = angleController.calculate(LimeLight.getInstance().getXAngle());
+			// double throttle =
+			// throttleController.calculate(LimeLight.getInstance().calculateDistance());
+
+		} else {
+			// Drive using joysticks
+			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
+		}
 
 	}
 
