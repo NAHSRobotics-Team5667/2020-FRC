@@ -30,7 +30,9 @@ public class ShooterCommand extends CommandBase {
   @Override
   public void execute() {
     if (RobotContainer.getController().getAButton() == true) {
-
+      // ShooterSubsystem.fire();
+    } else if (RobotContainer.getController().getAButton() == false) {
+      // ShooterSubsystem.stopFire();
     }
     if (RobotContainer.getController().getLeftTrigger() >= 2) {
 
