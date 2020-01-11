@@ -21,6 +21,20 @@ public final class Constants {
 
     public static RobotState m_RobotState = new RobotState(null);
 
+    public final static class DriveTrainConstants {
+
+        public static final int frontLeftMotorPort = 0;
+        public static final int frontRightMotorPort = 1;
+        public static final int backLeftMotorPort = 2;
+        public static final int backRightMotorPort = 3;
+
+        public static final int rightEncoderChannelA = 0;
+        public static final int rightEncoderChannelB = 1;
+        public static final int leftEncoderChannnelA = 2;
+        public static final int leftEncoderChannelB = 3;
+
+    }
+
     public final static class ControllerConstants {
         public static final int controllerPort = 0; // Controller port
 
