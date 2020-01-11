@@ -17,6 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	SpeedController m_rightWheel, m_leftWheel, m_angleWheel;
 	Encoder m_rightEncoder, m_leftEncoder, m_angleEncoder;
+
 	double rightShooterSpeed = .1;
 	double leftShooterSpeed = .1;
 	private final double angleWheelSpeed = .1;
@@ -32,7 +33,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public void calculateSpeeds() {
-		// to calculate the different speeds of the motors
+		// to calculate the different speeds of the right and left motors based on angle
 	}
 
 	public void fire() {
