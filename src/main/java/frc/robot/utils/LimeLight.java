@@ -335,6 +335,20 @@ public class LimeLight {
     }
 
     /**
+     * Get the distance of the limelight target
+     * 
+     * @param h1 - The height of the limelight with respect to the floor
+     * @param h2 - The height of the target
+     * @param a1 - The mounting angle for the limelight
+     * @param a2 - The angle between the limelight angle and the target
+     * 
+     * @return The distance between the robot and the limelight
+     */
+    public double getDistance(double h1, double h2, double a1, double a2) {
+        return (h2 - h1) / Math.tan(a1 + a2);
+    }
+
+    /**
      * Output diagnostics
      */
     public void outputTelemetry() {
