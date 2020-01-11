@@ -8,22 +8,18 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ShooterSubsystem extends SubsystemBase {
 	/**
 	 * Creates a new ShooterSubsystem.
 	 */
-	private PWMTalonSRX m_rightWheel, m_leftWheel, m_angleWheel;
+	private SpeedController m_rightWheel, m_leftWheel, m_angleWheel;
 	private Encoder m_rightEncoder, m_leftEncoder, m_angleEncoder;
 
-	private double rightShooterSpeed = .1;
-	private double leftShooterSpeed = -.1;
-	private final double angleWheelSpeed = .1;
-
-	public ShooterSubsystem(PWMTalonSRX rightWheel, PWMTalonSRX leftWheel, PWMTalonSRX angleWheel, Encoder rightEncoder,
-			Encoder leftEncoder, Encoder angleEncoder) {
+	public ShooterSubsystem(SpeedController rightWheel, SpeedController leftWheel, SpeedController angleWheel,
+			Encoder rightEncoder, Encoder leftEncoder, Encoder angleEncoder) {
 		m_rightWheel = rightWheel;
 		m_leftWheel = leftWheel;
 		m_angleWheel = angleWheel;
@@ -46,12 +42,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_leftWheel.stopMotor();
 	}
 
-	public void goDown() {
-		m_angleWheel.set(-angleWheelSpeed);
+	public void goDown(double angleSpeed) {
+		m_angleWheel.set(-angleSpeed);
 	}
 
-	public void goUp() {
-		m_angleWheel.set(angleWheelSpeed);
+	public void goUp(double angleSpeed) {
+		m_angleWheel.set(angleSpeed);
 	}
 
 	public void angleStop() {
