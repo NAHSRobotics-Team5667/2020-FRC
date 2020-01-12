@@ -11,7 +11,7 @@ The FRC 2020 Infinite Recharge Code
 
 ## frc.robot.subsystems
 
-...
+* [ShooterSubsystem](src/main/java/frc/robot/ShooterSubsystem.java)
 
 ## frc.robot.commands
 
