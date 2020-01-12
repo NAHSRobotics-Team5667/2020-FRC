@@ -24,14 +24,7 @@ import frc.robot.utils.Controller;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
-	private static ShooterSubsystem m_Shooter = new ShooterSubsystem(
-			new PWMTalonSRX(Constants.ShooterConstants.RightShooter_Port),
-			new PWMTalonSRX(Constants.ShooterConstants.LeftShooter_Port),
-			new PWMTalonSRX(Constants.ShooterConstants.AngleShooter_Port),
-			new Encoder(Constants.ShooterConstants.RightEncoder_Port_A, Constants.ShooterConstants.RightEncoder_Port_B),
-			new Encoder(Constants.ShooterConstants.LeftEncoder_Port_A, Constants.ShooterConstants.LeftEncoder_Port_B),
-			new Encoder(Constants.ShooterConstants.AngleEncoder_Port_A,
-					Constants.ShooterConstants.AngleEncoder_Port_B));
+	private static ShooterSubsystem m_shooter;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -39,6 +32,16 @@ public class RobotContainer {
 	public RobotContainer() {
 		// Configure the button bindings
 		configureButtonBindings();
+
+		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RightShooter_Port),
+				new PWMTalonSRX(Constants.ShooterConstants.LeftShooter_Port),
+				new PWMTalonSRX(Constants.ShooterConstants.AngleShooter_Port),
+				new Encoder(Constants.ShooterConstants.RightEncoder_Port_A,
+						Constants.ShooterConstants.RightEncoder_Port_B),
+				new Encoder(Constants.ShooterConstants.LeftEncoder_Port_A,
+						Constants.ShooterConstants.LeftEncoder_Port_B),
+				new Encoder(Constants.ShooterConstants.AngleEncoder_Port_A,
+						Constants.ShooterConstants.AngleEncoder_Port_B));
 	}
 
 	/**
