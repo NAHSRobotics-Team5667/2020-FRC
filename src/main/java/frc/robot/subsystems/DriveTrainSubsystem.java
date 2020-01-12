@@ -21,16 +21,11 @@ import frc.robot.Constants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
-	private SpeedController m_fRight;
-	private SpeedController m_fLeft;
-	private SpeedController m_bRight;
-	private SpeedController m_bLeft;
+	private SpeedController m_fRight, m_fLeft, m_bRight, m_bLeft;
 
-	private SpeedControllerGroup m_left;
-	private SpeedControllerGroup m_right;
+	private SpeedControllerGroup m_left, m_right;
 
-	private Encoder m_lEncoder;
-	private Encoder m_rEncoder;
+	private Encoder m_lEncoder, m_rEncoder;
 
 	private DifferentialDrive m_drive;
 
