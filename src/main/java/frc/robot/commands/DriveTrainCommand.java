@@ -11,12 +11,15 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
 
-  public DriveTrainCommand() {
+  private DriveTrainSubsystem m_driveTrain;
 
+  public DriveTrainCommand(DriveTrainSubsystem driveTrain) {
+    m_driveTrain = driveTrain;
   }
 
   // Called when the command is initially scheduled.
@@ -28,14 +31,14 @@ public class DriveTrainCommand extends CommandBase {
   @Override
   public void execute() {
     Map<String, Double> sticks = RobotContainer.getController().getSticks();
-    RobotContainer.getDriveTrain().arcadeDrive(sticks.get("LSY"), sticks.get("RSX"));
+    m_driveTrain.arcadeDrive(sticks.get("LSY"), sticks.get("RSX"));
 
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    RobotContainer.getDriveTrain().stop();
+
   }
 
   // Returns true when the command should end.
