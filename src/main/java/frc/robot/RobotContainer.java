@@ -7,11 +7,22 @@
 
 package frc.robot;
 
+import java.io.IOException;
+import java.nio.file.Paths;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.RamseteController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ShooterSubsystem;
+import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.subsystems.DriveTrainSubsystem;
+
 import frc.robot.utils.Controller;
 
 /**
@@ -24,6 +35,8 @@ import frc.robot.utils.Controller;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
+	private static DriveTrainSubsystem m_drive;
+	private Trajectory trajectory;
 	private static ShooterSubsystem m_shooter;
 
 	/**
@@ -32,6 +45,20 @@ public class RobotContainer {
 	public RobotContainer() {
 		// Configure the button bindings
 		configureButtonBindings();
+
+    try {
+			trajectory = TrajectoryUtil.fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/circle.wpilib.json"));
+		} catch (Exception e) {
+			trajectory = null;
+			System.out.println("Could not load trajectory");
+		}
+
+		m_drive = new DriveTrainSubsystem(new PWMTalonSRX(Constants.DriveConstants.fRight),
+				new PWMTalonSRX(Constants.DriveConstants.bRight), new PWMTalonSRX(Constants.DriveConstants.fLeft),
+				new PWMTalonSRX(Constants.DriveConstants.bLeft),
+				new Encoder(Constants.DriveConstants.rEncoderA, Constants.DriveConstants.rEncoderB),
+				new Encoder(Constants.DriveConstants.lEncoderA, Constants.DriveConstants.lEncoderB),
+				new ADXRS450_Gyro());
 
 		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RightShooter_Port),
 				new PWMTalonSRX(Constants.ShooterConstants.LeftShooter_Port),
@@ -59,8 +86,28 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// An ExampleCommand will run in autonomous
-		return null;
+		RamseteCommand ramseteCommand = new RamseteCommand(
+				// The Trajectory
+				trajectory,
+				// Get the current robot pos
+				m_drive::getPose,
+				// Ramsete Controller
+				new RamseteController(Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
+				// Feed Forward
+				new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
+						Constants.DriveConstants.kvVoltSecondsPerMeter,
+						Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+				// Drive Kinematics
+				Constants.DriveConstants.kDriveKinematics,
+				// Get Wheel speeds
+				m_drive::getWheelSpeeds,
+				// PID Controllers
+				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
+				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
+				// RamseteCommand passes volts to the callback
+				m_drive::tankDriveVolts, m_drive);
+
+		return ramseteCommand.andThen(m_drive::stop);
 	}
 
 	/**
