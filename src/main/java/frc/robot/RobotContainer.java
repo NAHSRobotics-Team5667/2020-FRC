@@ -7,13 +7,13 @@
 
 package frc.robot;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
-
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -46,7 +46,7 @@ public class RobotContainer {
 		// Configure the button bindings
 		configureButtonBindings();
 
-    try {
+		try {
 			trajectory = TrajectoryUtil.fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/circle.wpilib.json"));
 		} catch (Exception e) {
 			trajectory = null;
