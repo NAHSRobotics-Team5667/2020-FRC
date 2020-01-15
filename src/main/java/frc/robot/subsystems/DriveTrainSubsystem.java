@@ -27,8 +27,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 	private SpeedControllerGroup m_left, m_right;
 
-	private Encoder m_lEncoder, m_rEncoder;
-
 	private DifferentialDrive m_drive;
 
 	private final Gyro m_gyro;
@@ -74,12 +72,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		m_drive = new DifferentialDrive(m_left, m_right);
 
-		m_lEncoder = lEncoder;
-		m_rEncoder = rEncoder;
-
-		m_lEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
-		m_rEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
-
 		m_gyro = gyro;
 
 		resetEncoders();
@@ -124,7 +116,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
-		m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_lEncoder.getDistance(), m_rEncoder.getDistance());
+		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderDistance(), getRightEncoderDistance());
 	}
 
 	/**
@@ -142,7 +134,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return The current wheel speeds.
 	 */
 	public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-		return new DifferentialDriveWheelSpeeds(m_lEncoder.getRate(), m_rEncoder.getRate());
+		return new DifferentialDriveWheelSpeeds(getLeftEncoderRate(), getRightEncoderRate());
 	}
 
 	/**
@@ -180,6 +172,22 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
 	public void resetEncoders() {
+	}
+
+	public double getLeftEncoderDistance() {
+		return 0;
+	}
+
+	public double getRightEncoderDistance() {
+		return 0;
+	}
+
+	public double getLeftEncoderRate() {
+		return 0;
+	}
+
+	public double getRightEncoderRate() {
+		return 0;
 	}
 
 	/**
