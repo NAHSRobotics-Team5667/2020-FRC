@@ -5,6 +5,8 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+///** Make sure to change things based on updates to ShooterSubsystem and elsewhere
+
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -22,23 +24,20 @@ public class ShooterCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-
+        // Turns on the shooter motor - it should stay on the entire match
+        RobotContainer.getShooterSubsystem().fire(0, 0); /** Replace 0s with proper values **/
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
         if (RobotContainer.getController().getAButton() == true) {
-            // Fires the shooting wheels when A is pressed
-            RobotContainer.getShooterSubsystem().fire(0, 0); /** Replace 0s with proper values **/
-        } else if (RobotContainer.getController().getAButton() == false) {
-            // Stops firing the shooting wheels when A is released
-            RobotContainer.getShooterSubsystem().stopFire();
+            // *Add method for activating the conveyor belt here
         }
-        if (RobotContainer.getController().getLeftTrigger() >= 2) {
+        if (RobotContainer.getController().getLeftTrigger() != 0) {
             /**
-             * Put trigger code here. Confirm if this needs to be L or R trigger. Also
-             * replace "2" for a proper value.
+             * A method from ShooterSubsystem will be used here This method should use
+             * vision to automatically adjust the shooting angle
              **/
         }
     }
