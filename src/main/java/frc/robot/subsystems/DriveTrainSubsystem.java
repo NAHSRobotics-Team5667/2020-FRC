@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -59,8 +61,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param lEncoder - The Left Encoder
 	 * @param rEncoder - The Right Encoder
 	 */
-	public DriveTrainSubsystem(SpeedController fRight, SpeedController fLeft, SpeedController bRight,
-			SpeedController bLeft, Encoder lEncoder, Encoder rEncoder, Gyro gyro) {
+	public DriveTrainSubsystem(WPI_TalonSRX fRight, WPI_TalonSRX fLeft, WPI_TalonSRX bRight, WPI_TalonSRX bLeft,
+			Encoder lEncoder, Encoder rEncoder, Gyro gyro) {
 
 		m_fRight = fRight;
 		m_fLeft = fLeft;
@@ -178,8 +180,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
 	public void resetEncoders() {
-		m_lEncoder.reset();
-		m_rEncoder.reset();
 	}
 
 	/**
@@ -188,7 +188,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the average of the two encoder readings
 	 */
 	public double getAverageEncoderDistance() {
-		return (m_lEncoder.getDistance() + m_rEncoder.getDistance()) / 2.0;
+		return 0;
 	}
 
 	/**
@@ -197,7 +197,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the left drive encoder
 	 */
 	public Encoder getLeftEncoder() {
-		return m_lEncoder;
+		return null;
 	}
 
 	/**
@@ -206,7 +206,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the right drive encoder
 	 */
 	public Encoder getRightEncoder() {
-		return m_rEncoder;
+		return null;
 	}
 
 	/**

@@ -9,6 +9,8 @@ package frc.robot;
 
 import java.nio.file.Paths;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -53,9 +55,9 @@ public class RobotContainer {
 			System.out.println("Could not load trajectory");
 		}
 
-		m_drive = new DriveTrainSubsystem(new PWMTalonSRX(Constants.DriveConstants.fRight),
-				new PWMTalonSRX(Constants.DriveConstants.bRight), new PWMTalonSRX(Constants.DriveConstants.fLeft),
-				new PWMTalonSRX(Constants.DriveConstants.bLeft),
+		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.fRight),
+				new WPI_TalonSRX(Constants.DriveConstants.bRight), new WPI_TalonSRX(Constants.DriveConstants.fLeft),
+				new WPI_TalonSRX(Constants.DriveConstants.bLeft),
 				new Encoder(Constants.DriveConstants.rEncoderA, Constants.DriveConstants.rEncoderB),
 				new Encoder(Constants.DriveConstants.lEncoderA, Constants.DriveConstants.lEncoderB),
 				new ADXRS450_Gyro());
