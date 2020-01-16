@@ -11,14 +11,22 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utils.PIDFController;
 
 public class ShooterCommand extends CommandBase {
+
+    private PIDFController shooterAngle = new PIDFController("shooterAngle", 0.0, 0.0, 0.0, 0.0);
+
+    private ShooterSubsystem m_shooter;
+
     /**
      * Creates a new ShooterCommand.
      */
-    public ShooterCommand() {
+    public ShooterCommand(ShooterSubsystem shooter) {
         // Use addRequirements() here to declare subsystem dependencies.
-
+        m_shooter = shooter;
+        addRequirements(m_shooter);
     }
 
     // Called when the command is initially scheduled.
@@ -26,6 +34,7 @@ public class ShooterCommand extends CommandBase {
     public void initialize() {
         // Turns on the shooter motor - it should stay on the entire match
         RobotContainer.getShooterSubsystem().fire(0, 0); /** Replace 0s with proper values **/
+
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -35,9 +44,9 @@ public class ShooterCommand extends CommandBase {
             // *Add method for activating the conveyor belt here
         }
         if (RobotContainer.getController().getLeftTrigger() != 0) {
+            shooterAngle.calculate(0.0);
             /**
-             * A method from ShooterSubsystem will be used here This method should use
-             * vision to automatically adjust the shooting angle
+             * This method should use vision to automatically adjust the shooting angle
              **/
         }
     }
