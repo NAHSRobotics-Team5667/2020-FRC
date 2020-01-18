@@ -174,18 +174,34 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void resetEncoders() {
 	}
 
+	/**
+	 * 
+	 * @return Left Encoder Distance
+	 */
 	public double getLeftEncoderDistance() {
 		return 0;
 	}
 
+	/**
+	 * 
+	 * @return Right Encoder Distance
+	 */
 	public double getRightEncoderDistance() {
 		return 0;
 	}
 
+	/**
+	 * 
+	 * @return Left Encoder Rate
+	 */
 	public double getLeftEncoderRate() {
 		return 0;
 	}
 
+	/**
+	 * 
+	 * @return Right Encoder Distance
+	 */
 	public double getRightEncoderRate() {
 		return 0;
 	}
