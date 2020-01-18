@@ -5,12 +5,10 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-///** Make sure to change things based on updates to ShooterSubsystem and elsewhere
-
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-//import frc.robot.RobotContainer;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.PIDFController;
 
@@ -33,27 +31,27 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void initialize() {
         // Turns on the shooter motor - it should stay on the entire match
-        m_shooter.getShooterSubsystem().fire(0, 0); /** Replace 0s with proper values **/
+        m_shooter.fire(0, 0); /** Replace 0s with proper values **/
 
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (m_shooter.getController().getAButton() == true) {
+        if (RobotContainer.getController().getAButton() == true) {
             // *Add method for activating the conveyor belt here
         }
-        if (m_shooter.getController().getLeftTrigger() != 0) {
+        if (RobotContainer.getController().getLeftTrigger() != 0) {
             shooterAngle.calculate(0.0);
-            /**
-             * This method should use vision to automatically adjust the shooting angle
-             **/
+
         }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
+        // Turns off the shooter motor at the match's end
+        m_shooter.stopFire();
     }
 
     // Returns true when the command should end.
