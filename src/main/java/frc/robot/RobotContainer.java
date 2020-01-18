@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
@@ -40,6 +41,7 @@ public class RobotContainer {
 	private static DriveTrainSubsystem m_drive;
 	private Trajectory trajectory;
 	private static ShooterSubsystem m_shooter;
+	private static DriverStation m_driverStation;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -71,6 +73,7 @@ public class RobotContainer {
 						Constants.ShooterConstants.LeftEncoder_Port_B),
 				new Encoder(Constants.ShooterConstants.AngleEncoder_Port_A,
 						Constants.ShooterConstants.AngleEncoder_Port_B));
+
 	}
 
 	/**
@@ -119,6 +122,10 @@ public class RobotContainer {
 	 */
 	public static Controller getController() {
 		return m_controller;
+	}
+
+	public static DriverStation getDriverStation() {
+		return m_driverStation;
 	}
 
 }
