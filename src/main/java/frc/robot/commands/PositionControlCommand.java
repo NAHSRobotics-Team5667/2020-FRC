@@ -11,35 +11,48 @@ import frc.robot.Robot;
 import frc.robot.RobotContainer;
 
 public class PositionControlCommand extends CommandBase {
-  SpinnerSubsystem m_SpinnerSubsystem;
+	SpinnerSubsystem m_SpinnerSubsystem;
 
-  /**
-   * Creates a new Posit ionControlCommand.
-   */
+	/**
+	 * CReates Position Control Command
+	 * 
+	 * @param spinnerSubsystem - instance of the spinnerSubsystem to be accessed
+	 */
+	public PositionControlCommand(SpinnerSubsystem spinnerSubsystem) {
+		m_SpinnerSubsystem = spinnerSubsystem;
+		addRequirements(m_SpinnerSubsystem);
 
-  public PositionControlCommand(SpinnerSubsystem spinnerSubsystem) {
-    m_SpinnerSubsystem = spinnerSubsystem;
-    addRequirements(m_SpinnerSubsystem);
+	}
 
-  }
+	/**
+	 * Starts up the PID controller to find the color
+	 */
+	@Override
+	public void initialize() {
+		m_SpinnerSubsystem.position();
+		m_SpinnerSubsystem.enable();
+	}
 
-  @Override
-  public void initialize() {
-    m_SpinnerSubsystem.position();
-    m_SpinnerSubsystem.enable();
-  }
+	/**
+	 * No execute needed for PositionControlCommand
+	 */
+	@Override
+	public void execute() {
+	}
 
-  @Override
-  public void execute() {
-  }
+	/**
+	 * Disables the PID controller when the correct color is reached
+	 */
+	@Override
+	public void end(boolean interrupted) {
+		m_SpinnerSubsystem.disable();
+	}
 
-  @Override
-  public void end(boolean interrupted) {
-    m_SpinnerSubsystem.disable();
-  }
-
-  @Override
-  public boolean isFinished() {
-    return m_SpinnerSubsystem.isFinished;
-  }
+	/**
+	 * Returns that the PID controller is done
+	 */
+	@Override
+	public boolean isFinished() {
+		return m_SpinnerSubsystem.isFinished;
+	}
 }
