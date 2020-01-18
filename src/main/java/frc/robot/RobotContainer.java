@@ -119,12 +119,5 @@ public class RobotContainer {
 		return m_controller;
 	}
 
-	/**
-	 * Get the shooter subsystem instance
-	 * 
-	 * @return The shooter subsystem instance
-	 */
-	public static ShooterSubsystem getShooterSubsystem() {
-		return m_shooter;
-	}
+	
 }
