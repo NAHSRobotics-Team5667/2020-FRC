@@ -29,7 +29,7 @@ public final class Constants {
     }
 
     public final static class DriveConstants {
-        public static final int kEncoderDistancePerPulse = 0;
+        public static final int kEncoderDistancePerPulse = 1024;
         public static final boolean kGyroReversed = false;
 
         public static final int fRight = 0;
@@ -88,8 +88,8 @@ public final class Constants {
         public static final double H2 = 0; // Height of target
         public static final double A1 = 0; // Limelight mounting angle
     }
-  
-     public final static class ShooterConstants {
+
+    public final static class ShooterConstants {
         public static final int RightShooter_Port = 4;
         public static final int LeftShooter_Port = 5;
         public static final int AngleShooter_Port = 6;

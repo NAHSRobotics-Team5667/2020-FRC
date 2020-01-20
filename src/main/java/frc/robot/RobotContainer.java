@@ -48,9 +48,15 @@ public class RobotContainer {
 
 		try {
 			trajectory = TrajectoryUtil.fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/circle.wpilib.json"));
+			System.out.println("Trajectory loaded successfully");
 		} catch (Exception e) {
-			trajectory = null;
-			System.out.println("Could not load trajectory");
+			try {
+				trajectory = TrajectoryUtil.fromPathweaverJson(Paths.get(
+						"/home/spectre/Desktop/dev/dev-Robotics/FRC_2020/src/main/deploy/output/circle.wpilib.json"));
+			} catch (Exception s) {
+				trajectory = null;
+				System.out.println("Could not load trajectory");
+			}
 		}
 
 		m_drive = new DriveTrainSubsystem(new PWMTalonSRX(Constants.DriveConstants.fRight),
@@ -86,28 +92,32 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		RamseteCommand ramseteCommand = new RamseteCommand(
-				// The Trajectory
-				trajectory,
-				// Get the current robot pos
-				m_drive::getPose,
-				// Ramsete Controller
-				new RamseteController(Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
-				// Feed Forward
-				new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
-						Constants.DriveConstants.kvVoltSecondsPerMeter,
-						Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-				// Drive Kinematics
-				Constants.DriveConstants.kDriveKinematics,
-				// Get Wheel speeds
-				m_drive::getWheelSpeeds,
-				// PID Controllers
-				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
-				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
-				// RamseteCommand passes volts to the callback
-				m_drive::tankDriveVolts, m_drive);
+		if (trajectory != null) {
+			RamseteCommand ramseteCommand = new RamseteCommand(
+					// The Trajectory
+					trajectory,
+					// Get the current robot pos
+					m_drive::getPose,
+					// Ramsete Controller
+					new RamseteController(Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
+					// Feed Forward
+					new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
+							Constants.DriveConstants.kvVoltSecondsPerMeter,
+							Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+					// Drive Kinematics
+					Constants.DriveConstants.kDriveKinematics,
+					// Get Wheel speeds
+					m_drive::getWheelSpeeds,
+					// PID Controllers
+					new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
+					new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
+					// RamseteCommand passes volts to the callback
+					m_drive::tankDriveVolts, m_drive);
 
-		return ramseteCommand.andThen(m_drive::stop);
+			return ramseteCommand.andThen(m_drive::stop);
+		} else {
+			return null;
+		}
 	}
 
 	/**
