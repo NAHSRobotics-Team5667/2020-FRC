@@ -8,6 +8,7 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -24,12 +25,12 @@ public final class Constants {
     public static RobotState m_RobotState = new RobotState(null);
 
     public final static class AutoConstants {
-        public static final int kRamseteB = 0;
-        public static final int kRamseteZeta = 0;
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
     }
 
     public final static class DriveConstants {
-        public static final int kEncoderDistancePerPulse = 1024;
+        public static final int kEncoderDistancePerPulse = 4096;
         public static final boolean kGyroReversed = false;
 
         public static final int fRight = 0;
@@ -46,7 +47,7 @@ public final class Constants {
         public static final double kvVoltSecondsPerMeter = 0;
         public static final double kaVoltSecondsSquaredPerMeter = 0;
 
-        public static final double kTrackwidthMeters = 0.0;
+        public static final double kTrackwidthMeters = Units.inchesToMeters(15);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
