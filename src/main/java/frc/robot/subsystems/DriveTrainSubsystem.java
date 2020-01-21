@@ -122,6 +122,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void stop() {
 		m_drive.stopMotor();
+		m_left.setVoltage(0);
+		m_right.setVoltage(0);
 	}
 
 	@Override
@@ -173,11 +175,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param rightVolts the commanded right output
 	 */
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
-		m_left.setVoltage(leftVolts);
-		m_right.setVoltage(rightVolts);
+		double l = leftVolts;
+		double r = -rightVolts;
 
-		SmartDashboard.putNumber("l_volts", leftVolts);
-		SmartDashboard.putNumber("r_volts", rightVolts);
+		m_left.setVoltage(l);
+		m_right.setVoltage(r);
+
+		SmartDashboard.putNumber("l_volts", l);
+		SmartDashboard.putNumber("r_volts", r);
 	}
 
 	/**
@@ -218,7 +223,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the robot's heading in degrees, from 180 to 180
 	 */
 	public double getHeading() {
-		return Math.IEEEremainder(m_gyro.getAngle(), 360) * (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
+		// return (double) m_gyro.getCompassHeading() *
+		// (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
+		return Math.IEEEremainder(m_gyro.getCompassHeading(), 360)
+				* (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
 	}
 
 	/**
