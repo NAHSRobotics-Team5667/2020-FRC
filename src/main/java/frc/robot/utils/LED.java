@@ -9,6 +9,7 @@ package frc.robot.utils;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
@@ -87,9 +88,9 @@ public class LED {
     }
 
     private void getAllianceColor() {
-        if (RobotContainer.getDriverStation().getAlliance() == Alliance.Blue) {
+        if (DriverStation.getInstance().getAlliance() == Alliance.Blue) {
             colorVals = new int[] { 0, 0, 255 };
-        } else if (RobotContainer.getDriverStation().getAlliance() == Alliance.Red) {
+        } else if (DriverStation.getInstance().getAlliance() == Alliance.Red) {
             colorVals = new int[] { 255, 0, 0 };
         }
         oneColor();
