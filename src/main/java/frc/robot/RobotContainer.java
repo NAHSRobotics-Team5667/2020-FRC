@@ -12,9 +12,7 @@ import java.nio.file.Paths;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
@@ -26,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -40,7 +37,6 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
 	private static DriveTrainSubsystem m_drive;
-	private static ShooterSubsystem m_shooter;
 	private Trajectory trajectory;
 
 	/**
@@ -61,16 +57,6 @@ public class RobotContainer {
 				new WPI_TalonSRX(Constants.DriveConstants.leftMaster),
 				new WPI_TalonSRX(Constants.DriveConstants.rightSlave),
 				new WPI_TalonSRX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
-
-		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RightShooter_Port),
-				new PWMTalonSRX(Constants.ShooterConstants.LeftShooter_Port),
-				new PWMTalonSRX(Constants.ShooterConstants.AngleShooter_Port),
-				new Encoder(Constants.ShooterConstants.RightEncoder_Port_A,
-						Constants.ShooterConstants.RightEncoder_Port_B),
-				new Encoder(Constants.ShooterConstants.LeftEncoder_Port_A,
-						Constants.ShooterConstants.LeftEncoder_Port_B),
-				new Encoder(Constants.ShooterConstants.AngleEncoder_Port_A,
-						Constants.ShooterConstants.AngleEncoder_Port_B));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 	}
