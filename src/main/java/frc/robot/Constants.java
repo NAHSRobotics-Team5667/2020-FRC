@@ -24,6 +24,29 @@ public final class Constants {
 
     public static RobotState m_RobotState = new RobotState(null);
 
+    public final static class LedConstants {
+        public static final int ledPort = 4;
+        public static final int ledAmount = 0;
+        public static final double flashTime = 0.5;
+
+        public static enum Colors {
+            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(153, 50, 204), YELLOW(255, 255, 0), WHITE(255, 255, 255),
+            GREEN(0, 255, 0);
+
+            private int r, g, b;
+
+            private Colors(int r, int g, int b) {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+
+            public int[] getColor() {
+                return new int[] { r, g, b };
+            }
+        }
+    }
+
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;

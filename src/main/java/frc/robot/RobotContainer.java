@@ -10,6 +10,7 @@ package frc.robot;
 import java.nio.file.Paths;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.Encoder;
@@ -41,6 +42,7 @@ public class RobotContainer {
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
 	private static DriveTrainSubsystem m_drive;
 	private static ShooterSubsystem m_shooter;
+
 	private Trajectory trajectory;
 
 	/**
@@ -56,6 +58,7 @@ public class RobotContainer {
 			trajectory = null;
 			System.out.println("Could not load trajectory");
 		}
+
 
 		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.rightMaster),
 				new WPI_TalonSRX(Constants.DriveConstants.leftMaster),
@@ -129,5 +132,4 @@ public class RobotContainer {
 	public static Controller getController() {
 		return m_controller;
 	}
-
 }
