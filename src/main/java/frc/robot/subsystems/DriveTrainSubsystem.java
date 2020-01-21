@@ -59,6 +59,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param leftSlave   - The left talon without encoder
 	 * @param gyro        - The gyro
 	 */
+
 	public DriveTrainSubsystem(WPI_TalonSRX rightMaster, WPI_TalonSRX leftMaster, WPI_TalonSRX rightSlave,
 			WPI_TalonSRX leftSlave, AHRS gyro) {
 
@@ -135,7 +136,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("Gyro", getHeading());
 		SmartDashboard.putNumber("Gyro Vel X", m_gyro.getVelocityX());
 		SmartDashboard.putNumber("Gyro Vel Y", m_gyro.getVelocityY());
-
 	}
 
 	/**
