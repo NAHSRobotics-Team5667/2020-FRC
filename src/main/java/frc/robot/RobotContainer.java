@@ -11,11 +11,12 @@ import java.nio.file.Paths;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.DriverStation;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PWMTalonSRX;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -24,6 +25,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.Controller;
@@ -39,9 +41,9 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
 	private static DriveTrainSubsystem m_drive;
-	private Trajectory trajectory;
 	private static ShooterSubsystem m_shooter;
-	private static DriverStation m_driverStation;
+
+	private Trajectory trajectory;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -57,12 +59,11 @@ public class RobotContainer {
 			System.out.println("Could not load trajectory");
 		}
 
-		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.fRight),
-				new WPI_TalonSRX(Constants.DriveConstants.bRight), new WPI_TalonSRX(Constants.DriveConstants.fLeft),
-				new WPI_TalonSRX(Constants.DriveConstants.bLeft),
-				new Encoder(Constants.DriveConstants.rEncoderA, Constants.DriveConstants.rEncoderB),
-				new Encoder(Constants.DriveConstants.lEncoderA, Constants.DriveConstants.lEncoderB),
-				new ADXRS450_Gyro());
+
+		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.rightMaster),
+				new WPI_TalonSRX(Constants.DriveConstants.leftMaster),
+				new WPI_TalonSRX(Constants.DriveConstants.rightSlave),
+				new WPI_TalonSRX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
 
 		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RightShooter_Port),
 				new PWMTalonSRX(Constants.ShooterConstants.LeftShooter_Port),
@@ -74,6 +75,7 @@ public class RobotContainer {
 				new Encoder(Constants.ShooterConstants.AngleEncoder_Port_A,
 						Constants.ShooterConstants.AngleEncoder_Port_B));
 
+		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 	}
 
 	/**
@@ -91,28 +93,35 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		RamseteCommand ramseteCommand = new RamseteCommand(
-				// The Trajectory
-				trajectory,
-				// Get the current robot pos
-				m_drive::getPose,
-				// Ramsete Controller
-				new RamseteController(Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
-				// Feed Forward
-				new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
-						Constants.DriveConstants.kvVoltSecondsPerMeter,
-						Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-				// Drive Kinematics
-				Constants.DriveConstants.kDriveKinematics,
-				// Get Wheel speeds
-				m_drive::getWheelSpeeds,
-				// PID Controllers
-				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
-				new PIDController(Constants.DriveConstants.kPDriveVel, 0, 0),
-				// RamseteCommand passes volts to the callback
-				m_drive::tankDriveVolts, m_drive);
+		if (trajectory != null) {
+			// Set the initial pos as the current pos
+			m_drive.resetOdometry(trajectory.getInitialPose());
 
-		return ramseteCommand.andThen(m_drive::stop);
+			RamseteCommand ramseteCommand = new RamseteCommand(
+					// The Trajectory
+					trajectory,
+					// Get the current robot pos
+					m_drive::getPose,
+					// Ramsete Controller
+					new RamseteController(Constants.AutoConstants.kRamseteB, Constants.AutoConstants.kRamseteZeta),
+					// Feed Forward
+					new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
+							Constants.DriveConstants.kvVoltSecondsPerMeter,
+							Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+					// Drive Kinematics
+					Constants.DriveConstants.kDriveKinematics,
+					// Get Wheel speeds
+					m_drive::getWheelSpeeds,
+					// PID Controllers
+					new PIDController(Constants.DriveConstants.kPDrive, 0, Constants.DriveConstants.kDDrive),
+					new PIDController(Constants.DriveConstants.kPDrive, 0, Constants.DriveConstants.kDDrive),
+					// RamseteCommand passes volts to the callback
+					m_drive::tankDriveVolts, m_drive);
+
+			return ramseteCommand.andThen(m_drive::stop);
+		} else {
+			return null;
+		}
 	}
 
 	/**
@@ -123,9 +132,4 @@ public class RobotContainer {
 	public static Controller getController() {
 		return m_controller;
 	}
-
-	public static DriverStation getDriverStation() {
-		return m_driverStation;
-	}
-
 }
