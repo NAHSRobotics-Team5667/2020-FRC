@@ -27,32 +27,49 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+
     }
 
     public final static class DriveConstants {
-        public static final int kEncoderDistancePerPulse = 4096;
+        public static final double WHEEL_DIAMETER = 0.1524;
+        public static final double ENCODER_EDGES_PER_REV = 4096;
+        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = false;
 
-        public static final int fRight = 0;
-        public static final int bRight = 1;
-        public static final int fLeft = 2;
-        public static final int bLeft = 3;
+        public static final int rightMaster = 1;
+        public static final int leftMaster = 0;
+        public static final int rightSlave = 3;
+        public static final int leftSlave = 2;
 
-        public static final int rEncoderA = 0;
-        public static final int rEncoderB = 1;
-        public static final int lEncoderA = 2;
-        public static final int lEncoderB = 3;
-
-        public static final double ksVolts = 0;
-        public static final double kvVoltSecondsPerMeter = 0;
-        public static final double kaVoltSecondsSquaredPerMeter = 0;
+        public static final double ksVolts = .519;
+        public static final double kvVoltSecondsPerMeter = 3.15;
+        public static final double kaVoltSecondsSquaredPerMeter = .491;
 
         public static final double kTrackwidthMeters = Units.inchesToMeters(15);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static final double kPDriveVel = 0;
+        public static final double kPDrive = 37.6;
+        public static final double kDDrive = 16.7;
 
+    }
+
+    public final static class VisionConstants {
+        public static final double H1 = 0; // Height of limelight from the ground
+        public static final double H2 = 0; // Height of target
+        public static final double A1 = 0; // Limelight mounting angle
+    }
+
+    public final static class ShooterConstants {
+        public static final int RightShooter_Port = 4;
+        public static final int LeftShooter_Port = 5;
+        public static final int AngleShooter_Port = 6;
+        public static final int RightEncoder_Port_A = 8;
+        public static final int RightEncoder_Port_B = 9;
+        public static final int LeftEncoder_Port_A = 10;
+        public static final int LeftEncoder_Port_B = 11;
+        public static final int AngleEncoder_Port_A = 12;
+        public static final int AngleEncoder_Port_B = 13;
     }
 
     public final static class ControllerConstants {
@@ -82,23 +99,5 @@ public final class Constants {
         public static final int button_Menu_Port = 8; // Menu Button
         public static final int button_Start_Port = 7; // Start button
 
-    }
-
-    public final static class VisionConstants {
-        public static final double H1 = 0; // Height of limelight from the ground
-        public static final double H2 = 0; // Height of target
-        public static final double A1 = 0; // Limelight mounting angle
-    }
-
-    public final static class ShooterConstants {
-        public static final int RightShooter_Port = 4;
-        public static final int LeftShooter_Port = 5;
-        public static final int AngleShooter_Port = 6;
-        public static final int RightEncoder_Port_A = 8;
-        public static final int RightEncoder_Port_B = 9;
-        public static final int LeftEncoder_Port_A = 10;
-        public static final int LeftEncoder_Port_B = 11;
-        public static final int AngleEncoder_Port_A = 12;
-        public static final int AngleEncoder_Port_B = 13;
     }
 }
