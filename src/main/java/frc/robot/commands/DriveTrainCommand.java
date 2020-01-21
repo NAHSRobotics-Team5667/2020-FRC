@@ -9,6 +9,7 @@ package frc.robot.commands;
 
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -17,7 +18,7 @@ import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
 
-	private PIDFController angleController = new PIDFController("Angle", 0, 0, 0, 0);
+	private PIDFController angleController = new PIDFController("Angle", 0.001, 0, 0, 0);
 
 	private DriveTrainSubsystem m_drive;
 
@@ -43,6 +44,10 @@ public class DriveTrainCommand extends CommandBase {
 	public void execute() {
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
 
+		if (RobotContainer.getController().getXButtonPressed()) {
+			m_drive.resetOdometry(new Pose2d());
+		}
+
 		if (RobotContainer.getController().getYButton()) {
 			LimeLight.getInstance().turnLightOn();
 			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
@@ -59,6 +64,8 @@ public class DriveTrainCommand extends CommandBase {
 		} else {
 			// Drive using joysticks
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
+			// m_drive.curvatureDrive(sticks.get("LSY"), sticks.get("RSX"),
+			// RobotContainer.getController().getRightTrigger() > 0);
 		}
 	}
 

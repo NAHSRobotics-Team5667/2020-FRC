@@ -27,31 +27,31 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+        public static final double kMaxVelocity = 2;
+        public static final double kMaxAcceleration = 1;
     }
 
     public final static class DriveConstants {
-        public static final int kEncoderDistancePerPulse = 4096;
+        public static final double WHEEL_DIAMETER = 0.1524;
+        public static final double ENCODER_EDGES_PER_REV = 4096;
+        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = false;
 
-        public static final int fRight = 0;
-        public static final int bRight = 1;
-        public static final int fLeft = 2;
-        public static final int bLeft = 3;
+        public static final int rightMaster = 1;
+        public static final int leftMaster = 0;
+        public static final int rightSlave = 3;
+        public static final int leftSlave = 2;
 
-        public static final int rEncoderA = 0;
-        public static final int rEncoderB = 1;
-        public static final int lEncoderA = 2;
-        public static final int lEncoderB = 3;
-
-        public static final double ksVolts = 0;
-        public static final double kvVoltSecondsPerMeter = 0;
-        public static final double kaVoltSecondsSquaredPerMeter = 0;
+        public static final double ksVolts = .519;
+        public static final double kvVoltSecondsPerMeter = 3.15;
+        public static final double kaVoltSecondsSquaredPerMeter = .491;
 
         public static final double kTrackwidthMeters = Units.inchesToMeters(15);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static final double kPDriveVel = 0;
+        public static final double kPDrive = 37.6;
+        public static final double kDDrive = 16.7;
 
     }
 

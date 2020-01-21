@@ -7,29 +7,29 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
-	private SpeedController m_fRight, m_fLeft, m_bRight, m_bLeft;
+	private WPI_TalonSRX m_rightMaster, m_leftMaster, m_rightSlave, m_leftSlave;
 
 	private SpeedControllerGroup m_left, m_right;
 
-	private Encoder m_lEncoder, m_rEncoder;
-
 	private DifferentialDrive m_drive;
 
-	private final Gyro m_gyro;
+	private final AHRS m_gyro;
 
 	private final DifferentialDriveOdometry m_odometry;
 
@@ -50,33 +50,36 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Drive Train Subsystem
 	 * 
-	 * @param fRight   - The Front Right Motor
-	 * @param fLeft    - The Front Left Motor
-	 * @param bRight   - The Back Right Motor
-	 * @param bLeft    - The Back Left Motor
-	 * @param lEncoder - The Left Encoder
-	 * @param rEncoder - The Right Encoder
+	 * @param rightMaster
+	 * @param leftMaster
+	 * @param rightSlave
+	 * @param leftSlave
+	 * @param gyro
 	 */
-	public DriveTrainSubsystem(SpeedController fRight, SpeedController fLeft, SpeedController bRight,
-			SpeedController bLeft, Encoder lEncoder, Encoder rEncoder, Gyro gyro) {
+	public DriveTrainSubsystem(WPI_TalonSRX rightMaster, WPI_TalonSRX leftMaster, WPI_TalonSRX rightSlave,
+			WPI_TalonSRX leftSlave, AHRS gyro) {
 
-		m_fRight = fRight;
-		m_fLeft = fLeft;
-		m_bRight = bRight;
-		m_bLeft = bLeft;
+		m_rightMaster = rightMaster;
+		m_leftMaster = leftMaster;
+		m_rightSlave = rightSlave;
+		m_leftSlave = leftSlave;
 
-		m_left = new SpeedControllerGroup(m_fLeft, m_bLeft);
-		m_right = new SpeedControllerGroup(m_fRight, m_bRight);
+		m_rightMaster.configFactoryDefault();
+		m_leftMaster.configFactoryDefault();
+		m_rightSlave.configFactoryDefault();
+		m_leftSlave.configFactoryDefault();
+
+		m_rightMaster.setSensorPhase(false);
+		m_leftMaster.setSensorPhase(true);
+
+		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+
+		m_left = new SpeedControllerGroup(m_leftMaster, m_leftSlave);
+		m_right = new SpeedControllerGroup(m_rightMaster, m_rightSlave);
 
 		m_drive = new DifferentialDrive(m_left, m_right);
-
-		m_lEncoder = lEncoder;
-		m_rEncoder = rEncoder;
-
-		m_lEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
-		m_rEncoder.setDistancePerPulse(Constants.DriveConstants.kEncoderDistancePerPulse);
 
 		m_gyro = gyro;
 
@@ -122,7 +125,15 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
-		m_odometry.update(Rotation2d.fromDegrees(getHeading()), m_lEncoder.getDistance(), m_rEncoder.getDistance());
+		m_odometry.update(Rotation2d.fromDegrees(getHeading()), -getLeftRotations(), getRightRotations());
+		SmartDashboard.putNumber("Right Pos", getRightRotations());
+		SmartDashboard.putNumber("Left Pos", getLeftRotations());
+		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
+		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
+		SmartDashboard.putNumber("Gyro", getHeading());
+		SmartDashboard.putNumber("Gyro Vel X", m_gyro.getVelocityX());
+		SmartDashboard.putNumber("Gyro Vel Y", m_gyro.getVelocityY());
+
 	}
 
 	/**
@@ -140,7 +151,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return The current wheel speeds.
 	 */
 	public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-		return new DifferentialDriveWheelSpeeds(m_lEncoder.getRate(), m_rEncoder.getRate());
+		return new DifferentialDriveWheelSpeeds(getLeftEncoderRate(), getRightEncoderRate());
 	}
 
 	/**
@@ -154,16 +165,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Drives the robot using arcade controls.
-	 *
-	 * @param fwd the commanded forward movement
-	 * @param rot the commanded rotation
-	 */
-	public void arcadeDrive(double fwd, double rot) {
-		m_drive.arcadeDrive(fwd, rot);
-	}
-
-	/**
 	 * Controls the left and right sides of the drive directly with voltages.
 	 *
 	 * @param leftVolts  the commanded left output
@@ -171,15 +172,18 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
 		m_left.setVoltage(leftVolts);
-		m_right.setVoltage(-rightVolts);
+		m_right.setVoltage(rightVolts);
+
+		SmartDashboard.putNumber("l_volts", leftVolts);
+		SmartDashboard.putNumber("r_volts", rightVolts);
 	}
 
 	/**
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
 	public void resetEncoders() {
-		m_lEncoder.reset();
-		m_rEncoder.reset();
+		m_rightMaster.setSelectedSensorPosition(0);
+		m_leftMaster.setSelectedSensorPosition(0);
 	}
 
 	/**
@@ -188,25 +192,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the average of the two encoder readings
 	 */
 	public double getAverageEncoderDistance() {
-		return (m_lEncoder.getDistance() + m_rEncoder.getDistance()) / 2.0;
-	}
-
-	/**
-	 * Gets the left drive encoder.
-	 *
-	 * @return the left drive encoder
-	 */
-	public Encoder getLeftEncoder() {
-		return m_lEncoder;
-	}
-
-	/**
-	 * Gets the right drive encoder.
-	 *
-	 * @return the right drive encoder
-	 */
-	public Encoder getRightEncoder() {
-		return m_rEncoder;
+		return (getLeftRotations() + getRightRotations()) / 2.0;
 	}
 
 	/**
@@ -240,6 +226,26 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public double getTurnRate() {
 		return m_gyro.getRate() * (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
+	}
+
+	public double getRightRotations() {
+		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+	}
+
+	public double getLeftRotations() {
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+	}
+
+	public void curvatureDrive(double throttle, double angle, boolean quickTurn) {
+		m_drive.curvatureDrive(throttle, angle, quickTurn);
+	}
+
+	public double getLeftEncoderRate() {
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+	}
+
+	public double getRightEncoderRate() {
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
 	}
 
 }
