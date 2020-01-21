@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -50,12 +51,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
+	 * Create a Drive Train subsystem
 	 * 
-	 * @param rightMaster
-	 * @param leftMaster
-	 * @param rightSlave
-	 * @param leftSlave
-	 * @param gyro
+	 * @param rightMaster - The right talon with encoder
+	 * @param leftMaster  - The left talon with encoder
+	 * @param rightSlave  - The right talon without encoder
+	 * @param leftSlave   - The left talon without encoder
+	 * @param gyro        - The gyro
 	 */
 	public DriveTrainSubsystem(WPI_TalonSRX rightMaster, WPI_TalonSRX leftMaster, WPI_TalonSRX rightSlave,
 			WPI_TalonSRX leftSlave, AHRS gyro) {
@@ -157,7 +159,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	/**
 	 * Resets the odometry to the specified pose.
 	 *
-	 * @param pose The pose to which to set the odometry.
+	 * @param pose - The pose to which to set the odometry.
 	 */
 	public void resetOdometry(Pose2d pose) {
 		resetEncoders();
@@ -228,22 +230,49 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		return m_gyro.getRate() * (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
 	}
 
+	/**
+	 * Get the distance traveled on the right side
+	 * 
+	 * @return The distance traveled in meters from the right encoder
+	 */
 	public double getRightRotations() {
 		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
 	}
 
+	/**
+	 * Get the distance traveled on the left side
+	 * 
+	 * @return The distance traveled in meters from the left encoder
+	 */
 	public double getLeftRotations() {
 		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
 	}
 
+	/**
+	 * Drive using the curvatureDrive method
+	 * 
+	 * @param throttle  - Speed
+	 * @param angle     - Rotation
+	 * @param quickTurn - is quick turn
+	 */
 	public void curvatureDrive(double throttle, double angle, boolean quickTurn) {
 		m_drive.curvatureDrive(throttle, angle, quickTurn);
 	}
 
+	/**
+	 * Get the left encoder velocity
+	 * 
+	 * @return Get the left encoder velocity in m/s
+	 */
 	public double getLeftEncoderRate() {
 		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
 	}
 
+	/**
+	 * Geth the right encoder velocity
+	 * 
+	 * @return Get the right encoder velocity in m/s
+	 */
 	public double getRightEncoderRate() {
 		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
 	}

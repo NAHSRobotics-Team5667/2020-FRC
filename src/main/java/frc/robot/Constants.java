@@ -27,8 +27,7 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxVelocity = 2;
-        public static final double kMaxAcceleration = 1;
+
     }
 
     public final static class DriveConstants {
@@ -53,6 +52,24 @@ public final class Constants {
         public static final double kPDrive = 37.6;
         public static final double kDDrive = 16.7;
 
+    }
+
+    public final static class VisionConstants {
+        public static final double H1 = 0; // Height of limelight from the ground
+        public static final double H2 = 0; // Height of target
+        public static final double A1 = 0; // Limelight mounting angle
+    }
+
+    public final static class ShooterConstants {
+        public static final int RightShooter_Port = 4;
+        public static final int LeftShooter_Port = 5;
+        public static final int AngleShooter_Port = 6;
+        public static final int RightEncoder_Port_A = 8;
+        public static final int RightEncoder_Port_B = 9;
+        public static final int LeftEncoder_Port_A = 10;
+        public static final int LeftEncoder_Port_B = 11;
+        public static final int AngleEncoder_Port_A = 12;
+        public static final int AngleEncoder_Port_B = 13;
     }
 
     public final static class ControllerConstants {
@@ -82,23 +99,5 @@ public final class Constants {
         public static final int button_Menu_Port = 8; // Menu Button
         public static final int button_Start_Port = 7; // Start button
 
-    }
-
-    public final static class VisionConstants {
-        public static final double H1 = 0; // Height of limelight from the ground
-        public static final double H2 = 0; // Height of target
-        public static final double A1 = 0; // Limelight mounting angle
-    }
-
-    public final static class ShooterConstants {
-        public static final int RightShooter_Port = 4;
-        public static final int LeftShooter_Port = 5;
-        public static final int AngleShooter_Port = 6;
-        public static final int RightEncoder_Port_A = 8;
-        public static final int RightEncoder_Port_B = 9;
-        public static final int LeftEncoder_Port_A = 10;
-        public static final int LeftEncoder_Port_B = 11;
-        public static final int AngleEncoder_Port_A = 12;
-        public static final int AngleEncoder_Port_B = 13;
     }
 }

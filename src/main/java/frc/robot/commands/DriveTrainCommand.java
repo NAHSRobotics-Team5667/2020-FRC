@@ -44,10 +44,6 @@ public class DriveTrainCommand extends CommandBase {
 	public void execute() {
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
 
-		if (RobotContainer.getController().getXButtonPressed()) {
-			m_drive.resetOdometry(new Pose2d());
-		}
-
 		if (RobotContainer.getController().getYButton()) {
 			LimeLight.getInstance().turnLightOn();
 			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
