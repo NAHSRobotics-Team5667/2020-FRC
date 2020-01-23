@@ -33,6 +33,10 @@ public class LED {
         m_adressableLed.start();
     }
 
+    /***
+     * 
+     * @return the LED Instance
+     */
     public static LED getLEDInstance() {
         if (m_led == null) {
             m_led = new LED();
@@ -41,10 +45,16 @@ public class LED {
 
     }
 
+    /***
+     * Gets the color based on the current state
+     */
     private void getColor() {
         colorVals = Constants.m_RobotState.getCurrentState().getColor();
     }
 
+    /***
+     * determines what to set the LED to based off of current state
+     */
     public void setColor() {
         getColor();
         if (Constants.m_RobotState.getCurrentState() == States.IDLE) {
@@ -67,6 +77,9 @@ public class LED {
 
     }
 
+    /***
+     * makes all LEDs the same color
+     */
     private void oneColor() {
         for (int i = 0; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);
@@ -75,6 +88,9 @@ public class LED {
         m_adressableLed.setData(m_ledBuffer);
     }
 
+    /***
+     * flashes a color on and off
+     */
     private void flashColor() {
         m_timer.reset();
         m_timer.start();
@@ -86,15 +102,20 @@ public class LED {
         }
     }
 
+    /***
+     * set colorVals to alliance color
+     */
     private void getAllianceColor() {
         if (RobotContainer.getDriverStation().getAlliance() == Alliance.Blue) {
             colorVals = new int[] { 0, 0, 255 };
         } else if (RobotContainer.getDriverStation().getAlliance() == Alliance.Red) {
             colorVals = new int[] { 255, 0, 0 };
         }
-        oneColor();
     }
 
+    /***
+     * alternates color of LEDs on strip and flashes all LEDs
+     */
     private void flashAndAlternate() {
         m_timer.reset();
         m_timer.start();
