@@ -13,7 +13,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private SpeedController m_belt;
   private Ultrasonic m_ultrasonic;
 
-  private boolean previous, current = false;
+  private boolean seenBall = false;
 
   /**
    * Creates an intake subsystem instance
@@ -52,7 +52,33 @@ public class IntakeSubsystem extends SubsystemBase {
     m_intake.set(0);
   }
 
-  //// public boolean hasSeenBall(){}
+  /**
+   * Determine if the ultrasonic sensor sees a power cell or not
+   * 
+   * @return true if ball is seen
+   */
+  public boolean hasSeenBall() {
+    if (m_ultrasonic.getRangeInches() <= 6) {
+      seenBall = true;
+    } else if (m_ultrasonic.getRangeInches() > 6) {
+      seenBall = false;
+    }
+    return seenBall;
+  }
+
+  /**
+   * Start the belt
+   */
+  public void startBelt() {
+    m_belt.set(1.0);
+  }
+
+  /**
+   * Stop the belt
+   */
+  public void stopBelt() {
+    m_belt.set(0);
+  }
 
   @Override
   public void periodic() {
