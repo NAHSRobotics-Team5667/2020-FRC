@@ -9,7 +9,6 @@ package frc.robot.commands;
 
 import java.util.Map;
 
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -60,8 +59,6 @@ public class DriveTrainCommand extends CommandBase {
 		} else {
 			// Drive using joysticks
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
-			// m_drive.curvatureDrive(sticks.get("LSY"), sticks.get("RSX"),
-			// RobotContainer.getController().getRightTrigger() > 0);
 		}
 	}
 

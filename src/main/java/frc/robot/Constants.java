@@ -92,26 +92,34 @@ public final class Constants {
 
     public final static class DriveConstants {
         public static final double WHEEL_DIAMETER = 0.152;
-        public static final double ENCODER_EDGES_PER_REV = 4096;
-        public static final double GEAR_RATIO = 10.71;
-        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
-        public static final boolean kGyroReversed = true;
+        public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
+        public static final double SENSOR_UNITS_PER_ROTATION = 2048;
+        public static final double encoderConstant = (1 / SENSOR_UNITS_PER_ROTATION) * WHEEL_CIRCUMFERENCE_METERS;
+        public static final boolean kGyroReversed = false;
+
+        public static final double MAX_SPEED_TELE = 3.25;
+        public static final double MAX_ANGULAR_VEL = 320;
 
         public static final int rightMaster = 1;
         public static final int leftMaster = 0;
         public static final int rightSlave = 3;
         public static final int leftSlave = 2;
 
-        public static final double ksVolts = .705;
-        public static final double kvVoltSecondsPerMeter = 3.13;
-        public static final double kaVoltSecondsSquaredPerMeter = .434;
+        public static final double ksVolts = .937;
+        public static final double kvVoltSecondsPerMeter = 3.07;
+        public static final double kaVoltSecondsSquaredPerMeter = .451;
 
-        public static final double kTrackwidthMeters = 0.6318329405640246;
+        public static final double kTrackwidthMeters = 0.5846519769757944;
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static double kPDrive = 14.9; // 37.6
-        public static final double kDDrive = 0; // 16.7;
+        public static double kPDriveVel = 15.3;
+
+        public static final double DEADBAND = .11;
+        public static final double CLOSED_LOOP_RAMP = .2;
+        public static final double OPEN_LOOP_RAMP = .25;
+        public static double kP = 0.00299;
+        public static final double kD = 0;
 
     }
 

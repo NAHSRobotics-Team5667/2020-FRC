@@ -9,10 +9,10 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -24,9 +24,7 @@ import frc.robot.Constants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
-	private WPI_TalonSRX m_rightMaster, m_leftMaster, m_rightSlave, m_leftSlave;
-
-	private SpeedControllerGroup m_left, m_right;
+	private WPI_TalonFX m_rightMaster, m_leftMaster, m_rightSlave, m_leftSlave;
 
 	private DifferentialDrive m_drive;
 
@@ -53,40 +51,80 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	/**
 	 * Create a Drive Train subsystem
 	 * 
-	 * @param rightMaster - The right talon with encoder
-	 * @param leftMaster  - The left talon with encoder
-	 * @param rightSlave  - The right talon without encoder
-	 * @param leftSlave   - The left talon without encoder
+	 * @param rightMaster - The right falcon with encoder
+	 * @param leftMaster  - The left falcon with encoder
+	 * @param rightSlave  - The right falcon without encoder
+	 * @param leftSlave   - The left falcon without encoder
 	 * @param gyro        - The gyro
 	 */
-	public DriveTrainSubsystem(WPI_TalonSRX rightMaster, WPI_TalonSRX leftMaster, WPI_TalonSRX rightSlave,
-			WPI_TalonSRX leftSlave, AHRS gyro) {
+	public DriveTrainSubsystem(WPI_TalonFX rightMaster, WPI_TalonFX leftMaster, WPI_TalonFX rightSlave,
+			WPI_TalonFX leftSlave, AHRS gyro) {
 
 		m_rightMaster = rightMaster;
 		m_leftMaster = leftMaster;
 		m_rightSlave = rightSlave;
 		m_leftSlave = leftSlave;
 
-		m_rightMaster.configFactoryDefault();
-		m_leftMaster.configFactoryDefault();
-		m_rightSlave.configFactoryDefault();
-		m_leftSlave.configFactoryDefault();
+		TalonFXConfiguration falconConfig = new TalonFXConfiguration();
+		falconConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+		falconConfig.neutralDeadband = Constants.DriveConstants.DEADBAND;
+		falconConfig.slot0.kP = Constants.DriveConstants.kP;
+		falconConfig.slot0.kI = 0.0;
+		falconConfig.slot0.kD = Constants.DriveConstants.kD;
+		falconConfig.slot0.integralZone = 400;
+		falconConfig.slot0.closedLoopPeakOutput = 1.0;
+		falconConfig.closedloopRamp = Constants.DriveConstants.CLOSED_LOOP_RAMP;
+		falconConfig.openloopRamp = Constants.DriveConstants.OPEN_LOOP_RAMP;
+
+		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+
+		setNeutralMode(NeutralMode.Brake);
 
 		m_rightMaster.setSensorPhase(false);
 		m_leftMaster.setSensorPhase(true);
 
-		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
-		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 10);
+		m_rightMaster.overrideLimitSwitchesEnable(false);
+		m_leftMaster.overrideLimitSwitchesEnable(false);
 
-		m_left = new SpeedControllerGroup(m_leftMaster, m_leftSlave);
-		m_right = new SpeedControllerGroup(m_rightMaster, m_rightSlave);
+		m_rightMaster.configAllSettings(falconConfig);
+		m_leftMaster.configAllSettings(falconConfig);
 
-		m_drive = new DifferentialDrive(m_left, m_right);
+		m_leftSlave.follow(m_leftMaster);
+		m_rightSlave.follow(m_rightMaster);
+
+		m_drive = new DifferentialDrive(m_leftMaster, m_rightMaster);
 
 		m_gyro = gyro;
 
-		resetEncoders();
+		resetOdometry(new Pose2d());
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+	}
+
+	@Override
+	public void periodic() {
+		// Update the odometry in the periodic block
+		m_odometry.update(Rotation2d.fromDegrees(getHeading()), stepsToMeters(getLeftEncoderPosition()),
+				stepsToMeters(getRightEncoderPosition()));
+		SmartDashboard.putString("Pose", m_odometry.getPoseMeters().toString());
+		SmartDashboard.putNumber("Right Position", stepsToMeters(getRightEncoderPosition()));
+		SmartDashboard.putNumber("Left Position", stepsToMeters(getLeftEncoderPosition()));
+
+		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
+		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
+
+	}
+
+	/**
+	 * Sets the neutral mode for the drive train
+	 * 
+	 * @param neutralMode the desired neutral mode
+	 */
+	public void setNeutralMode(NeutralMode neutralMode) {
+		m_leftMaster.setNeutralMode(neutralMode);
+		m_leftSlave.setNeutralMode(neutralMode);
+		m_rightMaster.setNeutralMode(neutralMode);
+		m_rightSlave.setNeutralMode(neutralMode);
 	}
 
 	/**
@@ -122,22 +160,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void stop() {
 		m_drive.stopMotor();
-		m_left.setVoltage(0);
-		m_right.setVoltage(0);
-	}
-
-	@Override
-	public void periodic() {
-		// Update the odometry in the periodic block
-		m_odometry.update(Rotation2d.fromDegrees(getHeading()), -getLeftRotations(), getRightRotations());
-		SmartDashboard.putNumber("Right Pos", getRightRotations());
-		SmartDashboard.putNumber("Left Pos", getLeftRotations());
-		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
-		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
-		SmartDashboard.putNumber("Gyro", getHeading());
-		SmartDashboard.putNumber("Gyro Vel X", m_gyro.getVelocityX());
-		SmartDashboard.putNumber("Gyro Vel Y", m_gyro.getVelocityY());
-
 	}
 
 	/**
@@ -164,7 +186,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param pose - The pose to which to set the odometry.
 	 */
 	public void resetOdometry(Pose2d pose) {
-		resetEncoders();
+		zeroDriveTrainEncoders();
+		m_gyro.zeroYaw();
 		m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
 	}
 
@@ -178,8 +201,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		double l = leftVolts;
 		double r = -rightVolts;
 
-		m_left.setVoltage(l);
-		m_right.setVoltage(r);
+		m_leftMaster.setVoltage(l);
+		m_leftMaster.setVoltage(r);
 
 		SmartDashboard.putNumber("l_volts", l);
 		SmartDashboard.putNumber("r_volts", r);
@@ -188,7 +211,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	/**
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
-	public void resetEncoders() {
+	public void zeroDriveTrainEncoders() {
 		m_rightMaster.setSelectedSensorPosition(0);
 		m_leftMaster.setSelectedSensorPosition(0);
 	}
@@ -199,15 +222,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the average of the two encoder readings
 	 */
 	public double getAverageEncoderDistance() {
-		return (getLeftRotations() + getRightRotations()) / 2.0;
-	}
-
-	/**
-	 *
-	 * @param maxOutput the maximum output to which the drive will be constrained
-	 */
-	public void setMaxOutput(double maxOutput) {
-		m_drive.setMaxOutput(maxOutput);
+		return (stepsToMeters(getLeftEncoderPosition()) + stepsToMeters(getRightEncoderPosition())) / 2.0;
 	}
 
 	/**
@@ -215,18 +230,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void zeroHeading() {
 		m_gyro.reset();
-	}
-
-	/**
-	 * Returns the heading of the robot.
-	 *
-	 * @return the robot's heading in degrees, from 180 to 180
-	 */
-	public double getHeading() {
-		// return (double) m_gyro.getCompassHeading() *
-		// (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
-		return Math.IEEEremainder(m_gyro.getCompassHeading(), 360)
-				* (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
 	}
 
 	/**
@@ -239,32 +242,21 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Get the distance traveled on the right side
+	 * returns left encoder position
 	 * 
-	 * @return The distance traveled in meters from the right encoder
+	 * @return left encoder position
 	 */
-	public double getRightRotations() {
-		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+	public int getLeftEncoderPosition() {
+		return m_leftMaster.getSelectedSensorPosition(0);
 	}
 
 	/**
-	 * Get the distance traveled on the left side
+	 * Returns right encoder position
 	 * 
-	 * @return The distance traveled in meters from the left encoder
+	 * @return right encoder position
 	 */
-	public double getLeftRotations() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
-	}
-
-	/**
-	 * Drive using the curvatureDrive method
-	 * 
-	 * @param throttle  - Speed
-	 * @param angle     - Rotation
-	 * @param quickTurn - is quick turn
-	 */
-	public void curvatureDrive(double throttle, double angle, boolean quickTurn) {
-		m_drive.curvatureDrive(throttle, angle, quickTurn);
+	public int getRightEncoderPosition() {
+		return m_rightMaster.getSelectedSensorPosition(0);
 	}
 
 	/**
@@ -282,7 +274,59 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+	}
+
+	/**
+	 * Returns the heading of the robot in form required for odometry.
+	 *
+	 * @return the robot's heading in degrees, from 180 to 180 with positive value
+	 *         for left turn.
+	 */
+	public double getHeading() {
+		return Math.IEEEremainder(m_gyro.getAngle(), 360.0d) * -1.0d;
+	}
+
+	/**
+	 * Converts from encoder steps to meters.
+	 * 
+	 * @param steps encoder steps to convert
+	 * @return meters
+	 */
+	public static double stepsToMeters(int steps) {
+		return (Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS
+				/ Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION) * steps;
+	}
+
+	/**
+	 * Converts from encoder units per 100 milliseconds to meters per second.
+	 * 
+	 * @param stepsPerDecisec steps per decisecond
+	 * @return meters per second
+	 */
+	public static double stepsPerDecisecToMetersPerSec(int stepsPerDecisec) {
+		return stepsToMeters(stepsPerDecisec * 10);
+	}
+
+	/**
+	 * Converts from meters to encoder units.
+	 * 
+	 * @param meters meters
+	 * @return encoder units
+	 */
+	public static double metersToSteps(double meters) {
+		return (meters / Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS)
+				* Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION;
+	}
+
+	/**
+	 * Convers from meters per second to encoder units per 100 milliseconds.
+	 * 
+	 * @param metersPerSec meters per second
+	 * @return encoder units per decisecond
+	 */
+	public static double metersPerSecToStepsPerDecisec(double metersPerSec) {
+		return metersToSteps(metersPerSec) * .1d;
 	}
 
 }
