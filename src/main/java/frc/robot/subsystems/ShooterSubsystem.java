@@ -25,7 +25,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	 *                     the shooter's angle
 	 * @param rightEncoder - encoder to track the progress of the right shooter
 	 *                     wheel
-	 * @param leftEncoder  - encoder to track the progress of the left shooter whe l
+	 * @param leftEncoder  - encoder to track the progress of the left shooter wheel
 	 * @param angleEncoder - encoder to track the progress of the shooter arm
 	 */
 
