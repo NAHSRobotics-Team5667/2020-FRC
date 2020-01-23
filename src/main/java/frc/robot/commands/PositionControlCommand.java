@@ -7,8 +7,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Robot;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.SpinnerSubsystem;
 
 public class PositionControlCommand extends CommandBase {
 	SpinnerSubsystem m_SpinnerSubsystem;
@@ -53,6 +52,6 @@ public class PositionControlCommand extends CommandBase {
 	 */
 	@Override
 	public boolean isFinished() {
-		return m_SpinnerSubsystem.isFinished;
+		return m_SpinnerSubsystem.getController().atSetpoint();
 	}
 }
