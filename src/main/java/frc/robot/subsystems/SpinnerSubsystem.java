@@ -20,7 +20,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	private WPI_TalonFX motor;
 	private Encoder encoder;
 
-	private ColorSensorV3 m_colorSensor = new ColorSensorV3(Constants.VisionConstants.colorSensorPort);
+	private ColorSensorV3 m_colorSensor = new ColorSensorV3(Constants.VisionConstants.COLOR_SENSOR_PORT);
 
 	/**
 	 * creates new PID Controller

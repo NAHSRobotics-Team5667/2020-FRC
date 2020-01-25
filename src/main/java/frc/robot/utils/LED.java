@@ -20,8 +20,8 @@ import frc.robot.RobotState.States;
  */
 public class LED {
     private static LED m_led;
-    private static AddressableLED m_adressableLed = new AddressableLED(Constants.LedConstants.ledPort);
-    private static AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(Constants.LedConstants.ledAmount);
+    private static AddressableLED m_adressableLed = new AddressableLED(Constants.LedConstants.LED_PORT);
+    private static AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(Constants.LedConstants.LED_AMOUNT);
 
     private int[] colorVals;
 
@@ -94,7 +94,7 @@ public class LED {
     private void flashColor() {
         m_timer.reset();
         m_timer.start();
-        if (m_timer.hasPeriodPassed(Constants.LedConstants.flashTime)) {
+        if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
             for (int i = 0; i < m_ledBuffer.getLength(); i++) {
                 m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);
             }
@@ -119,7 +119,7 @@ public class LED {
     private void flashAndAlternate() {
         m_timer.reset();
         m_timer.start();
-        if (m_timer.hasPeriodPassed(Constants.LedConstants.flashTime)) {
+        if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
             for (int i = 0; i < m_ledBuffer.getLength(); i++) {
                 if (i % 2 == 0) {
                     m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);

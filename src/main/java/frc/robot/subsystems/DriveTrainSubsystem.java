@@ -235,7 +235,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return The distance traveled in meters from the right encoder
 	 */
 	public double getRightRotations() {
-		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
 	}
 
 	/**
@@ -244,7 +244,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return The distance traveled in meters from the left encoder
 	 */
 	public double getLeftRotations() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the left encoder velocity in m/s
 	 */
 	public double getLeftEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
 	}
 
 	/**
@@ -273,7 +273,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
 	}
 
 }
