@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.util.Units;
 
@@ -81,6 +82,8 @@ public final class Constants {
         public static final double H1 = 0; // Height of limelight from the ground
         public static final double H2 = 0; // Height of target
         public static final double A1 = 0; // Limelight mounting angle
+
+        public static final I2C.Port colorSensorPort = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
     public final static class ShooterConstants {
