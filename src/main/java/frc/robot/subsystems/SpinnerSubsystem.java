@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 public class SpinnerSubsystem extends PIDSubsystem {
-	private double m_setpoint;
 	private WPI_TalonSRX motor;
 	private Encoder encoder;
 
