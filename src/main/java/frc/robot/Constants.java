@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.util.Units;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -91,25 +92,27 @@ public final class Constants {
     }
 
     public final static class DriveConstants {
-        public static final double WHEEL_DIAMETER = 0.152;
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double SENSOR_UNITS_PER_ROTATION = 2048;
-        public static final double encoderConstant = (1 / SENSOR_UNITS_PER_ROTATION) * WHEEL_CIRCUMFERENCE_METERS;
+        public static final double GEAR_RATIO = 10.71;
+        public static final double encoderConstant = (1 / WHEEL_CIRCUMFERENCE_METERS)
+                * (SENSOR_UNITS_PER_ROTATION * GEAR_RATIO);
         public static final boolean kGyroReversed = false;
 
         public static final double MAX_SPEED_TELE = 3.25;
         public static final double MAX_ANGULAR_VEL = 320;
 
         public static final int rightMaster = 1;
-        public static final int leftMaster = 0;
-        public static final int rightSlave = 3;
+        public static final int leftMaster = 3;
+        public static final int rightSlave = 0;
         public static final int leftSlave = 2;
 
         public static final double ksVolts = .937;
         public static final double kvVoltSecondsPerMeter = 3.07;
         public static final double kaVoltSecondsSquaredPerMeter = .451;
 
-        public static final double kTrackwidthMeters = 0.5846519769757944;
+        public static final double kTrackwidthMeters = Units.inchesToMeters(22);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 

@@ -57,6 +57,7 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
+
 	}
 
 	/**
@@ -90,7 +91,7 @@ public class RobotContainer {
 					// RamseteCommand passes volts to the callback
 					m_drive::tankDriveVolts, m_drive);
 
-			return ramseteCommand.andThen(new InstantCommand(() -> m_drive.drive(0, 0)));
+			return ramseteCommand.andThen(new InstantCommand(() -> m_drive.drive(0, 0, false)));
 		} else {
 			return null;
 		}

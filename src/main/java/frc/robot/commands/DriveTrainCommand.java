@@ -54,11 +54,12 @@ public class DriveTrainCommand extends CommandBase {
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
 
 			double angle = angleController.calculate(LimeLight.getInstance().getXAngle());
-			m_drive.drive(sticks.get("LSY"), angle);
+			m_drive.drive(sticks.get("LSY"), angle, true);
 
 		} else {
 			// Drive using joysticks
-			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
+			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
+					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
 		}
 	}
 

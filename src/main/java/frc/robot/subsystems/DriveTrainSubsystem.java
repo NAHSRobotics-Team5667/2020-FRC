@@ -30,7 +30,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 	private final AHRS m_gyro;
 
-	private final DifferentialDriveOdometry m_odometry;
+	private DifferentialDriveOdometry m_odometry;
 
 	private DriveModes m_driveMode = DriveModes.MANUAL;
 
@@ -81,14 +81,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		setNeutralMode(NeutralMode.Brake);
 
-		m_rightMaster.setSensorPhase(false);
-		m_leftMaster.setSensorPhase(true);
-
 		m_rightMaster.overrideLimitSwitchesEnable(false);
 		m_leftMaster.overrideLimitSwitchesEnable(false);
 
 		m_rightMaster.configAllSettings(falconConfig);
 		m_leftMaster.configAllSettings(falconConfig);
+
+		m_rightMaster.setInverted(true);
+		m_leftMaster.setInverted(false);
 
 		m_leftSlave.follow(m_leftMaster);
 		m_rightSlave.follow(m_rightMaster);
@@ -97,8 +97,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		m_gyro = gyro;
 
-		resetOdometry(new Pose2d());
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+		resetOdometry(new Pose2d());
 	}
 
 	@Override
@@ -133,8 +133,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param throttle - How fast it should drive (-1, 1)
 	 * @param angle    - Change in heading
 	 */
-	public void drive(double throttle, double angle) {
-		m_drive.arcadeDrive(throttle, angle);
+	public void drive(double throttle, double angle, boolean isQuickTurn) {
+		// m_drive.arcadeDrive(throttle, angle);
+		m_drive.curvatureDrive(throttle, angle, isQuickTurn);
 	}
 
 	/**
@@ -188,7 +189,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void resetOdometry(Pose2d pose) {
 		zeroDriveTrainEncoders();
 		m_gyro.zeroYaw();
-		m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+		m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
 	}
 
 	/**
@@ -256,7 +257,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return right encoder position
 	 */
 	public int getRightEncoderPosition() {
-		return m_rightMaster.getSelectedSensorPosition(0);
+		return -m_rightMaster.getSelectedSensorPosition(0);
 	}
 
 	/**
@@ -294,8 +295,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return meters
 	 */
 	public static double stepsToMeters(int steps) {
-		return (Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS
-				/ Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION) * steps;
+		// return (Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS
+		// / Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION) * steps;
+		return steps / Constants.DriveConstants.encoderConstant;
 	}
 
 	/**
@@ -316,7 +318,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public static double metersToSteps(double meters) {
 		return (meters / Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS)
-				* Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION;
+				* Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION * Constants.DriveConstants.GEAR_RATIO;
 	}
 
 	/**
