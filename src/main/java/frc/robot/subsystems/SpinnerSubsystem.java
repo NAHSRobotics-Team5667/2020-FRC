@@ -7,16 +7,20 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import frc.robot.Constants;
 
 public class SpinnerSubsystem extends PIDSubsystem {
-	private double m_setpoint;
-	private WPI_TalonSRX motor;
+	private WPI_TalonFX motor;
 	private Encoder encoder;
+
+	private ColorSensorV3 m_colorSensor = new ColorSensorV3(Constants.VisionConstants.COLOR_SENSOR_PORT);
 
 	/**
 	 * creates new PID Controller
@@ -28,7 +32,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	 * @param kI      - kI
 	 * @param kD      - kD
 	 */
-	public SpinnerSubsystem(WPI_TalonSRX motor, Encoder encoder, double kP, double kI, double kD) {
+	public SpinnerSubsystem(WPI_TalonFX motor, Encoder encoder, double kP, double kI, double kD) {
 		super(new PIDController(kP, kI, kD));
 		this.motor = motor;
 		this.encoder = encoder;
@@ -53,6 +57,17 @@ public class SpinnerSubsystem extends PIDSubsystem {
 
 	public void control() {
 		super.setSetpoint(0);
+	}
+
+	/***
+	 * 
+	 * @return the name of the detected color as a string
+	 */
+	public String detectColor() {
+		String color = m_colorSensor.getColor().toString();
+		SmartDashboard.putString("Color", color);
+		return color;
+
 	}
 
 	/**

@@ -37,7 +37,7 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
+	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 	private static DriveTrainSubsystem m_drive;
 	private static ShooterSubsystem m_shooter;
 
@@ -57,10 +57,10 @@ public class RobotContainer {
 			System.out.println("Could not load trajectory");
 		}
 
-		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.rightMaster),
-				new WPI_TalonSRX(Constants.DriveConstants.leftMaster),
-				new WPI_TalonSRX(Constants.DriveConstants.rightSlave),
-				new WPI_TalonSRX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
+		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.RIGHT_MASTER),
+				new WPI_TalonSRX(Constants.DriveConstants.LEFT_MASTER),
+				new WPI_TalonSRX(Constants.DriveConstants.RIGHT_SLAVE),
+				new WPI_TalonSRX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 	}
