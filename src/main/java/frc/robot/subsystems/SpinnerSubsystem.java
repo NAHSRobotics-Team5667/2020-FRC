@@ -7,12 +7,17 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 
@@ -32,10 +37,17 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	 * @param kI      - kI
 	 * @param kD      - kD
 	 */
-	public SpinnerSubsystem(WPI_TalonFX motor, Encoder encoder, double kP, double kI, double kD) {
+	public SpinnerSubsystem(WPI_TalonFX motor, double kP, double kI, double kD) {
 		super(new PIDController(kP, kI, kD));
 		this.motor = motor;
-		this.encoder = encoder;
+
+		this.motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		this.motor.setNeutralMode(NeutralMode.Brake);
+
+	}
+
+	public void drive(double throttle) {
+		return motor.getSelectedSensorPosition(0) / motor.getSelectedSensorPosition(0);
 
 	}
 
@@ -77,5 +89,16 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	public double getMeasurement() {
 		// Return the process variable measurement here
 		return encoder.get();
+	}
+
+	@Override
+	public void periodic() {
+		super.periodic();
+		SmartDashboard.putNumber("Rotations",
+				motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4)));
+	}
+
+	public double getRate(){
+		return motor.getSelectedSensorPosition(0)
 	}
 }
