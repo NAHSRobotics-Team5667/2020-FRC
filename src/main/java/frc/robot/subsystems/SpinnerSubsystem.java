@@ -25,6 +25,8 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	private WPI_TalonFX motor;
 	private Encoder encoder;
 
+	public double rotations = 2.7 * 3;
+
 	private ColorSensorV3 m_colorSensor = new ColorSensorV3(Constants.VisionConstants.COLOR_SENSOR_PORT);
 
 	/**
@@ -43,12 +45,20 @@ public class SpinnerSubsystem extends PIDSubsystem {
 
 		this.motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		this.motor.setNeutralMode(NeutralMode.Brake);
-
+		reset();
 	}
 
 	public void drive(double throttle) {
-		return motor.getSelectedSensorPosition(0) / motor.getSelectedSensorPosition(0);
+		motor.set(throttle);
 
+	}
+
+	public boolean hasRotated() {
+		return (motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4))) >= rotations;
+	}
+
+	public void reset() {
+		motor.setSelectedSensorPosition(0);
 	}
 
 	/**
@@ -68,7 +78,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	}
 
 	public void control() {
-		super.setSetpoint(0);
+		super.setSetpoint(rotations);
 	}
 
 	/***
@@ -88,7 +98,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	@Override
 	public double getMeasurement() {
 		// Return the process variable measurement here
-		return encoder.get();
+		return motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4));
 	}
 
 	@Override
@@ -98,7 +108,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 				motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4)));
 	}
 
-	public double getRate(){
-		return motor.getSelectedSensorPosition(0)
+	public double getRate() {
+		return motor.getSelectedSensorVelocity(0) * Math.PI * 8 * 10;
 	}
 }
