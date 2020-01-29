@@ -8,6 +8,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.RobotState.States;
 import frc.robot.subsystems.SpinnerSubsystem;
 
 public class RotationCommand extends CommandBase {
@@ -25,6 +27,7 @@ public class RotationCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Constants.m_RobotState.setState(States.ROTATION);
     m_spinner.control();
     m_spinner.enable();
   }

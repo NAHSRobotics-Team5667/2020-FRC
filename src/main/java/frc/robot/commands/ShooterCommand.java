@@ -8,7 +8,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.RobotState.States;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.PIDFController;
 
@@ -30,6 +32,7 @@ public class ShooterCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
+        Constants.m_RobotState.setState(States.SHOOTING);
         // Turns on the shooter motor - it should stay on the entire match
         m_shooter.fire(0, 0); /** Replace 0s with proper values **/
 
@@ -60,4 +63,3 @@ public class ShooterCommand extends CommandBase {
         return false;
     }
 }
-

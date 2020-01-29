@@ -10,7 +10,10 @@ package frc.robot.commands;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.RobotState;
+import frc.robot.RobotState.States;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.utils.LimeLight;
 import frc.robot.utils.PIDFController;
@@ -27,6 +30,10 @@ public class DriveTrainCommand extends CommandBase {
 	 * @param DriveTrain - The Drive Train Subsystem
 	 */
 	public DriveTrainCommand(DriveTrainSubsystem DriveTrain) {
+		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
+				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING) {
+			Constants.m_RobotState.setState(States.DRIVE);
+		}
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = DriveTrain;
 		addRequirements(m_drive);
