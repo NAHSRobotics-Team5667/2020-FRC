@@ -58,9 +58,9 @@ public class IntakeSubsystem extends SubsystemBase {
    * @return true if ball is seen
    */
   public boolean hasSeenBall() {
-    if (m_ultrasonic.getRangeInches() <= 6) {
+    if (m_ultrasonic.getRangeInches() <= 6 && seenBall == false) {
       seenBall = true;
-    } else if (m_ultrasonic.getRangeInches() > 6) {
+    } else if (m_ultrasonic.getRangeInches() > 6 && seenBall == true) {
       seenBall = false;
     }
     return seenBall;
