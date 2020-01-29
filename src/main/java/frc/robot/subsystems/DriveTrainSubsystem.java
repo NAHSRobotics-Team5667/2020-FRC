@@ -81,16 +81,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		setNeutralMode(NeutralMode.Brake);
 
-		m_rightMaster.overrideLimitSwitchesEnable(false);
-		m_leftMaster.overrideLimitSwitchesEnable(false);
-
 		m_rightMaster.configAllSettings(falconConfig);
 		m_leftMaster.configAllSettings(falconConfig);
 
-		m_rightMaster.setInverted(true);
-		m_leftMaster.setInverted(false);
-
 		m_leftSlave.follow(m_leftMaster);
+
 		m_rightSlave.follow(m_rightMaster);
 
 		m_drive = new DifferentialDrive(m_leftMaster, m_rightMaster);
@@ -104,15 +99,19 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
-		m_odometry.update(Rotation2d.fromDegrees(getHeading()), stepsToMeters(getLeftEncoderPosition()),
-				stepsToMeters(getRightEncoderPosition()));
+		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
 		SmartDashboard.putString("Pose", m_odometry.getPoseMeters().toString());
-		SmartDashboard.putNumber("Right Position", stepsToMeters(getRightEncoderPosition()));
-		SmartDashboard.putNumber("Left Position", stepsToMeters(getLeftEncoderPosition()));
+		SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
+		SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
+
+		SmartDashboard.putNumber("RM", m_rightMaster.get());
+		SmartDashboard.putNumber("LM", m_leftMaster.get());
+		SmartDashboard.putNumber("RS", m_rightSlave.get());
+		SmartDashboard.putNumber("LS", m_leftSlave.get());
 
 		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
 		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
-
+		SmartDashboard.putNumber("Raw Gyro", m_gyro.getAngle());
 	}
 
 	/**
@@ -134,8 +133,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param angle    - Change in heading
 	 */
 	public void drive(double throttle, double angle, boolean isQuickTurn) {
-		// m_drive.arcadeDrive(throttle, angle);
-		m_drive.curvatureDrive(throttle, angle, isQuickTurn);
+		m_drive.arcadeDrive(throttle, angle);
+		// m_drive.curvatureDrive(throttle, angle, isQuickTurn);
 	}
 
 	/**
@@ -188,7 +187,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void resetOdometry(Pose2d pose) {
 		zeroDriveTrainEncoders();
-		m_gyro.zeroYaw();
+		m_gyro.reset();
 		m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
 	}
 
@@ -203,7 +202,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		double r = -rightVolts;
 
 		m_leftMaster.setVoltage(l);
-		m_leftMaster.setVoltage(r);
+		m_rightMaster.setVoltage(r);
 
 		SmartDashboard.putNumber("l_volts", l);
 		SmartDashboard.putNumber("r_volts", r);
@@ -223,7 +222,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return the average of the two encoder readings
 	 */
 	public double getAverageEncoderDistance() {
-		return (stepsToMeters(getLeftEncoderPosition()) + stepsToMeters(getRightEncoderPosition())) / 2.0;
+		return (getLeftEncoderPosition() + getRightEncoderPosition()) / 2.0;
 	}
 
 	/**
@@ -234,21 +233,12 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Returns the turn rate of the robot.
-	 *
-	 * @return The turn rate of the robot, in degrees per second
-	 */
-	public double getTurnRate() {
-		return m_gyro.getRate() * (Constants.DriveConstants.kGyroReversed ? -1.0 : 1.0);
-	}
-
-	/**
 	 * returns left encoder position
 	 * 
 	 * @return left encoder position
 	 */
-	public int getLeftEncoderPosition() {
-		return m_leftMaster.getSelectedSensorPosition(0);
+	public double getLeftEncoderPosition() {
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
 	}
 
 	/**
@@ -256,8 +246,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * 
 	 * @return right encoder position
 	 */
-	public int getRightEncoderPosition() {
-		return -m_rightMaster.getSelectedSensorPosition(0);
+	public double getRightEncoderPosition() {
+		return -m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
 	}
 
 	/**
@@ -285,50 +275,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 *         for left turn.
 	 */
 	public double getHeading() {
-		return Math.IEEEremainder(m_gyro.getAngle(), 360.0d) * -1.0d;
+		return -m_gyro.getAngle();
 	}
 
-	/**
-	 * Converts from encoder steps to meters.
-	 * 
-	 * @param steps encoder steps to convert
-	 * @return meters
-	 */
-	public static double stepsToMeters(int steps) {
-		// return (Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS
-		// / Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION) * steps;
-		return steps / Constants.DriveConstants.encoderConstant;
-	}
-
-	/**
-	 * Converts from encoder units per 100 milliseconds to meters per second.
-	 * 
-	 * @param stepsPerDecisec steps per decisecond
-	 * @return meters per second
-	 */
-	public static double stepsPerDecisecToMetersPerSec(int stepsPerDecisec) {
-		return stepsToMeters(stepsPerDecisec * 10);
-	}
-
-	/**
-	 * Converts from meters to encoder units.
-	 * 
-	 * @param meters meters
-	 * @return encoder units
-	 */
-	public static double metersToSteps(double meters) {
-		return (meters / Constants.DriveConstants.WHEEL_CIRCUMFERENCE_METERS)
-				* Constants.DriveConstants.SENSOR_UNITS_PER_ROTATION * Constants.DriveConstants.GEAR_RATIO;
-	}
-
-	/**
-	 * Convers from meters per second to encoder units per 100 milliseconds.
-	 * 
-	 * @param metersPerSec meters per second
-	 * @return encoder units per decisecond
-	 */
-	public static double metersPerSecToStepsPerDecisec(double metersPerSec) {
-		return metersToSteps(metersPerSec) * .1d;
+	public void feedMotorSafety() {
+		m_drive.feed();
 	}
 
 }

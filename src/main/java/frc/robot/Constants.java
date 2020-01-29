@@ -81,7 +81,7 @@ public final class Constants {
                 public static Trajectory getTrajectory() {
                     try {
                         return TrajectoryUtil
-                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/circle.wpilib.json"));
+                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/path.wpilib.json"));
                     } catch (IOException e) {
                         return null;
                     }
@@ -94,11 +94,10 @@ public final class Constants {
     public final static class DriveConstants {
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
-        public static final double SENSOR_UNITS_PER_ROTATION = 2048;
+        public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static final double encoderConstant = (1 / WHEEL_CIRCUMFERENCE_METERS)
-                * (SENSOR_UNITS_PER_ROTATION * GEAR_RATIO);
-        public static final boolean kGyroReversed = false;
+        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static final boolean kGyroReversed = true;
 
         public static final double MAX_SPEED_TELE = 3.25;
         public static final double MAX_ANGULAR_VEL = 320;
@@ -108,15 +107,15 @@ public final class Constants {
         public static final int rightSlave = 0;
         public static final int leftSlave = 2;
 
-        public static final double ksVolts = .937;
-        public static final double kvVoltSecondsPerMeter = 3.07;
-        public static final double kaVoltSecondsSquaredPerMeter = .451;
+        public static final double ksVolts = 0.0802;
+        public static final double kvVoltSecondsPerMeter = 2.47;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.191; // 1.9356652467050692
 
         public static final double kTrackwidthMeters = Units.inchesToMeters(22);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static double kPDriveVel = 15.3;
+        public static double kPDriveVel = 7.67;
 
         public static final double DEADBAND = .11;
         public static final double CLOSED_LOOP_RAMP = .2;
