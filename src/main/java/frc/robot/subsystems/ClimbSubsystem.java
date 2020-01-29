@@ -8,7 +8,18 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
@@ -16,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 public class ClimbSubsystem extends PIDSubsystem {
   private double m_setpoint;
   private WPI_TalonFX m_motor;
-  private Encoder m_encoder;
 
   /**
    * Creates new ClimbSubsystem
@@ -28,10 +38,9 @@ public class ClimbSubsystem extends PIDSubsystem {
    * @param kI      - kI value
    * @param kD      - kD value
    */
-  public ClimbSubsystem(WPI_TalonFX motor, Encoder encoder, double kP, double kI, double kD) {
+  public ClimbSubsystem(WPI_TalonFX motor, double kP, double kI, double kD) {
     super(new PIDController(kP, kI, kD));
     this.m_motor = motor;
-    this.m_encoder = encoder;
   }
 
   /**
@@ -52,17 +61,17 @@ public class ClimbSubsystem extends PIDSubsystem {
   }
 
   /**
-   * Returns the value from the encoder
-   */
-  public double getMeasurement() {
-    return m_encoder.get();
-  }
-
-  /**
    * Resets the value of the encoder
    */
   public void resetEncoder() {
-    m_encoder.reset();
+    m_motor.setSelectedSensorPosition(0);
+  }
+
+  /**
+   * Returns the value from the encoder
+   */
+  protected double getMeasurement() {
+    return m_motor.getSelectedSensorPosition(0) * Constants.ClimbConstants.ENCODER_CONSTANT;
   }
 
 }
