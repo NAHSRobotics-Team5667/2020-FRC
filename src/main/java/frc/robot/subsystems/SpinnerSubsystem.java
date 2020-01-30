@@ -7,27 +7,32 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
-import frc.robot.Constants;
 
 public class SpinnerSubsystem extends PIDSubsystem {
 	private WPI_TalonFX motor;
-	private Encoder encoder;
 
 	public double rotations = 2.7 * 3;
 
-	private ColorSensorV3 m_colorSensor = new ColorSensorV3(Constants.VisionConstants.COLOR_SENSOR_PORT);
+	private ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
+	private final ColorMatch m_colorMatcher = new ColorMatch();
+
+	private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
+	private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
+	private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
+	private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
 	/**
 	 * creates new PID Controller
@@ -46,6 +51,11 @@ public class SpinnerSubsystem extends PIDSubsystem {
 		this.motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		this.motor.setNeutralMode(NeutralMode.Brake);
 		reset();
+
+		m_colorMatcher.addColorMatch(kBlueTarget);
+		m_colorMatcher.addColorMatch(kGreenTarget);
+		m_colorMatcher.addColorMatch(kRedTarget);
+		m_colorMatcher.addColorMatch(kYellowTarget);
 	}
 
 	public void drive(double throttle) {
@@ -86,10 +96,28 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	 * @return the name of the detected color as a string
 	 */
 	public String detectColor() {
-		String color = m_colorSensor.getColor().toString();
-		SmartDashboard.putString("Color", color);
-		return color;
+		Color detectedColor = m_colorSensor.getColor();
+		String colorString;
+		ColorMatchResult match = m_colorMatcher.matchClosestColor(detectedColor);
 
+		if (match.color == kBlueTarget) {
+			colorString = "Blue";
+		} else if (match.color == kRedTarget) {
+			colorString = "Red";
+		} else if (match.color == kGreenTarget) {
+			colorString = "Green";
+		} else if (match.color == kYellowTarget) {
+			colorString = "Yellow";
+		} else {
+			colorString = "Unknown";
+		}
+		SmartDashboard.putNumber("Red", detectedColor.red);
+		SmartDashboard.putNumber("Green", detectedColor.green);
+		SmartDashboard.putNumber("Blue", detectedColor.blue);
+		SmartDashboard.putNumber("Confidence", match.confidence);
+		SmartDashboard.putString("Detected Color", colorString);
+
+		return colorString;
 	}
 
 	/**
@@ -106,6 +134,8 @@ public class SpinnerSubsystem extends PIDSubsystem {
 		super.periodic();
 		SmartDashboard.putNumber("Rotations",
 				motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4)));
+		detectColor();
+
 	}
 
 	public double getRate() {
