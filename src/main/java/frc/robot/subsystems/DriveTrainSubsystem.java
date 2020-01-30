@@ -18,6 +18,8 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -104,14 +106,12 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
 		SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
 
-		SmartDashboard.putNumber("RM", m_rightMaster.get());
-		SmartDashboard.putNumber("LM", m_leftMaster.get());
-		SmartDashboard.putNumber("RS", m_rightSlave.get());
-		SmartDashboard.putNumber("LS", m_leftSlave.get());
-
 		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
 		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
 		SmartDashboard.putNumber("Raw Gyro", m_gyro.getAngle());
+
+		SmartDashboard.putNumber("l_volts", m_leftMaster.getMotorOutputVoltage());
+		SmartDashboard.putNumber("r_volts", m_rightMaster.getMotorOutputVoltage());
 	}
 
 	/**
@@ -203,9 +203,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		m_leftMaster.setVoltage(l);
 		m_rightMaster.setVoltage(r);
-
-		SmartDashboard.putNumber("l_volts", l);
-		SmartDashboard.putNumber("r_volts", r);
 	}
 
 	/**
