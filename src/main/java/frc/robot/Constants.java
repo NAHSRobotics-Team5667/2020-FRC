@@ -126,4 +126,8 @@ public final class Constants {
         public static final int BUTTON_START_PORT = 7; // Start button
 
     }
+
+    public final static class ClimbConstants {
+        public static final int ENCODER_CONSTANT = 1;
+    }
 }
