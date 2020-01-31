@@ -12,38 +12,38 @@ import frc.robot.subsystems.SpinnerSubsystem;
 
 public class RotationCommand extends CommandBase {
 
-  private SpinnerSubsystem m_spinner;
+	private SpinnerSubsystem m_spinner;
 
-  /**
-   * Creates a new RotationCommand.
-   */
-  public RotationCommand(SpinnerSubsystem spinner) {
-    m_spinner = spinner;
-    addRequirements(m_spinner);
-  }
+	/**
+	 * Creates a new RotationCommand.
+	 */
+	public RotationCommand(SpinnerSubsystem spinner) {
+		m_spinner = spinner;
+		addRequirements(m_spinner);
+	}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    m_spinner.control();
-    m_spinner.enable();
-  }
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		m_spinner.control();
+		m_spinner.enable();
+	}
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
 
-  }
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    m_spinner.disable();
-  }
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		m_spinner.disable();
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return m_spinner.getController().atSetpoint();
-  }
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return m_spinner.getController().atSetpoint();
+	}
 }
