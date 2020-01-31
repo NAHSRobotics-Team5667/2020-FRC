@@ -26,6 +26,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -37,7 +38,7 @@ import frc.robot.utils.Controller;
  */
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
-	private static Controller m_controller = new Controller(Constants.ControllerConstants.controllerPort);
+	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 	private static DriveTrainSubsystem m_drive;
 	private static Trajectory[] trajectories = { Constants.Autos.Default.trajectory,
 			Constants.Autos.PathWeaver.Test.getTrajectory() };
@@ -67,7 +68,7 @@ public class RobotContainer {
 	 * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		Button b = new JoystickButton(getController(), Constants.ControllerConstants.button_X_Port);
+		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		b.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
 	}
 
