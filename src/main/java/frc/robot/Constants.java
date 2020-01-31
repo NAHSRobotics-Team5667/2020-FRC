@@ -120,7 +120,7 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = true;
 
         public static final double MAX_SPEED_TELE = 3.25;
