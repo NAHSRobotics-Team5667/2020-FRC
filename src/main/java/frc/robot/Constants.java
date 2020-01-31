@@ -9,7 +9,21 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
+import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.List;
+
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -51,10 +65,58 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
+        public static final double kMaxSpeedMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
     }
 
+    public final static class Autos {
+        public final static class Default {
+            public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+                    new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
+                            Constants.DriveConstants.kvVoltSecondsPerMeter,
+                            Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+                    Constants.DriveConstants.kDriveKinematics, 10);
+
+            // Create config for trajectory
+            public static final TrajectoryConfig config = new TrajectoryConfig(
+                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                            // Add kinematics to ensure max speed is actually obeyed
+                            .setKinematics(Constants.DriveConstants.kDriveKinematics)
+                            // Apply the voltage constraint
+                            .addConstraint(autoVoltageConstraint);
+
+            // An example trajectory to follow. All units in meters.
+            public static final Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+                    // Start at the origin facing the +X direction
+                    new Pose2d(0, 0, new Rotation2d(0)),
+                    // Pass through these two interior waypoints, making an 's' curve path
+                    List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(3, 0, new Rotation2d(0)),
+                    // Pass config
+                    config);
+        }
+
+        public static final class PathWeaver {
+
+            public static final class Test {
+                public static Trajectory getTrajectory() {
+                    try {
+                        return TrajectoryUtil
+                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/path.wpilib.json"));
+                    } catch (IOException e) {
+                        return null;
+                    }
+                }
+
+            }
+        }
+    }
+
     public final static class DriveConstants {
+<<<<<<< HEAD
         public static final double WHEEL_DIAMETER = 0.1524;
         public static final double ENCODER_EDGES_PER_REV = 4096;
         public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
@@ -64,17 +126,38 @@ public final class Constants {
         public static final int LEFT_MASTER = 0;
         public static final int RIGHT_SLAVE = 3;
         public static final int LEFT_SLAVE = 2;
+=======
+        public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
+        public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
+        public static final double ENCODER_EDGES_PER_REV = 21934;
+        public static final double GEAR_RATIO = 10.71;
+        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static final boolean kGyroReversed = true;
 
-        public static final double ksVolts = .519;
-        public static final double kvVoltSecondsPerMeter = 3.15;
-        public static final double kaVoltSecondsSquaredPerMeter = .491;
+        public static final double MAX_SPEED_TELE = 3.25;
+        public static final double MAX_ANGULAR_VEL = 320;
 
-        public static final double kTrackwidthMeters = Units.inchesToMeters(15);
+        public static final int rightMaster = 1;
+        public static final int leftMaster = 3;
+        public static final int rightSlave = 0;
+        public static final int leftSlave = 2;
+>>>>>>> DriveTrain
+
+        public static final double ksVolts = 0.0802;
+        public static final double kvVoltSecondsPerMeter = 2.47;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.191; // 1.9356652467050692
+
+        public static final double kTrackwidthMeters = Units.inchesToMeters(22);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static final double kPDrive = 37.6;
-        public static final double kDDrive = 16.7;
+        public static double kPDriveVel = 7.67;
+
+        public static final double DEADBAND = .11;
+        public static final double CLOSED_LOOP_RAMP = .2;
+        public static final double OPEN_LOOP_RAMP = .25;
+        public static double kP = 0.00299;
+        public static final double kD = 0;
 
     }
 

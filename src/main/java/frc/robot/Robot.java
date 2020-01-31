@@ -21,7 +21,6 @@ import frc.robot.utils.LED;
  */
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
-
 	private RobotContainer m_robotContainer;
 
 	/**
@@ -34,6 +33,7 @@ public class Robot extends TimedRobot {
 		// and put our
 		// autonomous chooser on the dashboard.
 		m_robotContainer = new RobotContainer();
+
 	}
 
 	/**
@@ -89,6 +89,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousPeriodic() {
+		m_autonomousCommand.schedule();
+		m_robotContainer.getDriveInstance().feedMotorSafety();
 	}
 
 	@Override
@@ -121,4 +123,5 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testPeriodic() {
 	}
+
 }
