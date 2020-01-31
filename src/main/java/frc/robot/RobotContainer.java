@@ -26,7 +26,6 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.Controller;
 
 /**
