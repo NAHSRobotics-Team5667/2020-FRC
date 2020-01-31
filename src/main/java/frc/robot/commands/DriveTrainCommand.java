@@ -30,10 +30,6 @@ public class DriveTrainCommand extends CommandBase {
 	 * @param DriveTrain - The Drive Train Subsystem
 	 */
 	public DriveTrainCommand(DriveTrainSubsystem DriveTrain) {
-		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
-				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING) {
-			Constants.m_RobotState.setState(States.DRIVE);
-		}
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = DriveTrain;
 		addRequirements(m_drive);
@@ -68,6 +64,11 @@ public class DriveTrainCommand extends CommandBase {
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
 			// m_drive.curvatureDrive(sticks.get("LSY"), sticks.get("RSX"),
 			// RobotContainer.getController().getRightTrigger() > 0);
+		}
+		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
+				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING
+				&& Constants.m_RobotState.getCurrentState() != States.POSITION) {
+			Constants.m_RobotState.setState(States.DRIVE);
 		}
 	}
 
