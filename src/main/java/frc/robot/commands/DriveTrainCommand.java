@@ -17,7 +17,7 @@ import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
 
-	private PIDFController angleController = new PIDFController("Angle", 0, 0, 0, 0);
+	private PIDFController angleController = new PIDFController("Angle", 0.001, 0, 0, 0);
 
 	private DriveTrainSubsystem m_drive;
 
@@ -54,11 +54,12 @@ public class DriveTrainCommand extends CommandBase {
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
 
 			double angle = angleController.calculate(LimeLight.getInstance().getXAngle());
-			m_drive.drive(sticks.get("LSY"), angle);
+			m_drive.drive(sticks.get("LSY"), angle, true);
 
 		} else {
 			// Drive using joysticks
-			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"));
+			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
+					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
 		}
 	}
 
