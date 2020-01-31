@@ -59,12 +59,14 @@ public class RobotContainer {
 			System.out.println("Could not load trajectory");
 		}
 
-		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.RIGHT_MASTER),
-				new WPI_TalonSRX(Constants.DriveConstants.LEFT_MASTER),
-				new WPI_TalonSRX(Constants.DriveConstants.RIGHT_SLAVE),
-				new WPI_TalonSRX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
+		// m_drive = new DriveTrainSubsystem(new
+		// WPI_TalonSRX(Constants.DriveConstants.RIGHT_MASTER),
+		// new WPI_TalonSRX(Constants.DriveConstants.LEFT_MASTER),
+		// new WPI_TalonSRX(Constants.DriveConstants.RIGHT_SLAVE),
+		// new WPI_TalonSRX(Constants.DriveConstants.LEFT_SLAVE), new
+		// AHRS(SPI.Port.kMXP));
 
-		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
+		// m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 	}
 
 	/**

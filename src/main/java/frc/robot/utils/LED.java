@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
 
@@ -28,7 +29,7 @@ public class LED {
     private static Timer m_timer;
 
     public LED() {
-        m_adressableLed.setLength(m_ledBuffer.getLength());
+        m_adressableLed.setLength(Constants.LedConstants.LED_AMOUNT);
         m_adressableLed.setData(m_ledBuffer);
         m_adressableLed.start();
     }
@@ -50,6 +51,9 @@ public class LED {
      */
     private void getColor() {
         colorVals = Constants.m_RobotState.getCurrentState().getColor();
+        SmartDashboard.putNumber("R", colorVals[0]);
+        SmartDashboard.putNumber("G", colorVals[1]);
+        SmartDashboard.putNumber("B", colorVals[2]);
     }
 
     /***
@@ -74,7 +78,7 @@ public class LED {
             getAllianceColor();
             flashColor();
         }
-
+        System.out.println("SETTING COLOR TO R:" + colorVals[0] + " G: " + colorVals[1] + " B: " + colorVals[2]);
     }
 
     /***
@@ -96,7 +100,7 @@ public class LED {
         m_timer.start();
         if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
             for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);
+                m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
             }
             m_adressableLed.setData(m_ledBuffer);
         }
@@ -122,7 +126,7 @@ public class LED {
         if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
             for (int i = 0; i < m_ledBuffer.getLength(); i++) {
                 if (i % 2 == 0) {
-                    m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);
+                    m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
                 } else {
                     m_ledBuffer.setRGB(i, 255, 255, 255);
                 }

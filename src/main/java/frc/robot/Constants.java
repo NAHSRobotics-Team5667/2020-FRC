@@ -26,8 +26,8 @@ public final class Constants {
     public static RobotState m_RobotState = new RobotState(null);
 
     public final static class LedConstants {
-        public static final int LED_PORT = 4;
-        public static final int LED_AMOUNT = 0;
+        public static final int LED_PORT = 0;
+        public static final int LED_AMOUNT = 20;
         public static final double FLASH_TIME = 0.5;
 
         public static enum Colors {
