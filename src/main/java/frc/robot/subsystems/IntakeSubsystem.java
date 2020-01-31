@@ -1,9 +1,13 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
+
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Ultrasonic;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -11,7 +15,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	private SpeedController m_intake;
 	private Solenoid m_rSolenoid, m_lSolenoid;
 	private SpeedController m_belt;
-	private Ultrasonic m_ultrasonic;
+	private Rev2mDistanceSensor m_tofSensor;
 
 	private boolean seenBall = false;
 
@@ -26,12 +30,16 @@ public class IntakeSubsystem extends SubsystemBase {
 	 *                   activated
 	 */
 	public IntakeSubsystem(SpeedController intake, Solenoid rSolenoid, Solenoid lSolenoid, SpeedController belt,
-			Ultrasonic ultrasonic) {
+			Rev2mDistanceSensor tofSensor) {
 		m_intake = intake;
 		m_rSolenoid = rSolenoid;
 		m_lSolenoid = lSolenoid;
 		m_belt = belt;
-		m_ultrasonic = ultrasonic;
+		m_tofSensor = tofSensor;
+
+		m_tofSensor.setDistanceUnits(Unit.kInches);
+		m_tofSensor.setRangeProfile(RangeProfile.kHighAccuracy);
+
 	}
 
 	/**
@@ -58,9 +66,9 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @return true if ball is seen
 	 */
 	public boolean hasSeenBall() {
-		if (m_ultrasonic.getRangeInches() <= 6 && seenBall == false) {
+		if (m_tofSensor.getRange() <= 6 && seenBall == false) {
 			seenBall = true;
-		} else if (m_ultrasonic.getRangeInches() > 6 && seenBall == true) {
+		} else if (m_tofSensor.getRange() > 6 && seenBall == true) {
 			seenBall = false;
 		}
 		return seenBall;
@@ -83,5 +91,6 @@ public class IntakeSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+		SmartDashboard.putNumber("TOF", m_tofSensor.getRange());
 	}
 }
