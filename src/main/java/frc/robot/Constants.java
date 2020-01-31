@@ -116,17 +116,6 @@ public final class Constants {
     }
 
     public final static class DriveConstants {
-<<<<<<< HEAD
-        public static final double WHEEL_DIAMETER = 0.1524;
-        public static final double ENCODER_EDGES_PER_REV = 4096;
-        public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
-        public static final boolean kGyroReversed = false;
-
-        public static final int RIGHT_MASTER = 1;
-        public static final int LEFT_MASTER = 0;
-        public static final int RIGHT_SLAVE = 3;
-        public static final int LEFT_SLAVE = 2;
-=======
         public static final double WHEEL_DIAMETER = Units.inchesToMeters(6);
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
@@ -141,7 +130,6 @@ public final class Constants {
         public static final int leftMaster = 3;
         public static final int rightSlave = 0;
         public static final int leftSlave = 2;
->>>>>>> DriveTrain
 
         public static final double ksVolts = 0.0802;
         public static final double kvVoltSecondsPerMeter = 2.47;

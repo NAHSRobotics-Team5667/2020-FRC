@@ -8,13 +8,9 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-<<<<<<< HEAD
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-=======
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
->>>>>>> DriveTrain
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -61,14 +57,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param leftSlave   - The left falcon without encoder
 	 * @param gyro        - The gyro
 	 */
-<<<<<<< HEAD
-
-	public DriveTrainSubsystem(WPI_TalonSRX rightMaster, WPI_TalonSRX leftMaster, WPI_TalonSRX rightSlave,
-			WPI_TalonSRX leftSlave, AHRS gyro) {
-=======
 	public DriveTrainSubsystem(WPI_TalonFX rightMaster, WPI_TalonFX leftMaster, WPI_TalonFX rightSlave,
 			WPI_TalonFX leftSlave, AHRS gyro) {
->>>>>>> DriveTrain
 
 		m_rightMaster = rightMaster;
 		m_leftMaster = leftMaster;
@@ -172,22 +162,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_drive.stopMotor();
 	}
 
-<<<<<<< HEAD
-	@Override
-	public void periodic() {
-		// Update the odometry in the periodic block
-		m_odometry.update(Rotation2d.fromDegrees(getHeading()), -getLeftRotations(), getRightRotations());
-		SmartDashboard.putNumber("Right Pos", getRightRotations());
-		SmartDashboard.putNumber("Left Pos", getLeftRotations());
-		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
-		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
-		SmartDashboard.putNumber("Gyro", getHeading());
-		SmartDashboard.putNumber("Gyro Vel X", m_gyro.getVelocityX());
-		SmartDashboard.putNumber("Gyro Vel Y", m_gyro.getVelocityY());
-	}
-
-=======
->>>>>>> DriveTrain
 	/**
 	 * Returns the currently-estimated pose of the robot.
 	 *
@@ -263,22 +237,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * 
 	 * @return left encoder position
 	 */
-<<<<<<< HEAD
-	public double getRightRotations() {
-		return m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
-	}
-
-	/**
-	 * Get the distance traveled on the left side
-	 * 
-	 * @return The distance traveled in meters from the left encoder
-	 */
-	public double getLeftRotations() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
-=======
 	public double getLeftEncoderPosition() {
 		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
->>>>>>> DriveTrain
 	}
 
 	/**
@@ -296,7 +256,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the left encoder velocity in m/s
 	 */
 	public double getLeftEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
 	}
 
 	/**
@@ -305,9 +265,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-<<<<<<< HEAD
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
-=======
 		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
 	}
 
@@ -323,7 +280,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 	public void feedMotorSafety() {
 		m_drive.feed();
->>>>>>> DriveTrain
 	}
 
 }

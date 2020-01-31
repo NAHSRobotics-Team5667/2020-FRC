@@ -7,14 +7,7 @@
 
 package frc.robot;
 
-<<<<<<< HEAD
-import java.nio.file.Paths;
-
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-=======
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
->>>>>>> DriveTrain
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.GenericHID;
@@ -29,11 +22,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-<<<<<<< HEAD
-=======
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
->>>>>>> DriveTrain
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -50,16 +40,10 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 	private static DriveTrainSubsystem m_drive;
-<<<<<<< HEAD
-	private static ShooterSubsystem m_shooter;
-
-	private Trajectory trajectory;
-=======
 	private static Trajectory[] trajectories = { Constants.Autos.Default.trajectory,
 			Constants.Autos.PathWeaver.Test.getTrajectory() };
 
 	private static Trajectory trajectory = trajectories[1];
->>>>>>> DriveTrain
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -68,24 +52,10 @@ public class RobotContainer {
 		// Configure the button bindings
 		configureButtonBindings();
 
-<<<<<<< HEAD
-		try {
-			trajectory = TrajectoryUtil.fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/circle.wpilib.json"));
-		} catch (Exception e) {
-			trajectory = null;
-			System.out.println("Could not load trajectory");
-		}
-
-		m_drive = new DriveTrainSubsystem(new WPI_TalonSRX(Constants.DriveConstants.RIGHT_MASTER),
-				new WPI_TalonSRX(Constants.DriveConstants.LEFT_MASTER),
-				new WPI_TalonSRX(Constants.DriveConstants.RIGHT_SLAVE),
-				new WPI_TalonSRX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
-=======
 		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.rightMaster),
 				new WPI_TalonFX(Constants.DriveConstants.leftMaster),
 				new WPI_TalonFX(Constants.DriveConstants.rightSlave),
 				new WPI_TalonFX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
->>>>>>> DriveTrain
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 
@@ -98,12 +68,8 @@ public class RobotContainer {
 	 * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-<<<<<<< HEAD
-
-=======
-		Button b = new JoystickButton(getController(), Constants.ControllerConstants.button_X_Port);
+		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		b.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
->>>>>>> DriveTrain
 	}
 
 	/**
@@ -139,12 +105,9 @@ public class RobotContainer {
 	public static Controller getController() {
 		return m_controller;
 	}
-<<<<<<< HEAD
-=======
 
 	public DriveTrainSubsystem getDriveInstance() {
 		return m_drive;
 	}
 
->>>>>>> DriveTrain
 }
