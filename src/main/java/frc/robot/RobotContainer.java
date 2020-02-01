@@ -15,9 +15,9 @@ import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
@@ -27,7 +27,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.utils.Controller;
-import frc.robot.utils.CustomRamseteCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -70,7 +69,7 @@ public class RobotContainer {
 	 */
 	private void configureButtonBindings() {
 		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
-		b.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
+		b.whenPressed(() -> m_drive.resetOdometry(new Pose2d()));
 	}
 
 	/**
@@ -83,12 +82,12 @@ public class RobotContainer {
 			// Set the initial pos as the current pos
 			m_drive.resetOdometry(trajectory.getInitialPose());
 
-			CustomRamseteCommand ramseteCommand = new CustomRamseteCommand(trajectory, m_drive::getPose,
+			RamseteCommand ramseteCommand = new RamseteCommand(trajectory, m_drive::getPose,
 					new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 					new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter,
 							DriveConstants.kaVoltSecondsSquaredPerMeter),
-					DriveConstants.kDriveKinematics, m_drive::getWheelSpeeds, Constants.Autos.Default.L_CONTROLLER,
-					Constants.Autos.Default.R_CONTROLLER,
+					DriveConstants.kDriveKinematics, m_drive::getWheelSpeeds, Constants.AutoConstants.L_CONTROLLER,
+					Constants.AutoConstants.R_CONTROLLER,
 					// RamseteCommand passes volts to the callback
 					m_drive::tankDriveVolts, m_drive);
 			return ramseteCommand.andThen(new RunCommand(() -> m_drive.drive(0, 0, false)));
@@ -106,8 +105,8 @@ public class RobotContainer {
 		return m_controller;
 	}
 
-	public DriveTrainSubsystem getDriveInstance() {
-		return m_drive;
+	public void feedMotorSafety() {
+		m_drive.feedMotorSafety();
 	}
 
 }

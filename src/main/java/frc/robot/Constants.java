@@ -68,6 +68,10 @@ public final class Constants {
         public static final double kRamseteZeta = 0.7;
         public static final double kMaxSpeedMetersPerSecond = 1;
         public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
+                DriveConstants.kD);
+        public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
+                DriveConstants.kD);
 
     }
 
@@ -107,10 +111,7 @@ public final class Constants {
                     new Pose2d(2, 0, new Rotation2d(0)),
                     // Pass config
                     config);
-            public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
-                    DriveConstants.kD);
-            public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
-                    DriveConstants.kD);
+
         }
 
         public static final class PathWeaver {
