@@ -4,20 +4,20 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-//Countdown timer?
+
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.WheelSubsystem;
 
-public class RotationCommand extends CommandBase {
-  // not needed here (PIDFController rotationController = new PIDFController("rotation", 0, 0, 0, 0);)
+public class PositionCommand extends CommandBase {
   WheelSubsystem wheelSubsystem;
   /**
-   * Creates a new RotationCommand.
+   * Creates a new PositionCommand.
    */
-  public RotationCommand(WheelSubsystem subsystem) {
+  public PositionCommand(WheelSubsystem subsystem, Color targetedColor, Color currentColor) {
     // Use addRequirements() here to declare subsystem dependencies.
     wheelSubsystem = subsystem;
     addRequirements(wheelSubsystem);
@@ -32,20 +32,14 @@ public class RotationCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    while(RobotContainer.getController().getXButtonPressed()){
-      /* Haikus with Olu:
-      *
-      * While "X" button's held...
-      * then spin the motor so long...
-      * the "X" button's pressed. 
-      * 
-      * This has been Haikus with Olu.
-      */
-
-        wheelSubsystem.rotateSpeed(1);
-  
+    if (RobotContainer.getController().getYButtonPressed()){
+      Color m_targetedColor = wheelSubsystem.targetColor();
+      Color m_currentColor = wheelSubsystem.getClosestColor();
+      
+      if (m_targetedColor != m_currentColor) {
+        wheelSubsystem.rotateSpeed(0.2);
+      }
     }
-    wheelSubsystem.rotateSpeed(0);
   }
 
   // Called once the command ends or is interrupted.
@@ -57,6 +51,14 @@ public class RotationCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    Color targetedColor = wheelSubsystem.targetColor();
+    Color currentColor = wheelSubsystem.getClosestColor();
+    
+    if (targetedColor == currentColor) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }
