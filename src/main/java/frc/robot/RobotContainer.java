@@ -13,13 +13,13 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
@@ -27,6 +27,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.utils.Controller;
+import frc.robot.utils.CustomRamseteCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -39,10 +40,11 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 	private static DriveTrainSubsystem m_drive;
-	private static Trajectory[] trajectories = { Constants.Autos.Default.trajectory,
-			Constants.Autos.PathWeaver.Test.getTrajectory() };
+	private static Trajectory[] trajectories = { Constants.Autos.Default.STRAIGHT_TRAJECTORY,
+			Constants.Autos.PathWeaver.Test.getTrajectory(), Constants.Autos.Default.S_TRAJECTORY };
 
 	private static Trajectory trajectory = trajectories[1];
+	public boolean done = false;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -77,20 +79,19 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		if (trajectory != null) {
+		if (trajectory != null && !done) {
 			// Set the initial pos as the current pos
 			m_drive.resetOdometry(trajectory.getInitialPose());
 
-			RamseteCommand ramseteCommand = new RamseteCommand(trajectory, m_drive::getPose,
+			CustomRamseteCommand ramseteCommand = new CustomRamseteCommand(trajectory, m_drive::getPose,
 					new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 					new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter,
 							DriveConstants.kaVoltSecondsSquaredPerMeter),
-					DriveConstants.kDriveKinematics, m_drive::getWheelSpeeds,
-					new PIDController(DriveConstants.kPDriveVel, 0, 0),
-					new PIDController(DriveConstants.kPDriveVel, 0, 0),
+					DriveConstants.kDriveKinematics, m_drive::getWheelSpeeds, Constants.Autos.Default.L_CONTROLLER,
+					Constants.Autos.Default.R_CONTROLLER,
 					// RamseteCommand passes volts to the callback
 					m_drive::tankDriveVolts, m_drive);
-			return ramseteCommand.andThen(new InstantCommand(() -> m_drive.drive(0, 0, false)));
+			return ramseteCommand.andThen(new RunCommand(() -> m_drive.drive(0, 0, false)));
 		} else {
 			return null;
 		}

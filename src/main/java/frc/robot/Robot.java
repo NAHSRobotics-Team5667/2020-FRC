@@ -7,7 +7,13 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LED;
@@ -20,7 +26,7 @@ import frc.robot.utils.LED;
  * project.
  */
 public class Robot extends TimedRobot {
-	private Command m_autonomousCommand;
+	private Command m_autonomousCommand = null;
 	private RobotContainer m_robotContainer;
 
 	/**
@@ -91,6 +97,10 @@ public class Robot extends TimedRobot {
 	public void autonomousPeriodic() {
 		m_autonomousCommand.schedule();
 		m_robotContainer.getDriveInstance().feedMotorSafety();
+
+		SmartDashboard.putNumber("r_setpoint", Constants.Autos.Default.R_CONTROLLER.getSetpoint());
+		SmartDashboard.putNumber("l_setpoint", Constants.Autos.Default.L_CONTROLLER.getSetpoint());
+
 	}
 
 	@Override
@@ -99,6 +109,7 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
+
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}

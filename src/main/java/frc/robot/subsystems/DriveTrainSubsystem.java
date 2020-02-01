@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -18,8 +19,6 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -67,16 +66,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_rightSlave = rightSlave;
 		m_leftSlave = leftSlave;
 
+		m_rightMaster.configFactoryDefault();
+		m_rightSlave.configFactoryDefault();
+
+		m_leftMaster.configFactoryDefault();
+		m_leftSlave.configFactoryDefault();
+
 		TalonFXConfiguration falconConfig = new TalonFXConfiguration();
 		falconConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-		falconConfig.neutralDeadband = Constants.DriveConstants.DEADBAND;
-		falconConfig.slot0.kP = Constants.DriveConstants.kP;
-		falconConfig.slot0.kI = 0.0;
-		falconConfig.slot0.kD = Constants.DriveConstants.kD;
-		falconConfig.slot0.integralZone = 400;
-		falconConfig.slot0.closedLoopPeakOutput = 1.0;
-		falconConfig.closedloopRamp = Constants.DriveConstants.CLOSED_LOOP_RAMP;
-		falconConfig.openloopRamp = Constants.DriveConstants.OPEN_LOOP_RAMP;
 
 		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
@@ -108,7 +105,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
 		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
-		SmartDashboard.putNumber("Raw Gyro", m_gyro.getAngle());
 
 		SmartDashboard.putNumber("l_volts", m_leftMaster.getMotorOutputVoltage());
 		SmartDashboard.putNumber("r_volts", m_rightMaster.getMotorOutputVoltage());
@@ -188,7 +184,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void resetOdometry(Pose2d pose) {
 		zeroDriveTrainEncoders();
 		m_gyro.reset();
-		m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
+		m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
 	}
 
 	/**
@@ -198,11 +194,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param rightVolts the commanded right output
 	 */
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
-		double l = leftVolts;
-		double r = -rightVolts;
+		SmartDashboard.putNumber("raw_lv", leftVolts);
+		SmartDashboard.putNumber("raw_rv", -rightVolts);
 
-		m_leftMaster.setVoltage(l);
-		m_rightMaster.setVoltage(r);
+		m_leftMaster.set(leftVolts);
+		m_rightMaster.set(-rightVolts);
 	}
 
 	/**
