@@ -27,11 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.DriveTrainCommand;
-import frc.robot.commands.PositionCommand;
-import frc.robot.commands.RotationCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.WheelSubsystem;
 import frc.robot.utils.Controller;
 
 /**
@@ -51,8 +47,6 @@ public class RobotContainer {
 	public boolean done = false;
 
 	private static DriveTrainSubsystem m_drive;
-	private static ShooterSubsystem m_shooter;
-	private static WheelSubsystem m_wheel;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -65,16 +59,6 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.leftMaster),
 				new WPI_TalonFX(Constants.DriveConstants.rightSlave),
 				new WPI_TalonFX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
-
-		m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
-				new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
-
-		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-				new PWMTalonSRX(Constants.ShooterConstants.LEFT_SHOOTER_PORT),
-				new Encoder(Constants.ShooterConstants.RIGHT_ENCODER_PORT_A,
-						Constants.ShooterConstants.RIGHT_ENCODER_PORT_B),
-				new Encoder(Constants.ShooterConstants.LEFT_ENCODER_PORT_A,
-						Constants.ShooterConstants.LEFT_ENCODER_PORT_B));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 
@@ -92,8 +76,6 @@ public class RobotContainer {
 		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
 
 		x.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
-		b.whenPressed(new PositionCommand(m_wheel));
-		a.whenPressed(new RotationCommand(m_wheel));
 	}
 
 	/**
