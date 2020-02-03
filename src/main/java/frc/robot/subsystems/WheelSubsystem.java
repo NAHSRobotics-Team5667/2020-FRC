@@ -17,8 +17,6 @@ import com.revrobotics.ColorSensorV3;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,8 +31,6 @@ public class WheelSubsystem extends SubsystemBase {
 	private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
 	private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
 	private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
-
-	private Color targetColor;
 
 	ShuffleboardTab wheelTab = Shuffleboard.getTab("Wheel");
 
@@ -75,30 +71,25 @@ public class WheelSubsystem extends SubsystemBase {
 			case 'B':
 				// the robot will see red at this point
 				// so spin until it sees red
-				targetColor = kRedTarget;
 				return "Red";
 
 			case 'G':
 				// the robot will see yellow at this point
 				// so spin until it sees yellow
-				targetColor = kYellowTarget;
 				return "Yellow";
 
 			case 'R':
 				// the robot will see blue at this point
 				// so spin until it sees blue
-				targetColor = kBlueTarget;
 				return "Blue";
 
 			case 'Y':
 				// the robot will see green at this point
 				// so spin until it sees green
-				targetColor = kGreenTarget;
 				return "Green";
 
 			default:
 				// This is corrupt data
-				targetColor = null;
 				break;
 			}
 		} else {
