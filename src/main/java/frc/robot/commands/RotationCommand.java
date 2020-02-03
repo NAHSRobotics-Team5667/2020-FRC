@@ -8,55 +8,54 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.WheelSubsystem;
 
+/**
+ * Creates a new RotationCommand.
+ */
 public class RotationCommand extends CommandBase {
-  // not needed here (PIDFController rotationController = new PIDFController("rotation", 0, 0, 0, 0);)
-  WheelSubsystem wheelSubsystem;
-  /**
-   * Creates a new RotationCommand.
-   */
-  public RotationCommand(WheelSubsystem subsystem) {
-    // Use addRequirements() here to declare subsystem dependencies.
-    wheelSubsystem = subsystem;
-    addRequirements(wheelSubsystem);
-  }
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    wheelSubsystem.rotateSpeed(0);
-  }
+	WheelSubsystem wheelSubsystem;
 
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
-    while(RobotContainer.getController().getXButtonPressed()){
-      /* Haikus with Olu:
-      *
-      * While "X" button's held...
-      * then spin the motor so long...
-      * the "X" button's pressed. 
-      * 
-      * This has been Haikus with Olu.
-      */
+	/**
+	 * Create a rotation command
+	 * 
+	 * @param subsystem The Wheel Subsystem
+	 */
+	public RotationCommand(WheelSubsystem subsystem) {
+		// Use addRequirements() here to declare subsystem dependencies.
+		wheelSubsystem = subsystem;
+		addRequirements(wheelSubsystem);
+	}
 
-        wheelSubsystem.rotateSpeed(1);
-  
-    }
-    wheelSubsystem.rotateSpeed(0);
-  }
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		wheelSubsystem.rotateSpeed(0.2);
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    wheelSubsystem.rotateSpeed(0);
-  }
+	// Called every time the scheduler runs while the command is scheduled.
+	@Override
+	public void execute() {
+		/*
+		 * Haikus with Olu:
+		 *
+		 * While "X" button's held... then spin the motor so long... the "X" button's
+		 * pressed.
+		 * 
+		 * This has been Haikus with Olu.
+		 */
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		wheelSubsystem.rotateSpeed(0);
+	}
+
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return wheelSubsystem.hasRotated();
+	}
 }
