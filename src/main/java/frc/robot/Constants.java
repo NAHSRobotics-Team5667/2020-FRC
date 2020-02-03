@@ -76,7 +76,7 @@ public final class Constants {
     }
 
     public final static class Autos {
-        public final static class Default {
+        public final static class PATHS {
             public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
                     new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
                             Constants.DriveConstants.kvVoltSecondsPerMeter,
@@ -112,21 +112,18 @@ public final class Constants {
                     // Pass config
                     config);
 
+            public static final Trajectory METER = getTrajectory("meter");
+            public static final Trajectory SEMI_CIRCLE = getTrajectory("semi-circle");
+
         }
 
-        public static final class PathWeaver {
-
-            public static final class Test {
-                public static Trajectory getTrajectory() {
-                    try {
-                        return TrajectoryUtil
-                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/Unnamed.wpilib.json"));
-                    } catch (IOException e) {
-                        System.out.println("CANNOT READ Trajectory");
-                        return null;
-                    }
-                }
-
+        public static Trajectory getTrajectory(String name) {
+            try {
+                return TrajectoryUtil
+                        .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/" + name + ".wpilib.json"));
+            } catch (IOException e) {
+                System.out.println("CANNOT READ Trajectory");
+                return null;
             }
         }
     }

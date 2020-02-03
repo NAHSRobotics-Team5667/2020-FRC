@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -99,13 +100,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 		resetOdometry(new Pose2d());
+		outputTelemetry();
 	}
 
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
-		outputTelemetry();
 	}
 
 	/**
@@ -277,9 +278,15 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	public void outputTelemetry() {
-		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
+		autoTab.addString("Robot Position", new Supplier<String>() {
 
-		autoTab.addNumber("Right Position", new DoubleSupplier() {
+			@Override
+			public String get() {
+				return m_odometry.getPoseMeters().toString();
+			}
+		});
+
+		autoTab.addNumber("r_pos", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getRightEncoderPosition();
@@ -334,7 +341,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 				return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
 			}
 		}).withWidget("Graph");
-
 	}
 
 }

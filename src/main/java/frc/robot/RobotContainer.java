@@ -9,11 +9,8 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
@@ -40,10 +37,10 @@ import frc.robot.utils.Controller;
 public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
-	private static Trajectory[] trajectories = { Constants.Autos.Default.STRAIGHT_TRAJECTORY,
-			Constants.Autos.PathWeaver.Test.getTrajectory(), Constants.Autos.Default.S_TRAJECTORY };
+	private static Trajectory[] trajectories = { Constants.Autos.PATHS.STRAIGHT_TRAJECTORY,
+			Constants.Autos.PATHS.S_TRAJECTORY, Constants.Autos.PATHS.METER, Constants.Autos.PATHS.SEMI_CIRCLE };
 
-	private static Trajectory trajectory = trajectories[1];
+	private static Trajectory trajectory = trajectories[3];
 	public boolean done = false;
 
 	private static DriveTrainSubsystem m_drive;
@@ -72,9 +69,6 @@ public class RobotContainer {
 	 */
 	private void configureButtonBindings() {
 		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
-		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
-		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
-
 		x.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
 	}
 
