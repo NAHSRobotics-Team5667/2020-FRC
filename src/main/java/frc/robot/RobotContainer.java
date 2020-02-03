@@ -69,10 +69,6 @@ public class RobotContainer {
 	 */
 	private void configureButtonBindings() {
 		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
-<<<<<<< HEAD
-=======
-
->>>>>>> f1f1a3315e66ccb387f87df64a5995f75bdf192c
 		x.whenPressed(() -> m_drive.resetOdometry(trajectory.getInitialPose()));
 	}
 
