@@ -15,6 +15,8 @@ public class IntakeCommand extends CommandBase {
 
   private IntakeSubsystem m_intake;
 
+  private boolean intakeExtended = false;
+
   /**
    * Creates a new IntakeCommand.
    */
@@ -27,11 +29,27 @@ public class IntakeCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    // Retract the intake just to be safe
+    m_intake.retractIntake();
+    intakeExtended = false;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    if (RobotContainer.getController().getBButton() == true) {
+      if (intakeExtended == false) {
+        m_intake.extendIntake();
+      } else if (intakeExtended == true) {
+        m_intake.retractIntake();
+      }
+    }
+
+    if (m_intake.hasSeenBall() == true) {
+      m_intake.startBelt();
+    } else if (m_intake.hasSeenBall() == false) {
+      m_intake.stopBelt();
+    }
   }
 
   // Called once the command ends or is interrupted.

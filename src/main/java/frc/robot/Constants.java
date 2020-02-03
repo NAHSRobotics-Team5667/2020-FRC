@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -65,8 +66,12 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxSpeedMetersPerSecond = 1;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
+                DriveConstants.kD);
+        public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
+                DriveConstants.kD);
 
     }
 
@@ -76,7 +81,7 @@ public final class Constants {
                     new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
                             Constants.DriveConstants.kvVoltSecondsPerMeter,
                             Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-                    Constants.DriveConstants.kDriveKinematics, 10);
+                    Constants.DriveConstants.kDriveKinematics, 6);
 
             // Create config for trajectory
             public static final TrajectoryConfig config = new TrajectoryConfig(
@@ -88,7 +93,7 @@ public final class Constants {
                             .addConstraint(autoVoltageConstraint);
 
             // An example trajectory to follow. All units in meters.
-            public static final Trajectory trajectory = TrajectoryGenerator.generateTrajectory(
+            public static final Trajectory S_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
                     // Start at the origin facing the +X direction
                     new Pose2d(0, 0, new Rotation2d(0)),
                     // Pass through these two interior waypoints, making an 's' curve path
@@ -97,6 +102,16 @@ public final class Constants {
                     new Pose2d(3, 0, new Rotation2d(0)),
                     // Pass config
                     config);
+            public static final Trajectory STRAIGHT_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
+                    // Start at the origin facing the +X direction
+                    new Pose2d(0, 0, new Rotation2d(0)),
+                    // Pass through these two interior waypoints
+                    List.of(new Translation2d(1, 0)),
+                    // End 3 meters straight ahead of where we started, facing forward
+                    new Pose2d(2, 0, new Rotation2d(0)),
+                    // Pass config
+                    config);
+
         }
 
         public static final class PathWeaver {
@@ -105,8 +120,9 @@ public final class Constants {
                 public static Trajectory getTrajectory() {
                     try {
                         return TrajectoryUtil
-                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/path.wpilib.json"));
+                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/Unnamed.wpilib.json"));
                     } catch (IOException e) {
+                        System.out.println("CANNOT READ Trajectory");
                         return null;
                     }
                 }
@@ -131,21 +147,17 @@ public final class Constants {
         public static final int rightSlave = 0;
         public static final int leftSlave = 2;
 
-        public static final double ksVolts = 0.0802;
-        public static final double kvVoltSecondsPerMeter = 2.47;
-        public static final double kaVoltSecondsSquaredPerMeter = 0.191; // 1.9356652467050692
+        public static final double ksVolts = 0.0869 / 10;
+        public static final double kvVoltSecondsPerMeter = 2.46 / 10;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.185 / 10; // 1.9356652467050692
 
         public static final double kTrackwidthMeters = Units.inchesToMeters(22);
         public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
                 kTrackwidthMeters);
 
-        public static double kPDriveVel = 7.67;
-
-        public static final double DEADBAND = .11;
-        public static final double CLOSED_LOOP_RAMP = .2;
-        public static final double OPEN_LOOP_RAMP = .25;
-        public static double kP = 0.00299;
-        public static final double kD = 0;
+        public static double kP = 0.01; // 7.43;
+        public static double kI = 0; // 0.01; // 7.43;
+        public static double kD = 0; // 0.01; // 7.43;
 
     }
 
@@ -167,6 +179,12 @@ public final class Constants {
         public static final int LEFT_ENCODER_PORT_B = 11;
         public static final int ANGLE_ENCODER_PORT_A = 12;
         public static final int ANGLE_ENCODER_PORT_B = 13;
+    }
+
+    public final static class WheelConstants {
+        public static final double ROTATIONS = 2.7 * 3;
+        public static final int MOTOR = 4;
+        public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
     public final static class ControllerConstants {
