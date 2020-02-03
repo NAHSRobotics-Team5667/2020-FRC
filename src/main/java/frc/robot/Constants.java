@@ -181,6 +181,12 @@ public final class Constants {
         public static final int ANGLE_ENCODER_PORT_B = 13;
     }
 
+    public final static class WheelConstants {
+        public static final double ROTATIONS = 2.7 * 3;
+        public static final int MOTOR = 4;
+        public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
+    }
+
     public final static class ControllerConstants {
         public static final int CONTROLLER_PORT = 0; // Controller port
 
