@@ -7,6 +7,8 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -18,6 +20,8 @@ import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,6 +37,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	private DifferentialDriveOdometry m_odometry;
 
 	private DriveModes m_driveMode = DriveModes.MANUAL;
+
+	private ShuffleboardTab graphTab = Shuffleboard.getTab("Graphs");
+	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
 
 	public static enum DriveModes {
 		MANUAL(0), AUTO(1);
@@ -65,16 +72,14 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_rightSlave = rightSlave;
 		m_leftSlave = leftSlave;
 
+		m_rightMaster.configFactoryDefault();
+		m_rightSlave.configFactoryDefault();
+
+		m_leftMaster.configFactoryDefault();
+		m_leftSlave.configFactoryDefault();
+
 		TalonFXConfiguration falconConfig = new TalonFXConfiguration();
 		falconConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
-		falconConfig.neutralDeadband = Constants.DriveConstants.DEADBAND;
-		falconConfig.slot0.kP = Constants.DriveConstants.kP;
-		falconConfig.slot0.kI = 0.0;
-		falconConfig.slot0.kD = Constants.DriveConstants.kD;
-		falconConfig.slot0.integralZone = 400;
-		falconConfig.slot0.closedLoopPeakOutput = 1.0;
-		falconConfig.closedloopRamp = Constants.DriveConstants.CLOSED_LOOP_RAMP;
-		falconConfig.openloopRamp = Constants.DriveConstants.OPEN_LOOP_RAMP;
 
 		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
@@ -100,18 +105,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
-		SmartDashboard.putString("Pose", m_odometry.getPoseMeters().toString());
-		SmartDashboard.putNumber("Right Position", getRightEncoderPosition());
-		SmartDashboard.putNumber("Left Position", getLeftEncoderPosition());
-
-		SmartDashboard.putNumber("RM", m_rightMaster.get());
-		SmartDashboard.putNumber("LM", m_leftMaster.get());
-		SmartDashboard.putNumber("RS", m_rightSlave.get());
-		SmartDashboard.putNumber("LS", m_leftSlave.get());
-
-		SmartDashboard.putNumber("Right Vel", getRightEncoderRate());
-		SmartDashboard.putNumber("Left Vel", getLeftEncoderRate());
-		SmartDashboard.putNumber("Raw Gyro", m_gyro.getAngle());
+		outputTelemetry();
 	}
 
 	/**
@@ -188,7 +182,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void resetOdometry(Pose2d pose) {
 		zeroDriveTrainEncoders();
 		m_gyro.reset();
-		m_odometry.resetPosition(new Pose2d(), Rotation2d.fromDegrees(getHeading()));
+		m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
 	}
 
 	/**
@@ -198,14 +192,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @param rightVolts the commanded right output
 	 */
 	public void tankDriveVolts(double leftVolts, double rightVolts) {
-		double l = leftVolts;
-		double r = -rightVolts;
+		SmartDashboard.putNumber("raw_lv", leftVolts);
+		SmartDashboard.putNumber("raw_rv", -rightVolts);
 
-		m_leftMaster.setVoltage(l);
-		m_rightMaster.setVoltage(r);
-
-		SmartDashboard.putNumber("l_volts", l);
-		SmartDashboard.putNumber("r_volts", r);
+		m_leftMaster.set(leftVolts);
+		m_rightMaster.set(-rightVolts);
 	}
 
 	/**
@@ -278,8 +269,72 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		return -m_gyro.getAngle();
 	}
 
+	/**
+	 * Feed the motor safety during auto
+	 */
 	public void feedMotorSafety() {
 		m_drive.feed();
+	}
+
+	public void outputTelemetry() {
+		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
+
+		autoTab.addNumber("Right Position", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getRightEncoderPosition();
+			}
+		});
+
+		autoTab.addNumber("l_pos", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getLeftEncoderPosition();
+			}
+		});
+
+		autoTab.addNumber("r_vel", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getRightEncoderRate();
+			}
+		});
+
+		autoTab.addNumber("l_vel", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getLeftEncoderRate();
+			}
+		});
+
+		graphTab.addNumber("l_volts", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_leftMaster.getMotorOutputVoltage();
+			}
+		}).withWidget("Graph");
+
+		graphTab.addNumber("r_volts", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_rightMaster.getMotorOutputVoltage();
+			}
+		}).withWidget("Graph");
+
+		graphTab.addNumber("r_setpoint", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return Constants.AutoConstants.R_CONTROLLER.getSetpoint();
+			}
+		}).withWidget("Graph");
+
+		graphTab.addNumber("l_setpoint", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
+			}
+		}).withWidget("Graph");
+
 	}
 
 }

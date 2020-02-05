@@ -4,25 +4,26 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-//Countdown timer?
+
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.WheelSubsystem;
 
 /**
- * Creates a new RotationCommand.
+ * Creates a new PositionCommand.
  */
-public class RotationCommand extends CommandBase {
-
+public class PositionCommand extends CommandBase {
 	WheelSubsystem wheelSubsystem;
 
 	/**
-	 * Create a rotation command
+	 * Creates a Position command
 	 * 
-	 * @param subsystem The Wheel Subsystem
+	 * @param subsystem     - The Wheel Subsystem
+	 * @param targetedColor - The target color to stop at
+	 * @param currentColor  - The current color seeing
 	 */
-	public RotationCommand(WheelSubsystem subsystem) {
+	public PositionCommand(WheelSubsystem subsystem) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		wheelSubsystem = subsystem;
 		addRequirements(wheelSubsystem);
@@ -37,14 +38,6 @@ public class RotationCommand extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		/*
-		 * Haikus with Olu:
-		 *
-		 * While "X" button's held... then spin the motor so long... the "X" button's
-		 * pressed.
-		 * 
-		 * This has been Haikus with Olu.
-		 */
 	}
 
 	// Called once the command ends or is interrupted.
@@ -56,6 +49,6 @@ public class RotationCommand extends CommandBase {
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return wheelSubsystem.hasRotated();
+		return wheelSubsystem.targetColor() == wheelSubsystem.getClosestColor();
 	}
 }
