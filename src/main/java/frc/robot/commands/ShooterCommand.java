@@ -12,6 +12,7 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState.States;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.utils.PIDFController;
 
 public class ShooterCommand extends CommandBase {
@@ -19,21 +20,25 @@ public class ShooterCommand extends CommandBase {
     private PIDFController shooterAngle = new PIDFController("shooterAngle", 0.0, 0.0, 0.0, 0.0);
 
     private ShooterSubsystem m_shooter;
+    private IntakeSubsystem m_intake;
 
     /**
      * Creates a new ShooterCommand.
      */
-    public ShooterCommand(ShooterSubsystem shooter) {
+    public ShooterCommand(ShooterSubsystem shooter, IntakeSubsystem intake) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
         addRequirements(m_shooter);
+
+        m_intake = intake;
+        addRequirements(m_intake);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         // Turns on the shooter motor - it should stay on the entire match
-        m_shooter.fire(0, 0); /** Replace 0s with proper values **/
+        m_shooter.fire(1, 1);
 
     }
 
@@ -41,7 +46,9 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void execute() {
         if (RobotContainer.getController().getAButton() == true) {
-            // *Add method for activating the conveyor belt here
+            m_intake.startBelt();
+        } else if (RobotContainer.getController().getAButton() == false) {
+            m_intake.stopBelt();
         }
         if (RobotContainer.getController().getLeftTrigger() != 0) {
             shooterAngle.calculate(0.0);
