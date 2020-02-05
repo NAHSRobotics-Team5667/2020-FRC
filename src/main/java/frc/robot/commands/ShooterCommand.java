@@ -32,7 +32,6 @@ public class ShooterCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        Constants.m_RobotState.setState(States.SHOOTING);
         // Turns on the shooter motor - it should stay on the entire match
         m_shooter.fire(0, 0); /** Replace 0s with proper values **/
 

@@ -41,6 +41,7 @@ public class RotationCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    Constants.m_RobotState.setState(States.IDLE);
     m_spinner.disable();
   }
 
