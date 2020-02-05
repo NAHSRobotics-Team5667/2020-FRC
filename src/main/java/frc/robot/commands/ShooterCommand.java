@@ -27,6 +27,7 @@ public class ShooterCommand extends CommandBase {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
         addRequirements(m_shooter);
+
         m_intake = intake;
         addRequirements(m_intake);
     }

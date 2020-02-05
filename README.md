@@ -1,4 +1,4 @@
-# The Digital Eagles Team 5667 2020 Code Robot A
+# The Digital Eagles Team 5667 2020 Code
 
 The FRC 2020 Infinite Recharge Code
 
@@ -12,24 +12,23 @@ The FRC 2020 Infinite Recharge Code
 
 ## frc.robot.subsystems
 
-* [DriveTrainSubsystem](src/main/java/frc/robot/subsystems/DriveTrainSubsystem.java)
-* [IntakeSubsystem](src/main/java/frc/robot/subsystems/IntakeSubsystem.java)
-* [ShooterSubsystem](src/main/java/frc/robot/subsystems/ShooterSubsystem.java)
-* [SpinnerSubsystem](src/main/java/frc/robot/subsystems/SpinnerSubsystem.java)
-* [ClimbSubsystem](src/main/java/frc/robot/subsystems/ClimbSubsystem.java)
-
+* [Drive Train](src/main/java/frc/robot/subsystems/DriveTrainSubsystem.java)
+* [Shooter](src/main/java/frc/robot/subsystems/ShooterSubsystem.java)
+* [Intake](src/main/java/frc/robot/subsystems/IntakeSubsystem.java)
+* [Climb](src/main/java/frc/robot/subsystems/ClimbSubsystem.java)
+* [Wheel Manipulator](src/main/java/frc/robot/subsystems/WheelSubsystem.java)
 
 ## frc.robot.commands
 
-* [DriveTrainCommand](src/main/java/frc/robot/commands/DriveTrainCommand.java)
-* [IntakeCommand](src/main/java/frc/robot/commands/IntakeCommand.java)
-* [ShooterCommand](src/main/java/frc/robot/commands/ShooterCommand.java)
-* [PositionControlCommand](src/main/java/frc/robot/commands/PositionControlCommand.java)
-* [RotationCommand](src/main/java/frc/robot/commands/RotationCommand.java)
+* [Drive Train](src/main/java/frc/robot/commands/DriveTrainCommand.java)
+* [Shooter](src/main/java/frc/robot/commands/ShooterCommand.java)
+* [Intake](src/main/java/frc/robot/commands/IntakeCommand.java)
+* Climb
+* [Position Control Command](src/main/java/frc/robot/commands/WheelSubsystem.java)
+* [Rotation Control Command](src/main/java/frc/robot/commands/WheelSubsystem.java)
 
 ## frc.robot.utils
 
 * [PIDFController](src/main/java/frc/robot/utils/PIDFController.java) - A custom PID Controller
-* [Controller](src/main/java/frc/robot/utils/Controller.java) - A custom Xbox Controller
-* [LED](src/main/java/frc/robot/utils/LED.java)
-* [LimeLight](src/main/java/frc/robot/utils/LimeLight.java)
+* [Controller](src/main/java/frc/robot/utils/Controller.java) - A custom XBox Controller
+* [LimeLight](src/main/java/frc/robot/utils/LimeLight.java) - Limelight interface
