@@ -40,8 +40,10 @@ public class IntakeCommand extends CommandBase {
     if (RobotContainer.getController().getBButton() == true) {
       if (intakeExtended == false) {
         m_intake.extendIntake();
+        intakeExtended = true;
       } else if (intakeExtended == true) {
         m_intake.retractIntake();
+        intakeExtended = false;
       }
     }
 
