@@ -8,6 +8,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.RobotState.States;
 import frc.robot.subsystems.WheelSubsystem;
 
 /**
@@ -31,6 +33,7 @@ public class RotationCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    Constants.m_RobotState.setState(States.ROTATION);
     wheelSubsystem.rotateSpeed(0.2);
   }
 
@@ -50,6 +53,7 @@ public class RotationCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    Constants.m_RobotState.setState(States.IDLE);
     wheelSubsystem.rotateSpeed(0);
   }
 

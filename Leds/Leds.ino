@@ -2,8 +2,9 @@
 
 #define NUM_LEDS 120
 #define DATA_PIN 11
-#define FLASH_TIME 1000
+#define FLASH_TIME 500
 #define COLOR_ORDER GRB
+#define MAX_BRIGHTNESS    255
 
 CRGB leds[NUM_LEDS];
 
@@ -11,6 +12,7 @@ String state;
 CRGB allianceColor;
 
 void setup() {
+  FastLED.setBrightness(MAX_BRIGHTNESS);
   FastLED.addLeds<WS2812B, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
   Serial.begin(9600);
 }
@@ -64,10 +66,12 @@ void flashColor(int r, int g, int b, int flashR, int flashG, int flashB){
   for (int i = 0; i < NUM_LEDS; i++) {
     leds[i] = CRGB(r, g, b);
   }
+  FastLED.show();
   delay(FLASH_TIME);
   for(int i = 0; i < NUM_LEDS; i++){
     leds[i] = CRGB(flashR, flashG, flashB);
   }
+  FastLED.show();
   delay(FLASH_TIME);
 }
 void flashAndAlternate(int r, int g, int b, int r2, int g2, int b2){
@@ -78,6 +82,7 @@ void flashAndAlternate(int r, int g, int b, int r2, int g2, int b2){
     else{
       leds[i] = CRGB(r2, g2, b2);
     }
+    FastLED.show();
   }
   delay(FLASH_TIME);
   for (int i = 0; i < NUM_LEDS; i++) {
@@ -87,6 +92,7 @@ void flashAndAlternate(int r, int g, int b, int r2, int g2, int b2){
     else{
       leds[i] = CRGB(r, g, b);
     }
+    FastLED.show();
   }
   delay(FLASH_TIME);
 }
