@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -38,17 +39,17 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Extends the intake outside of frame perimeter
 	 */
 	public void extendIntake() {
-		m_rSolenoid.set(true);
-		m_lSolenoid.set(true);
-		m_intake.set(1.0);
+		m_rSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_lSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_intake.set(Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
 	}
 
 	/**
 	 * Retracts the intake inside of frame perimeter
 	 */
 	public void retractIntake() {
-		m_rSolenoid.set(false);
-		m_lSolenoid.set(false);
+		m_rSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
+		m_lSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.set(0);
 	}
 
@@ -70,7 +71,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Start the belt
 	 */
 	public void startBelt() {
-		m_belt.set(1.0);
+		m_belt.set(Constants.IntakeConstants.BELT_MOTOR_SPEED);
 	}
 
 	/**
