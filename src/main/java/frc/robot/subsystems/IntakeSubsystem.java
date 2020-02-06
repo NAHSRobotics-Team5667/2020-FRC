@@ -16,8 +16,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	private Rev2mDistanceSensor m_intakeSensor;
 	private Rev2mDistanceSensor m_shooterSensor;
 
-	private boolean seenBallEnter = false;
-	private boolean seenBallExit = true;
+	private boolean previousSeenBallEnter = false;
+	private boolean previousSeenBallExit = false;
 
 	/**
 	 * Creates an intake subsystem instance
@@ -65,14 +65,17 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @return true if ball is present, therefore seen entering robot
 	 */
 	public boolean hasSeenBallEnter() {
+		boolean currentSeenBallEnter = false;
 		if (m_intakeSensor.getRange(Unit.kInches) <= Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& seenBallEnter == false) {
-			seenBallEnter = true;
+				&& previousSeenBallEnter == false) {
+			currentSeenBallEnter = true;
+			previousSeenBallEnter = currentSeenBallEnter;
 		} else if (m_intakeSensor.getRange(Unit.kInches) > Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& seenBallEnter == true) {
-			seenBallEnter = false;
+				&& previousSeenBallEnter == true) {
+			currentSeenBallEnter = false;
+			previousSeenBallEnter = currentSeenBallEnter;
 		}
-		return seenBallEnter;
+		return currentSeenBallEnter;
 	}
 
 	/**
@@ -81,14 +84,17 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @return true if ball is absent, therefore seen leaving robot
 	 */
 	public boolean hasSeenBallExit() {
+		boolean currentSeenBallExit = false;
 		if (m_shooterSensor.getRange(Unit.kInches) <= Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& seenBallExit == true) {
-			seenBallExit = false;
+				&& previousSeenBallExit == true) {
+			currentSeenBallExit = false;
+			previousSeenBallExit = currentSeenBallExit;
 		} else if (m_shooterSensor.getRange(Unit.kInches) > Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& seenBallExit == false) {
-			seenBallExit = true;
+				&& previousSeenBallExit == false) {
+			currentSeenBallExit = true;
+			previousSeenBallExit = currentSeenBallExit;
 		}
-		return seenBallExit;
+		return currentSeenBallExit;
 	}
 
 	/**
