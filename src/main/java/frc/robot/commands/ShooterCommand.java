@@ -38,7 +38,7 @@ public class ShooterCommand extends CommandBase {
     @Override
     public void initialize() {
         // Turns on the shooter motor - it should stay on the entire match
-        m_shooter.fire(1, 1);
+        m_shooter.fire(1);
 
     }
 
