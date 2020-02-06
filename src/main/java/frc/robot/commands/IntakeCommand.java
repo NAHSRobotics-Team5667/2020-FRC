@@ -60,10 +60,21 @@ public class IntakeCommand extends CommandBase {
       ballCount -= 1;
     }
 
-    // Start/stop the belt based on the ballCount - WIP, make sure to account for
-    // every scenario
+    // Start/stop the belt based on the ballCount
     if (ballCount < 5 && m_intake.hasSeenBallExit() == true) {
       m_intake.startBelt();
+    }
+    if (ballCount < 5 && m_intake.hasSeenBallExit() == false) {
+      m_intake.stopBelt();
+    }
+    if (ballCount < 5 && m_intake.hasSeenBallEnter() == true) {
+      m_intake.startBelt();
+    }
+    if (ballCount < 5 && m_intake.hasSeenBallEnter() == false) {
+      m_intake.stopBelt();
+    }
+    if (ballCount == 5) {
+      m_intake.stopBelt();
     }
 
   }
