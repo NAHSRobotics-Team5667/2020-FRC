@@ -10,6 +10,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotState.States;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -49,6 +51,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	 * @param leftSpeed  - the speed of the left shooting wheel
 	 */
 	public void fire(double rightSpeed, double leftSpeed) {
+		Constants.m_RobotState.setState(States.SHOOTING);
 		m_rightWheel.set(rightSpeed);
 		m_leftWheel.set(leftSpeed);
 	}

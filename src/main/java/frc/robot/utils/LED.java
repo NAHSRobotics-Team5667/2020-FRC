@@ -86,7 +86,7 @@ public class LED {
      */
     private void oneColor() {
         for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[0]);
+            m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
         }
 
         m_adressableLed.setData(m_ledBuffer);
