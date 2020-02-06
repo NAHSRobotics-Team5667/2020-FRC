@@ -69,13 +69,8 @@ public class RobotContainer {
 		m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
 				new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
 
-		m_shooter = new ShooterSubsystem(new PWMTalonSRX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-				new PWMTalonSRX(Constants.ShooterConstants.LEFT_SHOOTER_PORT),
-				new Encoder(Constants.ShooterConstants.RIGHT_ENCODER_PORT_A,
-						Constants.ShooterConstants.RIGHT_ENCODER_PORT_B),
-				new Encoder(Constants.ShooterConstants.LEFT_ENCODER_PORT_A,
-						Constants.ShooterConstants.LEFT_ENCODER_PORT_B));
-
+		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
+				new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 
 	}

@@ -7,41 +7,44 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-	private SpeedController m_rightWheel, m_leftWheel;
-	private Encoder m_rightEncoder, m_leftEncoder;
+	private WPI_TalonFX m_rightWheel, m_leftWheel;
 
 	/**
 	 * Creates a shooter subsystem
 	 * 
-	 * @param rightWheel   - motor controller that controls the right shooter wheel
-	 * @param leftWheel    - motor controller that controls the left shooter wheel
-	 * 
-	 * @param rightEncoder - encoder to track the progress of the right shooter
-	 *                     wheel
-	 * @param leftEncoder  - encoder to track the progress of the left shooter wheel
+	 * @param rightWheel - motor controller that controls the right shooter wheel
+	 * @param leftWheel  - motor controller that controls the left shooter wheel
 	 */
 
-	public ShooterSubsystem(SpeedController rightWheel, SpeedController leftWheel, Encoder rightEncoder,
-			Encoder leftEncoder) {
+	public ShooterSubsystem(WPI_TalonFX rightWheel, WPI_TalonFX leftWheel) {
 		m_rightWheel = rightWheel;
 		m_leftWheel = leftWheel;
-		m_rightEncoder = rightEncoder;
-		m_leftEncoder = leftEncoder;
+		m_rightWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_rightWheel.setSelectedSensorPosition(0);
+		m_leftWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_leftWheel.setSelectedSensorPosition(0);
 	}
 
 	/**
-	 * Calculates the speed of the shooting wheels
+	 * Calculates the speed of the right shooting wheel
 	 */
-	public void calculateSpeeds() {
-		// to calculate the different speeds of the right and left motors based on angle
+	public void calculateRightSpeed() {
+
+	}
+
+	/**
+	 * Calculates the speed of the left shooting wheel
+	 */
+	public void calculateLeftSpeed() {
+
 	}
 
 	/**
@@ -69,14 +72,14 @@ public class ShooterSubsystem extends SubsystemBase {
 	 * Resets the encoder for the right shooter wheel
 	 */
 	public void resetRightEncoder() {
-		m_rightEncoder.reset();
+		m_rightWheel.setSelectedSensorPosition(0);
 	}
 
 	/**
 	 * Resets the encoder for the left shooter wheel
 	 */
 	public void resetLeftEncoder() {
-		m_leftEncoder.reset();
+		m_leftWheel.setSelectedSensorPosition(0);
 	}
 
 	@Override
