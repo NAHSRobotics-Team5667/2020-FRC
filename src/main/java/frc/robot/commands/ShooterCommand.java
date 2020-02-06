@@ -10,7 +10,6 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.utils.PIDFController;
 
 public class ShooterCommand extends CommandBase {
@@ -18,18 +17,15 @@ public class ShooterCommand extends CommandBase {
     private PIDFController shooterAngle = new PIDFController("shooterAngle", 0.0, 0.0, 0.0, 0.0);
 
     private ShooterSubsystem m_shooter;
-    private IntakeSubsystem m_intake;
 
     /**
      * Creates a new ShooterCommand.
      */
-    public ShooterCommand(ShooterSubsystem shooter, IntakeSubsystem intake) {
+    public ShooterCommand(ShooterSubsystem shooter) {
         // Use addRequirements() here to declare subsystem dependencies.
         m_shooter = shooter;
         addRequirements(m_shooter);
 
-        m_intake = intake;
-        addRequirements(m_intake);
     }
 
     // Called when the command is initially scheduled.
@@ -43,11 +39,6 @@ public class ShooterCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (RobotContainer.getController().getAButton() == true) {
-            m_intake.startBelt();
-        } else if (RobotContainer.getController().getAButton() == false) {
-            m_intake.stopBelt();
-        }
         if (RobotContainer.getController().getLeftTrigger() != 0) {
             shooterAngle.calculate(0.0);
 
