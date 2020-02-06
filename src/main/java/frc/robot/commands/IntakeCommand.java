@@ -17,6 +17,7 @@ public class IntakeCommand extends CommandBase {
   private IntakeSubsystem m_intake;
 
   private boolean intakeExtended = false;
+  private boolean beltRunning = false;
   private int ballCount = 0;
 
   /**
@@ -34,6 +35,8 @@ public class IntakeCommand extends CommandBase {
     // Retract the intake just to be safe
     m_intake.retractIntake();
     intakeExtended = false;
+    // Stop the belt just to be safe
+    m_intake.stopBelt();
     // Set ballCount to the number of balls that are loaded in to begin
     ballCount = Constants.IntakeConstants.START_BALL_COUNT;
   }
@@ -52,6 +55,15 @@ public class IntakeCommand extends CommandBase {
       }
     }
 
+    // Start/stop belt when A is pressed
+    if (RobotContainer.getController().getAButton() == true) {
+      m_intake.startBelt();
+      beltRunning = true;
+    } else if (RobotContainer.getController().getAButton() == false) {
+      m_intake.stopBelt();
+      beltRunning = false;
+    }
+
     // Modify ballCount when balls enter or exit the robot
     if (m_intake.hasSeenBallEnter() == true) {
       ballCount++;
@@ -61,19 +73,19 @@ public class IntakeCommand extends CommandBase {
     }
 
     // Start/stop the belt based on the ballCount
-    if (ballCount < 5 && m_intake.hasSeenBallExit() == true) {
+    if (ballCount < 5 && m_intake.hasSeenBallExit() == true && beltRunning == false) {
       m_intake.startBelt();
     }
-    if (ballCount < 5 && m_intake.hasSeenBallExit() == false) {
+    if (ballCount < 5 && m_intake.hasSeenBallExit() == false && beltRunning == false) {
       m_intake.stopBelt();
     }
-    if (ballCount < 5 && m_intake.hasSeenBallEnter() == true) {
+    if (ballCount < 5 && m_intake.hasSeenBallEnter() == true && beltRunning == false) {
       m_intake.startBelt();
     }
-    if (ballCount < 5 && m_intake.hasSeenBallEnter() == false) {
+    if (ballCount < 5 && m_intake.hasSeenBallEnter() == false && beltRunning == false) {
       m_intake.stopBelt();
     }
-    if (ballCount == 5) {
+    if (ballCount == 5 && beltRunning == false) {
       m_intake.stopBelt();
     }
 
