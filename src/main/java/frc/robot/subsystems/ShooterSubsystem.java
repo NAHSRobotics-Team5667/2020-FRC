@@ -9,13 +9,24 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
+
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
 
-public class ShooterSubsystem extends SubsystemBase {
+public class ShooterSubsystem extends PIDSubsystem {
 
 	private WPI_TalonFX m_slaveWheel, m_masterWheel;
+	private Rev2mDistanceSensor m_shooterSensor = new Rev2mDistanceSensor(Port.kMXP, Unit.kInches, RangeProfile.kHighAccuracy);
+
+	private boolean previousSeenBallExit = false;
+
 
 	/**
 	 * Creates a shooter subsystem
@@ -25,6 +36,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 
 	public ShooterSubsystem(WPI_TalonFX slaveWheel, WPI_TalonFX masterWheel) {
+		super(new PIDController(Constants.ShooterConstants.kP, 0, Constants.ShooterConstants.kD));
 		m_slaveWheel = slaveWheel;
 		m_masterWheel = masterWheel;
 		m_masterWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
@@ -51,6 +63,10 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_masterWheel.set(speed);
 	}
 
+	public void setVoltage(double voltage){
+		fire(voltage / 12);
+	}
+
 	/**
 	 * Stops the shooter from firing
 	 * 
@@ -70,6 +86,39 @@ public class ShooterSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+	}
+
+	public double getCurrentRPM() {
+		return 0;
+	}
+
+	/**
+	 * Determine if the Rev2mDistanceSensor saw a power cell leave the robot or not
+	 * 
+	 * @return true if ball is absent, therefore seen leaving robot
+	 */
+	public boolean hasSeenBallExit() {
+		boolean currentSeenBallExit = false;
+		if (m_shooterSensor.getRange(Unit.kInches) <= Constants.IntakeConstants.SENSOR_RANGE_INCHES
+				&& previousSeenBallExit == true) {
+			currentSeenBallExit = false;
+			previousSeenBallExit = currentSeenBallExit;
+		} else if (m_shooterSensor.getRange(Unit.kInches) > Constants.IntakeConstants.SENSOR_RANGE_INCHES
+				&& previousSeenBallExit == false) {
+			currentSeenBallExit = true;
+			previousSeenBallExit = currentSeenBallExit;
+		}
+		return currentSeenBallExit;
+	}
+
+	@Override
+	protected void useOutput(double output, double setpoint) {
+		setVoltage(Constants.ShooterConstants.ksVolts + output);
+	}
+
+	@Override
+	protected double getMeasurement() {
+		return getCurrentRPM();
 	}
 
 }

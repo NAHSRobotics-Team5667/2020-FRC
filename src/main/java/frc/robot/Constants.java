@@ -175,6 +175,10 @@ public final class Constants {
         public static final boolean SOLENOID_FIRED = true;
         public static final double SENSOR_RANGE_INCHES = 6;
         public static final int START_BALL_COUNT = 3;
+        public static final int MOTOR_PORT = 7;
+        public static final int R_SOLENOID = 1;
+        public static final int L_SOLENOID = 2;
+        public static final int BELT_PORT = 8;
     }
 
     public final static class ShooterConstants {
@@ -187,6 +191,12 @@ public final class Constants {
         public static final int LEFT_ENCODER_PORT_B = 11;
         public static final int ANGLE_ENCODER_PORT_A = 12;
         public static final int ANGLE_ENCODER_PORT_B = 13;
+        public static final int AUTO_LINE_RPM = 4000;
+        public static final int TRENCH_RPM = 7000;
+        public static final int IDLE_VOLTAGE = 3;
+        public static final double ksVolts = 0;
+        public static final double kP = 0.0001;
+        public static final double kD = 0;
     }
 
     public final static class WheelConstants {
