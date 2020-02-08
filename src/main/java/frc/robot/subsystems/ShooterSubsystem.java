@@ -12,10 +12,16 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ShooterSubsystem extends SubsystemBase {
 
 	private WPI_TalonFX m_slaveWheel, m_masterWheel;
+	private double k_encoder = 0; 
+
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	/**
 	 * Creates a shooter subsystem
@@ -70,6 +76,18 @@ public class ShooterSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+	}
+
+	/**
+	 * 
+	 * @return RPM of shooter wheel
+	 */
+	public double getRPM() {
+		return m_masterWheel.getSelectedSensorVelocity(0) * k_encoder;
+	}
+
+	public void outputShooterStats() {
+		compTab.add("RPM of Master Shooter wheel", getRPM());
 	}
 
 }
