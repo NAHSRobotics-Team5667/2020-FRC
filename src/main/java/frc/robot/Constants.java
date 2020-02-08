@@ -169,6 +169,14 @@ public final class Constants {
         public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
+    public final static class IntakeConstants {
+        public static final double INTAKE_MOTOR_SPEED = 1;
+        public static final double BELT_MOTOR_SPEED = 1;
+        public static final boolean SOLENOID_FIRED = true;
+        public static final double SENSOR_RANGE_INCHES = 6;
+        public static final int START_BALL_COUNT = 3;
+    }
+
     public final static class ShooterConstants {
         public static final int RIGHT_SHOOTER_PORT = 4;
         public static final int LEFT_SHOOTER_PORT = 5;

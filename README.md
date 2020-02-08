@@ -8,6 +8,7 @@ The FRC 2020 Infinite Recharge Code
 * [Constants](src/main/java/frc/robot/Constants.java)
 * [RobotContainer](src/main/java/frc/robot/RobotContainer.java)
 * [RobotState](src/main/java/frc/robot/RobotState.java)
+* [Main](src/main/java/frc/robot/Main.java)
 
 ## frc.robot.subsystems
 
