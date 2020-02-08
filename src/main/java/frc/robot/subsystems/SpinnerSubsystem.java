@@ -7,15 +7,24 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.Rev2mDistanceSensor;
+import com.revrobotics.Rev2mDistanceSensor.Port;
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Units;
@@ -23,8 +32,14 @@ import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 
 public class SpinnerSubsystem extends PIDSubsystem {
 	private WPI_TalonFX motor;
+	Rev2mDistanceSensor m_sensor;
+	Rev2mDistanceSensor m_sensor2;
+
+	ShuffleboardTab tab = Shuffleboard.getTab("Wheel");
 
 	public double rotations = 2.7 * 3;
+	public double bigWheelD = Units.inchesToMeters(32);
+	public double smallWheelD = Units.inchesToMeters(4);
 
 	private ColorSensorV3 m_colorSensor = new ColorSensorV3(I2C.Port.kOnboard);
 	private final ColorMatch m_colorMatcher = new ColorMatch();
@@ -35,7 +50,7 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
 	/**
-	 * creates new PID Controller
+	 * creates new PID Controller // *
 	 * 
 	 * @param motor   - WPITalonSRX motor to spin wheel
 	 * @param encoder - measures motor rotation
@@ -46,16 +61,23 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	 */
 	public SpinnerSubsystem(WPI_TalonFX motor, double kP, double kI, double kD) {
 		super(new PIDController(kP, kI, kD));
-		this.motor = motor;
+		// this.motor = motor;
 
-		this.motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-		this.motor.setNeutralMode(NeutralMode.Brake);
-		reset();
+		// this.motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		// this.motor.setNeutralMode(NeutralMode.Brake);
+		// reset();
+
+		m_sensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kHighAccuracy);
+		m_sensor2 = new Rev2mDistanceSensor(Port.kMXP, Unit.kInches, RangeProfile.kHighAccuracy);
+
+		m_sensor.setAutomaticMode(true);
 
 		m_colorMatcher.addColorMatch(kBlueTarget);
 		m_colorMatcher.addColorMatch(kGreenTarget);
 		m_colorMatcher.addColorMatch(kRedTarget);
 		m_colorMatcher.addColorMatch(kYellowTarget);
+
+		outputTelemetry();
 	}
 
 	public void drive(double throttle) {
@@ -132,13 +154,48 @@ public class SpinnerSubsystem extends PIDSubsystem {
 	@Override
 	public void periodic() {
 		super.periodic();
-		SmartDashboard.putNumber("Rotations",
-				motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4)));
+		// SmartDashboard.putNumber("Rotations",
+		// motor.getSelectedSensorPosition(0) / 2048 * (Math.PI *
+		// Units.inchesToMeters(4)));
 		detectColor();
 
 	}
 
 	public double getRate() {
-		return motor.getSelectedSensorVelocity(0) * Math.PI * 8 * 10;
+		return (motor.getSelectedSensorVelocity(0) / 2048.0) * Math.PI * smallWheelD * 10;
+	}
+
+	public double getCurrentRPM() {
+		return getRate() * bigWheelD / smallWheelD;
+	}
+
+	public void outputTelemetry() {
+		tab.addNumber("Range", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_sensor.getRange();
+			}
+		});
+
+		tab.addNumber("Range2", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_sensor2.getRange();
+			}
+		});
+		// tab.addNumber("RPM", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return getCurrentRPM();
+		// }
+		// }).withWidget("Graph");
+
+		// tab.addNumber("motor_v", new DoubleSupplier() {
+
+		// @Override
+		// public double getAsDouble() {
+		// return getRate();
+		// }
+		// });
 	}
 }

@@ -41,7 +41,8 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// Configure the button bindings
-		spinnerSubsystem = new SpinnerSubsystem(new WPI_TalonFX(0), .1, 0, .15);
+		spinnerSubsystem = new SpinnerSubsystem(null, .1, 0, .15);
+		spinnerSubsystem.setDefaultCommand(new RotationCommand(spinnerSubsystem));
 		configureButtonBindings();
 
 	}
@@ -54,7 +55,7 @@ public class RobotContainer {
 	 */
 	private void configureButtonBindings() {
 		Button xButton = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
-		xButton.whenPressed(new RotationCommand(spinnerSubsystem));
+		// xButton.whenPressed(new RotationCommand(spinnerSubsystem));
 	}
 
 	/**
