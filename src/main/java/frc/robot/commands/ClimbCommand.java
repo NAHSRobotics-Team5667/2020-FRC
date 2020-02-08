@@ -31,7 +31,7 @@ public class ClimbCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		double speed = climbController.calculate(climbSubsystem.getClimbSpeed())
+		double speed = climbController.calculate(climbSubsystem.getClimbSpeed());
 		if (RobotContainer.getController().getLeftTrigger() != 0){
 			climbSubsystem.climb(-speed);
 		  }
