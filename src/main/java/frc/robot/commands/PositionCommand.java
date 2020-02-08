@@ -20,8 +20,8 @@ public class PositionCommand extends CommandBase {
 	 * Creates a Position command
 	 * 
 	 * @param subsystem     - The Wheel Subsystem
-	 * @param targetedColor - The target color to stop at
-	 * @param currentColor  - The current color seeing
+	 * @param targetedColor - The color the robot will see at the "target color"
+	 * @param currentColor  - The current color seen by the robot
 	 */
 	public PositionCommand(WheelSubsystem subsystem) {
 		// Use addRequirements() here to declare subsystem dependencies.
