@@ -7,7 +7,7 @@ import frc.robot.Constants;
 
 public class Controller extends XboxController {
 
-	public final double kGHOST = .1; // Threshold for blocking ghost signals
+	public final double kGHOST = .05; // Threshold for blocking ghost signals
 
 	/**
 	 * Initializes an Xbox controller.
@@ -36,9 +36,9 @@ public class Controller extends XboxController {
 	 *         otherwise we return 0
 	 */
 	public double getRightX() {
-		return (super.getRawAxis(Constants.ControllerConstants.sRightX_Port) > kGHOST
-				|| super.getRawAxis(Constants.ControllerConstants.sRightX_Port) < -kGHOST)
-						? super.getRawAxis(Constants.ControllerConstants.sRightX_Port)
+		return (super.getRawAxis(Constants.ControllerConstants.S_RIGHT_X_PORT) > kGHOST
+				|| super.getRawAxis(Constants.ControllerConstants.S_RIGHT_X_PORT) < -kGHOST)
+						? super.getRawAxis(Constants.ControllerConstants.S_RIGHT_X_PORT)
 						: 0;
 	}
 
@@ -49,9 +49,9 @@ public class Controller extends XboxController {
 	 *         otherwise we return 0
 	 */
 	public double getRightY() {
-		return (-super.getRawAxis(Constants.ControllerConstants.sRightY_Port) > kGHOST
-				|| -super.getRawAxis(Constants.ControllerConstants.sRightY_Port) < -kGHOST)
-						? -super.getRawAxis(Constants.ControllerConstants.sRightY_Port)
+		return (-super.getRawAxis(Constants.ControllerConstants.S_RIGHT_Y_PORT) > kGHOST
+				|| -super.getRawAxis(Constants.ControllerConstants.S_RIGHT_Y_PORT) < -kGHOST)
+						? -super.getRawAxis(Constants.ControllerConstants.S_RIGHT_Y_PORT)
 						: 0;
 	}
 
@@ -62,9 +62,9 @@ public class Controller extends XboxController {
 	 *         otherwise we return 0
 	 */
 	public double getLeftX() {
-		return (super.getRawAxis(Constants.ControllerConstants.sLeftX_Port) > kGHOST
-				|| super.getRawAxis(Constants.ControllerConstants.sLeftX_Port) < -kGHOST)
-						? super.getRawAxis(Constants.ControllerConstants.sLeftX_Port)
+		return (super.getRawAxis(Constants.ControllerConstants.S_LEFT_X_PORT) > kGHOST
+				|| super.getRawAxis(Constants.ControllerConstants.S_LEFT_X_PORT) < -kGHOST)
+						? super.getRawAxis(Constants.ControllerConstants.S_LEFT_X_PORT)
 						: 0;
 	}
 
@@ -75,9 +75,9 @@ public class Controller extends XboxController {
 	 *         otherwise we return 0
 	 */
 	public double getLeftY() {
-		return (-super.getRawAxis(Constants.ControllerConstants.sLeftY_Port) > kGHOST
-				|| -super.getRawAxis(Constants.ControllerConstants.sLeftY_Port) < -kGHOST)
-						? -super.getRawAxis(Constants.ControllerConstants.sLeftY_Port)
+		return (-super.getRawAxis(Constants.ControllerConstants.S_LEFT_Y_PORT) > kGHOST
+				|| -super.getRawAxis(Constants.ControllerConstants.S_LEFT_Y_PORT) < -kGHOST)
+						? -super.getRawAxis(Constants.ControllerConstants.S_LEFT_Y_PORT)
 						: 0;
 	}
 

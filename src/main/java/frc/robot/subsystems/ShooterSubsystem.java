@@ -7,54 +7,48 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotState.States;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-	private SpeedController m_rightWheel, m_leftWheel, m_angleWheel;
-	private Encoder m_rightEncoder, m_leftEncoder, m_angleEncoder;
+	private WPI_TalonFX m_slaveWheel, m_masterWheel;
 
 	/**
 	 * Creates a shooter subsystem
 	 * 
-	 * @param rightWheel   - motor controller that controls the right shooter wheel
-	 * @param leftWheel    - motor controller that controls the left shooter wheel
-	 * @param angleWheel   - motor controller that controls the motor to manipulate
-	 *                     the shooter's angle
-	 * @param rightEncoder - encoder to track the progress of the right shooter
-	 *                     wheel
-	 * @param leftEncoder  - encoder to track the progress of the left shooter whe l
-	 * @param angleEncoder - encoder to track the progress of the shooter arm
+	 * @param slaveWheel  - motor controller that follows
+	 * @param masterWheel - motor controller that controls the slave wheel
 	 */
 
-	public ShooterSubsystem(SpeedController rightWheel, SpeedController leftWheel, SpeedController angleWheel,
-			Encoder rightEncoder, Encoder leftEncoder, Encoder angleEncoder) {
-		m_rightWheel = rightWheel;
-		m_leftWheel = leftWheel;
-		m_angleWheel = angleWheel;
-		m_rightEncoder = rightEncoder;
-		m_leftEncoder = leftEncoder;
-		m_angleEncoder = angleEncoder;
+	public ShooterSubsystem(WPI_TalonFX slaveWheel, WPI_TalonFX masterWheel) {
+		m_slaveWheel = slaveWheel;
+		m_masterWheel = masterWheel;
+		m_masterWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_masterWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_slaveWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.follow(m_masterWheel);
 	}
 
 	/**
-	 * Calculates the speed of the shooting wheels
+	 * Calculates the speed of the wheels needed
 	 */
-	public void calculateSpeeds() {
-		// to calculate the different speeds of the right and left motors based on angle
+	public void calculateSpeed() {
+
 	}
 
 	/**
 	 * Fires the shooting wheels
 	 * 
-	 * @param rightSpeed - the speed of the right shooting wheel
-	 * @param leftSpeed  - the speed of the left shooting wheel
+	 * @param speed - the speed of the wheels thats needed
 	 */
-	public void fire(double rightSpeed, double leftSpeed) {
-		m_rightWheel.set(rightSpeed);
-		m_leftWheel.set(leftSpeed);
+	public void fire(double speed) {
+		Constants.m_RobotState.setState(States.SHOOTING);
+		m_masterWheel.set(speed);
 	}
 
 	/**
@@ -62,64 +56,15 @@ public class ShooterSubsystem extends SubsystemBase {
 	 * 
 	 */
 	public void stopFire() {
-		m_rightWheel.stopMotor();
-		m_leftWheel.stopMotor();
-	}
-
-	/**
-	 * Causes the angle of the shooter to decrease
-	 * 
-	 * @param angleSpeed - speed of the motor that controls the angle of the shooter
-	 */
-	public void goDown(double angleSpeed) {
-		m_angleWheel.set(-angleSpeed);
-	}
-
-	/**
-	 * Causes the angle of the shooter to increase
-	 * 
-	 * @param angleSpeed - speed of the motor that controls the angle of the shooter
-	 */
-	public void goUp(double angleSpeed) {
-		m_angleWheel.set(angleSpeed);
-	}
-
-	/**
-	 * Stops the shooter arm from moving
-	 */
-	public void angleStop() {
-		m_angleWheel.stopMotor();
-	}
-
-	/**
-	 * Returns the current angle/position of the shooter
-	 * 
-	 * @return - the current angle/position of the shooter
-	 */
-	public int getCurrentAngle() {
-		// covert experimental values to angles
-		return (m_angleEncoder.get());
+		m_masterWheel.stopMotor();
 	}
 
 	/**
 	 * Resets the encoder for the right shooter wheel
 	 */
-	public void resetRightEncoder() {
-		m_rightEncoder.reset();
-	}
-
-	/**
-	 * Resets the encoder for the left shooter wheel
-	 */
-	public void resetLeftEncoder() {
-		m_leftEncoder.reset();
-	}
-
-	/**
-	 * Resets the encoder for the motor controlling the shooter's angle
-	 */
-	public void resetAngleEncoder() {
-		m_angleEncoder.reset();
+	public void resetEncoder() {
+		m_masterWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.setSelectedSensorPosition(0);
 	}
 
 	@Override
