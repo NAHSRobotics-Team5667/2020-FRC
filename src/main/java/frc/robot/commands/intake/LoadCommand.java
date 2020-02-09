@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
@@ -14,6 +14,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 public class LoadCommand extends CommandBase {
 	private IntakeSubsystem m_intake;
 	private int targetCount;
+	private int initialCount;
 
 	/**
 	 * Creates a new LoadCommand.
@@ -28,13 +29,14 @@ public class LoadCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+		initialCount = RobotContainer.ballCount;
 		m_intake.extendIntake();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if(m_intake.hasSeenBallEnter()){
+		if (m_intake.hasSeenBallEnter()) {
 			m_intake.startBelt();
 			RobotContainer.ballCount += 1;
 		} else {
@@ -52,6 +54,6 @@ public class LoadCommand extends CommandBase {
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount == targetCount;
+		return RobotContainer.ballCount - initialCount == targetCount;
 	}
 }

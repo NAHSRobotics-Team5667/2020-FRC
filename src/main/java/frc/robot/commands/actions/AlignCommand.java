@@ -22,9 +22,10 @@ import frc.robot.utils.PIDFController;
 
 public class AlignCommand extends CommandBase {
 	private DriveTrainSubsystem m_drive;
-	
+
 	private PIDFController angleController = new PIDFController("Angle", 0.02, 0, 0.001, 0);
 	private ShuffleboardTab alignmentTab = Shuffleboard.getTab("Auto Alignment");
+
 	/**
 	 * Creates a new AlignCommand.
 	 */
@@ -52,8 +53,8 @@ public class AlignCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-			LimeLight.getInstance().turnLightOn();
-			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
+		LimeLight.getInstance().turnLightOn();
+		m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -68,10 +69,10 @@ public class AlignCommand extends CommandBase {
 
 		}
 
-		if(RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))){
-			
+		if (RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))) {
+
 		}
-		
+
 	}
 
 	// Called once the command ends or is interrupted.
@@ -83,6 +84,7 @@ public class AlignCommand extends CommandBase {
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return m_drive.getDriveMode() == DriveModes.MANUAL || !LimeLight.getInstance().hasValidTarget();
+		return m_drive.getDriveMode() == DriveModes.MANUAL || !LimeLight.getInstance().hasValidTarget()
+				|| angleController.atSetpoint();
 	}
 }

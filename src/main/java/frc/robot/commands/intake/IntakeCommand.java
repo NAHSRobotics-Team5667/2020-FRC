@@ -4,62 +4,47 @@
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
-//Countdown timer?
-package frc.robot.commands;
+
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.RobotState.States;
-import frc.robot.subsystems.WheelSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
 
-/**
- * Creates a new RotationCommand.
- */
-public class RotationCommand extends CommandBase {
+public class IntakeCommand extends CommandBase {
 
-  WheelSubsystem wheelSubsystem;
+  private IntakeSubsystem m_intake;
 
   /**
-   * Create a rotation command
-   * 
-   * @param subsystem The Wheel Subsystem
+   * Creates a new IntakeCommand.
    */
-  public RotationCommand(WheelSubsystem subsystem) {
+  public IntakeCommand(IntakeSubsystem intake) {
     // Use addRequirements() here to declare subsystem dependencies.
-    wheelSubsystem = subsystem;
-    addRequirements(wheelSubsystem);
+    m_intake = intake;
+    addRequirements(m_intake);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Constants.m_RobotState.setState(States.ROTATION);
-    wheelSubsystem.rotateSpeed(0.2);
+    // Retract the intake just to be safe
+    m_intake.retractIntake();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    /*
-     * Haikus with Olu:
-     *
-     * While "X" button's held... then spin the motor so long... the "X" button's
-     * pressed.
-     * 
-     * This has been Haikus with Olu.
-     */
+    // Retract/extend intake when B is pressed
+
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    Constants.m_RobotState.setState(States.IDLE);
-    wheelSubsystem.rotateSpeed(0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return wheelSubsystem.hasRotated();
+    return false;
   }
 }

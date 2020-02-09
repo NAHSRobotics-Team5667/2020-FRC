@@ -10,29 +10,18 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
+import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
-import frc.robot.commands.IntakeCommand;
-import frc.robot.commands.LoadCommand;
-import frc.robot.commands.ShootAutonomously;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -71,10 +60,11 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
 
 		// m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
-		// 		new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
+		// new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
 
-		// m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-		// 		new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
+		// m_shooter = new ShooterSubsystem(new
+		// WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
+		// new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
 
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
 				new Solenoid(Constants.IntakeConstants.R_SOLENOID), new Solenoid(Constants.IntakeConstants.L_SOLENOID),
@@ -102,31 +92,10 @@ public class RobotContainer {
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
 	 *
-	 * @return the command to run in autonomous
+	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(Trajectory path) {
-		// Set the initial pos as the current pos
-		m_drive.resetOdometry(path.getInitialPose());
-
-		RamseteCommand ramseteCommand = new RamseteCommand(path, m_drive::getPose,
-				new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-				new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter,
-						DriveConstants.kaVoltSecondsSquaredPerMeter),
-				DriveConstants.kDriveKinematics, m_drive::getWheelSpeeds, Constants.AutoConstants.L_CONTROLLER,
-				Constants.AutoConstants.R_CONTROLLER,
-				// RamseteCommand passes volts to the callback
-				m_drive::tankDriveVolts, m_drive);
-
-		ShootAutonomously step1 = new ShootAutonomously(m_shooter, m_intake, Constants.ShooterConstants.AUTO_LINE_RPM);
-			
-		ParallelCommandGroup step2 = new ParallelCommandGroup(new Command[]{ramseteCommand, new InstantCommand(() -> 
-				{m_shooter.setSetpoint(Constants.ShooterConstants.TRENCH_RPM); m_shooter.enable();}), new LoadCommand(m_intake, 3)
-		});
-
-		ParallelCommandGroup step3 = new ParallelCommandGroup(new Command[]{new ShootAutonomously(m_shooter, m_intake, Constants.ShooterConstants.TRENCH_RPM) });
-
-			return new SequentialCommandGroup(new Command[]{step1, step2, step3});
-			// return ramseteCommand.andThen(new RunCommand(() -> m_drive.drive(0, 0, false)));
+		return TrenchPathAuto.getAuto(path, m_drive, m_intake, m_shooter);
 	}
 
 	/**
