@@ -5,51 +5,49 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.wheel;
 
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.utils.PIDFController;
+import frc.robot.subsystems.WheelSubsystem;
 
-public class ClimbCommand extends CommandBase {
-	ClimbSubsystem climbSubsystem;
+/**
+ * Creates a new PositionCommand.
+ */
+public class PositionCommand extends CommandBase {
+
+	private WheelSubsystem wheelSubsystem;
 
 	/**
-	 * Creates a new ClimbCommand.
+	 * Creates a Position command
+	 * 
+	 * @param subsystem - The Wheel Subsystem
 	 */
-	public ClimbCommand(ClimbSubsystem subsystem) {
+	public PositionCommand(WheelSubsystem subsystem) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		climbSubsystem = subsystem;
-		addRequirements(climbSubsystem);
+		wheelSubsystem = subsystem;
+		addRequirements(wheelSubsystem);
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-
+		wheelSubsystem.rotateSpeed(0.2);
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		/*
-		 * 
-		 * Haikus with Olu 2:
-		 * 
-		 * When a trigger's pressed, the motor moves up or down to the target height.
-		 * This has been Haikus with Olu.
-		 */
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
+		wheelSubsystem.rotateSpeed(0);
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return false;
+		return wheelSubsystem.targetColor() == wheelSubsystem.getClosestColor();
 	}
 }

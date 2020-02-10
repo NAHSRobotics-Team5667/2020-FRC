@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import frc.robot.Constants.LedConstants.Colors;
-
 /**
  * Robot State Machine
  */
@@ -34,23 +32,17 @@ public class RobotState {
 		 * 
 		 * POSITION - The robot is currently attempting Position Control
 		 */
-		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.PURPLE),
-		AUTO(2, Constants.LedConstants.Colors.GREEN), VISION(3, Constants.LedConstants.Colors.RED),
-		SHOOTING(4, Constants.LedConstants.Colors.PURPLE), CLIMBING(5, Constants.LedConstants.Colors.RED),
-		ROTATION(6, Constants.LedConstants.Colors.RED), POSITION(7, Constants.LedConstants.Colors.RED);
+		IDLE(0), DRIVE(1), AUTO(2), VISION(3), SHOOTING(4), CLIMBING(5), ROTATION(6), POSITION(7);
 
 		private int state;
-		private int[] color;
 
 		/**
 		 * A state
 		 * 
 		 * @param state - The state represented as an integer
-		 * @param color - The Color associated with the state
 		 */
-		private States(int state, Colors color) {
+		private States(int state) {
 			this.state = state;
-			this.color = color.getColor();
 		}
 
 		/**
@@ -60,10 +52,6 @@ public class RobotState {
 		 */
 		public int getState() {
 			return state;
-		}
-
-		public int[] getColor() {
-			return color;
 		}
 	}
 

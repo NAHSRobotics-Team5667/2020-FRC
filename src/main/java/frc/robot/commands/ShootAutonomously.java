@@ -8,47 +8,59 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.WheelSubsystem;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
-/**
- * Creates a new PositionCommand.
- */
-public class PositionCommand extends CommandBase {
-	WheelSubsystem wheelSubsystem;
+public class ShootAutonomously extends CommandBase {
+	private ShooterSubsystem m_shooter;
+	private IntakeSubsystem m_intake;
+	private int targetRPM;
 
 	/**
-	 * Creates a Position command
-	 * 
-	 * @param subsystem     - The Wheel Subsystem
-	 * @param targetedColor - The color the robot will see at the "target color"
-	 * @param currentColor  - The current color seen by the robot
+	 * Creates a new ShootAuto.
 	 */
-	public PositionCommand(WheelSubsystem subsystem) {
+	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, int targetRPM) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		wheelSubsystem = subsystem;
-		addRequirements(wheelSubsystem);
+		m_shooter = shooter;
+		m_intake = intake;
+
+		addRequirements(m_shooter, m_intake);
+
+		this.targetRPM = targetRPM;
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		wheelSubsystem.rotateSpeed(0.2);
+		m_shooter.setSetpoint(targetRPM);
+		m_intake.retractIntake();
+		m_intake.stopBelt();
+		m_shooter.enable();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		if(m_shooter.getController().atSetpoint()) {
+			m_intake.startBelt();
+		} else {
+			m_intake.stopBelt();
+		}
+
+		if(m_shooter.hasSeenBallExit()) RobotContainer.ballCount -= 1;
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		wheelSubsystem.rotateSpeed(0);
+		m_intake.stopBelt();
+		m_shooter.disable();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return wheelSubsystem.targetColor() == wheelSubsystem.getClosestColor();
+		return RobotContainer.ballCount == 0;
 	}
 }

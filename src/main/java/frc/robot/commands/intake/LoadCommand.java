@@ -5,51 +5,55 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.utils.PIDFController;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.IntakeSubsystem;
 
-public class ClimbCommand extends CommandBase {
-	ClimbSubsystem climbSubsystem;
+public class LoadCommand extends CommandBase {
+	private IntakeSubsystem m_intake;
+	private int targetCount;
+	private int initialCount;
 
 	/**
-	 * Creates a new ClimbCommand.
+	 * Creates a new LoadCommand.
 	 */
-	public ClimbCommand(ClimbSubsystem subsystem) {
+	public LoadCommand(IntakeSubsystem intake, int targetCount) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		climbSubsystem = subsystem;
-		addRequirements(climbSubsystem);
+		m_intake = intake;
+		addRequirements(m_intake);
+		this.targetCount = targetCount;
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-
+		initialCount = RobotContainer.ballCount;
+		m_intake.extendIntake();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		/*
-		 * 
-		 * Haikus with Olu 2:
-		 * 
-		 * When a trigger's pressed, the motor moves up or down to the target height.
-		 * This has been Haikus with Olu.
-		 */
+		if (m_intake.hasSeenBallEnter()) {
+			m_intake.startBelt();
+			RobotContainer.ballCount += 1;
+		} else {
+			m_intake.stopBelt();
+		}
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
+		m_intake.stopBelt();
+		m_intake.retractIntake();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return false;
+		return RobotContainer.ballCount - initialCount == targetCount;
 	}
 }

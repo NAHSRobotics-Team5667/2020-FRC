@@ -5,52 +5,36 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
-
-import java.util.Map;
+package frc.robot.commands.actions;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.RobotState.States;
 import frc.robot.subsystems.DriveTrainSubsystem;
 
-public class DriveTrainCommand extends CommandBase {
-
+public class HoldPositionCommand extends CommandBase {
 	private DriveTrainSubsystem m_drive;
 
 	/**
-	 * Create a Drive Train Subsystem
-	 * 
-	 * @param DriveTrain - The Drive Train Subsystem
+	 * Creates a new HoldPositionCommand.
 	 */
-	public DriveTrainCommand(DriveTrainSubsystem DriveTrain) {
+	public HoldPositionCommand(DriveTrainSubsystem drive) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		m_drive = DriveTrain;
-		addRequirements(m_drive);
+		m_drive = drive;
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		m_drive.stop();
+		Constants.AutoConstants.L_CONTROLLER.setSetpoint(m_drive.getLeftEncoderPosition());
+		Constants.AutoConstants.R_CONTROLLER.setSetpoint(m_drive.getRightEncoderPosition());
+
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		Map<String, Double> sticks = RobotContainer.getController().getSticks();
-		m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
-		// Drive using joysticks
-		m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
-				RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
-
-		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
-				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING
-				&& Constants.m_RobotState.getCurrentState() != States.POSITION
-				&& Constants.m_RobotState.getCurrentState() != States.AUTO) {
-			Constants.m_RobotState.setState(States.DRIVE);
-		}
+		m_drive.tankDriveVolts(Constants.AutoConstants.L_CONTROLLER.calculate(m_drive.getLeftEncoderPosition()),
+			Constants.AutoConstants.R_CONTROLLER.calculate(m_drive.getRightEncoderPosition()));
 	}
 
 	// Called once the command ends or is interrupted.
@@ -64,5 +48,4 @@ public class DriveTrainCommand extends CommandBase {
 	public boolean isFinished() {
 		return false;
 	}
-
 }

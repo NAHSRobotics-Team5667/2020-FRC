@@ -7,34 +7,23 @@
 
 package frc.robot.utils;
 
-import edu.wpi.first.wpilibj.AddressableLED;
-import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.SerialPort;
 import frc.robot.Constants;
-import frc.robot.RobotState.States;
 
 /**
- * Add your docs here.
+ * LED Singleton class
  */
 public class LED {
     private static LED m_led;
-    private static AddressableLED m_adressableLed = new AddressableLED(Constants.LedConstants.LED_PORT);
-    private static AddressableLEDBuffer m_ledBuffer = new AddressableLEDBuffer(Constants.LedConstants.LED_AMOUNT);
-
-    private int[] colorVals;
-
-    private static Timer m_timer;
+    private SerialPort serialPort;
+    private int colorState;
 
     public LED() {
-        m_adressableLed.setLength(Constants.LedConstants.LED_AMOUNT);
-        m_adressableLed.setData(m_ledBuffer);
-        m_adressableLed.start();
+        serialPort = new SerialPort(9600, SerialPort.Port.kUSB);
     }
 
-    /***
+    /**
+     * Get the LED instance
      * 
      * @return the LED Instance
      */
@@ -46,94 +35,12 @@ public class LED {
 
     }
 
-    /***
-     * Gets the color based on the current state
-     */
-    private void getColor() {
-        colorVals = Constants.m_RobotState.getCurrentState().getColor();
-        SmartDashboard.putNumber("R", colorVals[0]);
-        SmartDashboard.putNumber("G", colorVals[1]);
-        SmartDashboard.putNumber("B", colorVals[2]);
-    }
-
-    /***
-     * determines what to set the LED to based off of current state
+    /**
+     * Sets the current color by communicating with the arduino
      */
     public void setColor() {
-        getColor();
-        if (Constants.m_RobotState.getCurrentState() == States.IDLE) {
-            getAllianceColor();
-            oneColor();
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
-            flashColor();
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
-            oneColor();
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
-            flashAndAlternate();
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
-            getAllianceColor();
-            flashColor();
-        }
-        System.out.println("SETTING COLOR TO R:" + colorVals[0] + " G: " + colorVals[1] + " B: " + colorVals[2]);
-    }
-
-    /***
-     * makes all LEDs the same color
-     */
-    private void oneColor() {
-        for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
-        }
-
-        m_adressableLed.setData(m_ledBuffer);
-    }
-
-    /***
-     * flashes a color on and off
-     */
-    private void flashColor() {
-        m_timer.reset();
-        m_timer.start();
-        if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
-            for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
-            }
-            m_adressableLed.setData(m_ledBuffer);
-        }
-    }
-
-    /***
-     * set colorVals to alliance color
-     */
-    private void getAllianceColor() {
-        if (DriverStation.getInstance().getAlliance() == Alliance.Blue) {
-            colorVals = new int[] { 0, 0, 255 };
-        } else if (DriverStation.getInstance().getAlliance() == Alliance.Red) {
-            colorVals = new int[] { 255, 0, 0 };
-        }
-    }
-
-    /***
-     * alternates color of LEDs on strip and flashes all LEDs
-     */
-    private void flashAndAlternate() {
-        m_timer.reset();
-        m_timer.start();
-        if (m_timer.hasPeriodPassed(Constants.LedConstants.FLASH_TIME)) {
-            for (int i = 0; i < m_ledBuffer.getLength(); i++) {
-                if (i % 2 == 0) {
-                    m_ledBuffer.setRGB(i, colorVals[0], colorVals[1], colorVals[2]);
-                } else {
-                    m_ledBuffer.setRGB(i, 255, 255, 255);
-                }
-
-            }
-            m_adressableLed.setData(m_ledBuffer);
-        }
+        colorState = Constants.m_RobotState.getCurrentState().getState();
+        serialPort.writeString(Integer.toString(colorState));
     }
 
 }
