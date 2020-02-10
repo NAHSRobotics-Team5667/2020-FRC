@@ -42,7 +42,7 @@ public class AlignCommand extends CommandBase {
 			}
 		});
 
-		alignmentTab.addNumber("ouput", new DoubleSupplier() {
+		alignmentTab.addNumber("output", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return angleController.getPositionError();
@@ -70,7 +70,7 @@ public class AlignCommand extends CommandBase {
 		}
 
 		if (RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))) {
-
+			m_drive.setDriveMode(DriveModes.MANUAL);
 		}
 
 	}

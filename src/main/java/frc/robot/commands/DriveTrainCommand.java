@@ -41,13 +41,14 @@ public class DriveTrainCommand extends CommandBase {
 	public void execute() {
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
 		m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
-			// Drive using joysticks
-			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
-					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
-		
+		// Drive using joysticks
+		m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
+				RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
+
 		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
 				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING
-				&& Constants.m_RobotState.getCurrentState() != States.POSITION && Constants.m_RobotState.getCurrentState() != States.AUTO) {
+				&& Constants.m_RobotState.getCurrentState() != States.POSITION
+				&& Constants.m_RobotState.getCurrentState() != States.AUTO) {
 			Constants.m_RobotState.setState(States.DRIVE);
 		}
 	}
