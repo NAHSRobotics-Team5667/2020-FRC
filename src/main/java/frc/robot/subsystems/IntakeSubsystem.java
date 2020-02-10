@@ -7,6 +7,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -15,6 +18,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	private SpeedController m_belt;
 	private Rev2mDistanceSensor m_intakeSensor;
 	private Rev2mDistanceSensor m_shooterSensor;
+
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private boolean previousSeenBallEnter = false;
 	private boolean previousSeenBallExit = false;
@@ -114,5 +119,10 @@ public class IntakeSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+	}
+
+	public void outputIntakeStats() {
+		compTab.add("Right Solenoid Fired", m_rSolenoid.get());
+		compTab.add("Left Solenoid Fired", m_lSolenoid.get());
 	}
 }
