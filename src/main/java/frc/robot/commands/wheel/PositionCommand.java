@@ -14,14 +14,13 @@ import frc.robot.subsystems.WheelSubsystem;
  * Creates a new PositionCommand.
  */
 public class PositionCommand extends CommandBase {
-	WheelSubsystem wheelSubsystem;
+
+	private WheelSubsystem wheelSubsystem;
 
 	/**
 	 * Creates a Position command
 	 * 
-	 * @param subsystem     - The Wheel Subsystem
-	 * @param targetedColor - The color the robot will see at the "target color"
-	 * @param currentColor  - The current color seen by the robot
+	 * @param subsystem - The Wheel Subsystem
 	 */
 	public PositionCommand(WheelSubsystem subsystem) {
 		// Use addRequirements() here to declare subsystem dependencies.

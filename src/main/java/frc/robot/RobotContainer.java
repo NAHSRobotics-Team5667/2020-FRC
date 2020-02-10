@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Constants.PATHS;
+import frc.robot.autos.RunPath;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -39,8 +41,12 @@ public class RobotContainer {
 	// The robot's subsystems and commands are defined here...
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 
+	private Trajectory[] paths = new Trajectory[] { PATHS.PathWeaver.getTrajectory("FAR_TRENCH"),
+			PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
+			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY };
+
 	public boolean done = false;
-	public static int ballCount = 3;
+	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
 
 	private static DriveTrainSubsystem m_drive;
 	private static ShooterSubsystem m_shooter;
@@ -54,10 +60,10 @@ public class RobotContainer {
 		// Configure the button bindings
 		configureButtonBindings();
 
-		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.rightMaster),
-				new WPI_TalonFX(Constants.DriveConstants.leftMaster),
-				new WPI_TalonFX(Constants.DriveConstants.rightSlave),
-				new WPI_TalonFX(Constants.DriveConstants.leftSlave), new AHRS(SPI.Port.kMXP));
+		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.RIGHT_MASTER),
+				new WPI_TalonFX(Constants.DriveConstants.LEFT_MASTER),
+				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
+				new WPI_TalonFX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
 
 		// m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
 		// new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
@@ -94,8 +100,13 @@ public class RobotContainer {
 	 *
 	 * @return the command to run during autonomous
 	 */
-	public Command getAutonomousCommand(Trajectory path) {
-		return TrenchPathAuto.getAuto(path, m_drive, m_intake, m_shooter);
+	public Command getAutonomousCommand(int selection) {
+		if (selection <= 3)
+			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
+		else if (selection > 3 && selection < paths.length)
+			return RunPath.getCommand(paths[selection], m_drive);
+		else
+			return null;
 	}
 
 	/**
@@ -107,6 +118,9 @@ public class RobotContainer {
 		return m_controller;
 	}
 
+	/**
+	 * Feed the motor safety during auto
+	 */
 	public void feedMotorSafety() {
 		m_drive.feedMotorSafety();
 	}

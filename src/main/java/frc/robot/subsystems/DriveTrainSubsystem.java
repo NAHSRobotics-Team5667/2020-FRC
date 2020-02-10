@@ -276,10 +276,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_drive.feed();
 	}
 
+	/**
+	 * Output the Drive Train telemtry
+	 */
 	public void outputTelemetry() {
 		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
 
-		autoTab.addNumber("Right Position", new DoubleSupplier() {
+		autoTab.addNumber("r_pos", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getRightEncoderPosition();

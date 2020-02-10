@@ -11,25 +11,16 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimbSubsystem extends SubsystemBase {
-	private WPI_TalonFX m_motor;
+	private WPI_TalonFX m_winchFx, m_riserFx;
 
 	/**
-	 * Creates a new ClimbSubsystem.
+	 * The subsystem that manipulates the climb
+	 * 
+	 * @param motor
 	 */
-	public ClimbSubsystem(WPI_TalonFX motor) {
-		m_motor = motor;
-	}
-
-	public double getClimbSpeed() {
-		return m_motor.get();
-	}
-
-	public void climb(double speed) {
-		m_motor.set(speed);
-	}
-
-	public void stop() {
-		m_motor.stopMotor();
+	public ClimbSubsystem(WPI_TalonFX winchFx, WPI_TalonFX riserFx) {
+		m_winchFx = winchFx;
+		m_riserFx = riserFx;
 	}
 
 	@Override

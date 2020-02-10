@@ -33,7 +33,7 @@ public class ShootAndHoldCommand extends SequentialCommandGroup {
   public ShootAndHoldCommand(DriveTrainSubsystem drive, ShooterSubsystem shooter, IntakeSubsystem intake,
       int targetRPM) {
     // Align -> Hold -> Shoot
-    super(new AlignCommand(drive), new ParallelCommandGroup(
-        new Command[] { new HoldPositionCommand(drive), new ShootAutonomously(shooter, intake, targetRPM) }));
+    super(new AlignCommand(drive),
+        new HoldPositionCommand(drive).alongWith(new ShootAutonomously(shooter, intake, targetRPM)));
   }
 }

@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.Rev2mDistanceSensor;
@@ -8,6 +10,7 @@ import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,16 +29,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	private boolean previousSeenBallEnter = false;
 
 	/**
-	 * Creates an intake subsystem instance
+	 * Subsystem that handles the intake functionality
 	 * 
-	 * @param intake        - motor controller for the intake wheels
-	 * @param rSolenoid     - right piston for extending/retracting intake
-	 * @param lSolenoid     - left piston for extending/retracting intake
-	 * @param belt          - motor controller for the belt
-	 * @param intakeSensor  - Rev2mDistanceSensor that detects if a ball has entered
-	 *                      the robot
-	 * @param shooterSensor - Rev2mDistanceSensor that detects if a ball has exited
-	 *                      the robot
+	 * @param intake    - The intake motor
+	 * @param rSolenoid - The right solenoid
+	 * @param lSolenoid - The left solenoid
+	 * @param belt      - The motor that controls the belt
 	 */
 	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid rSolenoid, Solenoid lSolenoid, WPI_VictorSPX belt) {
 		m_intake = intake;
@@ -46,6 +45,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		m_rSolenoid = rSolenoid;
 		m_lSolenoid = lSolenoid;
+	}
+
+	@Override
+	public void periodic() {
+		// This method will be called once per scheduler run
 	}
 
 	/**
@@ -99,6 +103,9 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_belt.stopMotor();
 	}
 
+	/**
+	 * Toggle the intake
+	 */
 	public void toggle() {
 		if (m_lSolenoid.get() == Constants.IntakeConstants.SOLENOID_FIRED) {
 			retractIntake();
@@ -107,14 +114,17 @@ public class IntakeSubsystem extends SubsystemBase {
 		}
 	}
 
-	public void outputIntakeStats() {
-		compTab.add("Right Solenoid Fired", m_rSolenoid.get());
-		compTab.add("Left Solenoid Fired", m_lSolenoid.get());
-	}
+	/**
+	 * Output telemtry data
+	 */
+	public void outputTelemetry() {
 
-	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
+		compTab.addBoolean("Intake", new BooleanSupplier() {
+			@Override
+			public boolean getAsBoolean() {
+				return (m_lSolenoid.get() && m_rSolenoid.get()) == Constants.IntakeConstants.SOLENOID_FIRED;
+			}
+		}).withWidget(BuiltInWidgets.kBooleanBox);
 	}
 
 }
