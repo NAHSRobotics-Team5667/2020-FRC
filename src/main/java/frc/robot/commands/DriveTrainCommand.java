@@ -45,7 +45,7 @@ public class DriveTrainCommand extends CommandBase {
 			}
 		});
 
-		alignmentTab.addNumber("ouput", new DoubleSupplier() {
+		alignmentTab.addNumber("output", new DoubleSupplier() {
 
 			@Override
 			public double getAsDouble() {
