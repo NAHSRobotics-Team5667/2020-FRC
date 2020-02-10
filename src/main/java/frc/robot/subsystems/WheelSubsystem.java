@@ -27,6 +27,8 @@ public class WheelSubsystem extends SubsystemBase {
 	private ColorSensorV3 m_colorV3;
 	private ColorMatch m_colorMatch = new ColorMatch();
 
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+
 	private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
 	private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
 	private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
@@ -171,5 +173,13 @@ public class WheelSubsystem extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 		wheelTab.add("Detected Color", getClosestColor());
+	}
+
+	public void outputWheelStats() {
+		compTab.add("Target Color", targetColor());
+
+		compTab.add("Current Color", getClosestColor());
+
+		compTab.add("Rotations", getRotations());
 	}
 }

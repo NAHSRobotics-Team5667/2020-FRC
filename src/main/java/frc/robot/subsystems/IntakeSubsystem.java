@@ -8,7 +8,8 @@ import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -17,7 +18,10 @@ public class IntakeSubsystem extends SubsystemBase {
 	private WPI_VictorSPX m_intake;
 	private Solenoid m_rSolenoid, m_lSolenoid;
 	private WPI_VictorSPX m_belt;
-	private Rev2mDistanceSensor m_intakeSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches, RangeProfile.kHighAccuracy);
+	private Rev2mDistanceSensor m_intakeSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches,
+			RangeProfile.kHighAccuracy);
+
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	private boolean previousSeenBallEnter = false;
 
@@ -95,16 +99,22 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_belt.stopMotor();
 	}
 
-	public void toggle(){
-		if(m_lSolenoid.get() == Constants.IntakeConstants.SOLENOID_FIRED) {
+	public void toggle() {
+		if (m_lSolenoid.get() == Constants.IntakeConstants.SOLENOID_FIRED) {
 			retractIntake();
 		} else {
 			extendIntake();
 		}
 	}
 
+	public void outputIntakeStats() {
+		compTab.add("Right Solenoid Fired", m_rSolenoid.get());
+		compTab.add("Left Solenoid Fired", m_lSolenoid.get());
+	}
+
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
 	}
+
 }
