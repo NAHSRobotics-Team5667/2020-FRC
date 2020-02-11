@@ -15,8 +15,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.autos.TrenchPathAuto;
 
 import java.io.IOException;
 import java.nio.file.Paths;

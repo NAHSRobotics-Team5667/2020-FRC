@@ -22,14 +22,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
+import frc.robot.sensors.Rev2mTOF;
 
 public class ShooterSubsystem extends PIDSubsystem {
 
 	private WPI_TalonFX m_slave, m_master;
-	private Rev2mDistanceSensor m_shooterSensor = new Rev2mDistanceSensor(Port.kMXP, Unit.kInches,
-			RangeProfile.kHighAccuracy);
-
-	private boolean previousSeenBallExit = false;
+	public Rev2mTOF tof_sensor = new Rev2mTOF(Port.kMXP, Unit.kInches, RangeProfile.kHighAccuracy,
+			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
 
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
@@ -56,6 +55,8 @@ public class ShooterSubsystem extends PIDSubsystem {
 		m_slave.follow(m_master);
 
 		setNeutralMode(NeutralMode.Coast);
+
+		tof_sensor.enable();
 
 		outputTelemetry();
 	}
@@ -111,25 +112,6 @@ public class ShooterSubsystem extends PIDSubsystem {
 	 */
 	public double getCurrentRPM() {
 		return m_master.getSelectedSensorVelocity(0) * Constants.ShooterConstants.ENCODER_CONSTANT * 600;
-	}
-
-	/**
-	 * Determine if the Rev2mDistanceSensor saw a power cell leave the robot or not
-	 * 
-	 * @return true if ball is absent, therefore seen leaving robot
-	 */
-	public boolean hasSeenBallExit() {
-		boolean currentSeenBallExit = false;
-		if (m_shooterSensor.getRange(Unit.kInches) <= Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& previousSeenBallExit == true) {
-			currentSeenBallExit = false;
-			previousSeenBallExit = currentSeenBallExit;
-		} else if (m_shooterSensor.getRange(Unit.kInches) > Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& previousSeenBallExit == false) {
-			currentSeenBallExit = true;
-			previousSeenBallExit = currentSeenBallExit;
-		}
-		return currentSeenBallExit;
 	}
 
 	/**
