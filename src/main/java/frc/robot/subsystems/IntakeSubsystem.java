@@ -4,7 +4,6 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
@@ -15,18 +14,17 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.sensors.Rev2mTOF;
 
 public class IntakeSubsystem extends SubsystemBase {
 
 	private WPI_VictorSPX m_intake;
 	private Solenoid m_rSolenoid, m_lSolenoid;
 	private WPI_VictorSPX m_belt;
-	private Rev2mDistanceSensor m_intakeSensor = new Rev2mDistanceSensor(Port.kOnboard, Unit.kInches,
-			RangeProfile.kHighAccuracy);
+	public Rev2mTOF tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches, RangeProfile.kHighAccuracy,
+			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
 
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
-
-	private boolean previousSeenBallEnter = false;
 
 	/**
 	 * Subsystem that handles the intake functionality
@@ -45,6 +43,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		m_rSolenoid = rSolenoid;
 		m_lSolenoid = lSolenoid;
+
+		tof_sensor.enable();
 	}
 
 	@Override
@@ -68,25 +68,6 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_rSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_lSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.stopMotor();
-	}
-
-	/**
-	 * Determine if the Rev2mDistanceSensor saw a power cell enter the robot or not
-	 * 
-	 * @return true if ball is present, therefore seen entering robot
-	 */
-	public boolean hasSeenBallEnter() {
-		boolean currentSeenBallEnter = false;
-		if (m_intakeSensor.getRange(Unit.kInches) <= Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& previousSeenBallEnter == false) {
-			currentSeenBallEnter = true;
-			previousSeenBallEnter = currentSeenBallEnter;
-		} else if (m_intakeSensor.getRange(Unit.kInches) > Constants.IntakeConstants.SENSOR_RANGE_INCHES
-				&& previousSeenBallEnter == true) {
-			currentSeenBallEnter = false;
-			previousSeenBallEnter = currentSeenBallEnter;
-		}
-		return currentSeenBallEnter;
 	}
 
 	/**

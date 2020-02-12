@@ -42,13 +42,14 @@ public class ShootAutonomously extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if(m_shooter.getController().atSetpoint()) {
+		if (m_shooter.getController().atSetpoint()) {
 			m_intake.startBelt();
 		} else {
 			m_intake.stopBelt();
 		}
 
-		if(m_shooter.hasSeenBallExit()) RobotContainer.ballCount -= 1;
+		if (m_shooter.tof_sensor.hasPassed())
+			RobotContainer.ballCount -= 1;
 	}
 
 	// Called once the command ends or is interrupted.
