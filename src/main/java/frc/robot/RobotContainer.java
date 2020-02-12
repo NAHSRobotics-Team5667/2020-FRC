@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
@@ -101,10 +102,14 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
+
 		if (selection <= 3)
 			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
 		else if (selection > 3 && selection < paths.length)
-			return RunPath.getCommand(paths[selection], m_drive);
+			return RunPath.getCommand(paths[selection], m_drive).andThen(() -> {
+				m_drive.setNeutralMode(NeutralMode.Brake);
+				m_drive.drive(0, 0, false);
+			});
 		else
 			return null;
 	}

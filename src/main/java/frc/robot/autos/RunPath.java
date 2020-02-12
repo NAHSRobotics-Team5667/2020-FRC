@@ -7,6 +7,8 @@
 
 package frc.robot.autos;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -21,6 +23,7 @@ import frc.robot.subsystems.DriveTrainSubsystem;
 public class RunPath {
     public static RamseteCommand getCommand(Trajectory path, DriveTrainSubsystem drive) {
         drive.resetOdometry(path.getInitialPose());
+        drive.setNeutralMode(NeutralMode.Coast);
         return new RamseteCommand(path, drive::getPose,
                 new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
                 new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter,

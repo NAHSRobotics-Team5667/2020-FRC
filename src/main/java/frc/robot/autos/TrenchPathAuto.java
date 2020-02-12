@@ -7,6 +7,8 @@
 
 package frc.robot.autos;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -37,7 +39,9 @@ public class TrenchPathAuto {
 
 		ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, shooter, intake, ShooterConstants.TRENCH_RPM);
 
-		return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3 });
-		// return ramseteCommand.andThen(new RunCommand(() -> m_drive.drive(0, 0,
+		return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3 }).andThen(() -> {
+			drive.setNeutralMode(NeutralMode.Brake);
+			drive.drive(0, 0, false);
+		});
 	}
 }
