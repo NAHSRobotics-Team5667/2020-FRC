@@ -13,15 +13,17 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.utils.PIDFController;
 
 public class ClimbCommand extends CommandBase {
-	ClimbSubsystem climbSubsystem;
+	ClimbSubsystem m_climbSubsystem;
+	// private PIDFController winchController = new PIDFController("Hook height",
+	// .01, .01, .01, .01);
 
 	/**
 	 * Creates a new ClimbCommand.
 	 */
 	public ClimbCommand(ClimbSubsystem subsystem) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		climbSubsystem = subsystem;
-		addRequirements(climbSubsystem);
+		m_climbSubsystem = subsystem;
+		addRequirements(m_climbSubsystem);
 	}
 
 	// Called when the command is initially scheduled.
@@ -40,6 +42,8 @@ public class ClimbCommand extends CommandBase {
 		 * When a trigger's pressed, the motor moves up or down to the target height.
 		 * This has been Haikus with Olu.
 		 */
+		m_climbSubsystem.DriveWinch(RobotContainer.getController().getLeftY());
+		m_climbSubsystem.DriveHook(RobotContainer.getController().getRightY());
 	}
 
 	// Called once the command ends or is interrupted.
