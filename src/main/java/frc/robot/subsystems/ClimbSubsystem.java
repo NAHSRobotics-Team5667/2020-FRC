@@ -27,18 +27,34 @@ public class ClimbSubsystem extends SubsystemBase {
 		m_winchFx.setSelectedSensorPosition(0);
 	}
 
+	/**
+	 * Moves the winch motor
+	 * 
+	 * @param speed - the speed for the motor to move
+	 */
 	public void DriveWinch(double speed) {
 		m_winchFx.set(speed);
 	}
 
+	/**
+	 * Stops the winch motor
+	 */
 	public void StopWinch() {
 		m_winchFx.stopMotor();
 	}
 
+	/**
+	 * Moves the hook motor
+	 * 
+	 * @param speed - the speed for the hook to move
+	 */
 	public void DriveHook(double speed) {
 		m_riserFx.set(speed);
 	}
 
+	/**
+	 * Stops the hook motor
+	 */
 	public void StopHook() {
 		m_riserFx.stopMotor();
 	}
