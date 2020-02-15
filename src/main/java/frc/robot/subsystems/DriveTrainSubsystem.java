@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -98,14 +99,15 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_gyro = gyro;
 
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+		reverseEncoders();
 		resetOdometry(new Pose2d());
+		outputTelemetry();
 	}
 
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
-		outputTelemetry();
 	}
 
 	/**
@@ -200,6 +202,20 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
+	 * Controls the left and right sides of the drive directly with voltages.
+	 *
+	 * @param leftVolts  the commanded left output
+	 * @param rightVolts the commanded right output
+	 */
+	public void tankDriveVoltsReverse(double leftVolts, double rightVolts) {
+		SmartDashboard.putNumber("raw_lv", leftVolts);
+		SmartDashboard.putNumber("raw_rv", -rightVolts);
+
+		m_leftMaster.set(-leftVolts);
+		m_rightMaster.set(rightVolts);
+	}
+
+	/**
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
 	public void zeroDriveTrainEncoders() {
@@ -276,11 +292,21 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_drive.feed();
 	}
 
+	public void reverseEncoders() {
+		Constants.DriveConstants.MAG *= -1;
+		resetOdometry(new Pose2d());
+	}
+
 	/**
 	 * Output the Drive Train telemtry
 	 */
 	public void outputTelemetry() {
-		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
+		autoTab.addString("Pose", new Supplier<String>() {
+			@Override
+			public String get() {
+				return m_odometry.getPoseMeters().toString();
+			}
+		});
 
 		autoTab.addNumber("r_pos", new DoubleSupplier() {
 			@Override

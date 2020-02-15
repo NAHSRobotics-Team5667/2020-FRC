@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);
-		m_chooser.addOption("Middle Trench", 1);
+		m_chooser.addOption("Middle Trench", 5); // 1
 		m_chooser.addOption("Close Trench", 2);
 		m_chooser.addOption("Shoot & Stay", 3);
 		m_chooser.addOption("Straight 2M", 4);
@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
 		// robot's periodic
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
-		LED.getLEDInstance().setColor();
+		// LED.getLEDInstance().setColor();
 
 	}
 

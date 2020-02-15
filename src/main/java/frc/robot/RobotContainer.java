@@ -19,12 +19,15 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
+import frc.robot.commands.actions.AlignCommand;
+import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -43,8 +46,8 @@ public class RobotContainer {
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 
 	private Trajectory[] paths = new Trajectory[] { PATHS.PathWeaver.getTrajectory("FAR_TRENCH"),
-			PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
-			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY };
+			PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"), null,
+			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH") };
 
 	public boolean done = false;
 	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
@@ -58,9 +61,6 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-		// Configure the button bindings
-		configureButtonBindings();
-
 		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.RIGHT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
@@ -69,15 +69,16 @@ public class RobotContainer {
 		// m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
 		// new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
 
-		// m_shooter = new ShooterSubsystem(new
-		// WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-		// new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
+		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.PORT));
 
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
-				new Solenoid(Constants.IntakeConstants.R_SOLENOID), new Solenoid(Constants.IntakeConstants.L_SOLENOID),
-				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
+				new Solenoid(Constants.IntakeConstants.SOLENOID_PORT));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
+		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
+
+		// Configure the button bindings
+		configureButtonBindings();
 
 	}
 
@@ -88,12 +89,13 @@ public class RobotContainer {
 	 * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		final Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
-		final Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
-		final Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
+		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
+		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
+		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
+		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
 
-		x.whenPressed(() -> m_drive.resetOdometry(new Pose2d()));
 		a.whenPressed(() -> m_intake.toggle());
+		y.whenPressed(new AlignCommand(m_drive));
 	}
 
 	/**
@@ -106,7 +108,7 @@ public class RobotContainer {
 		if (selection <= 3)
 			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
 		else if (selection > 3 && selection < paths.length)
-			return RunPath.getCommand(paths[selection], m_drive).andThen(() -> {
+			return RunPath.getCommand(paths[selection], m_drive, true).andThen(() -> {
 				m_drive.setNeutralMode(NeutralMode.Brake);
 				m_drive.drive(0, 0, false);
 			});
