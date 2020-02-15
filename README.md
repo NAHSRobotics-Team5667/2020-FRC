@@ -23,7 +23,7 @@ The FRC 2020 Infinite Recharge Code
 * [Drive Train](src/main/java/frc/robot/commands/DriveTrainCommand.java)
 * [Shooter](src/main/java/frc/robot/commands/ShooterCommand.java)
 * [Intake](src/main/java/frc/robot/commands/IntakeCommand.java)
-* Climb
+* [Climb](src/main/java/frc/robot/commands/ClimbCommand.java)
 * [Position Control Command](src/main/java/frc/robot/commands/PositionCommand.java)
 * [Rotation Control Command](src/main/java/frc/robot/commands/RotationCommand.java)
 
