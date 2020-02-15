@@ -52,7 +52,7 @@ public class ShooterSubsystem extends PIDSubsystem {
 
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-		setNeutralMode(NeutralMode.Brake);
+		setNeutralMode(NeutralMode.Coast);
 
 		m_master.configAllSettings(falconConfig);
 		resetEncoder();
@@ -115,11 +115,7 @@ public class ShooterSubsystem extends PIDSubsystem {
 	 * @return - The current RPM of the shooter wheels
 	 */
 	public double getCurrentRPM() {
-		return m_master.getSelectedSensorVelocity(0) * Constants.ShooterConstants.ENCODER_CONSTANT * 600;
-	}
-
-	public double getTicks() {
-		return m_master.getSelectedSensorPosition(0) / 2480;
+		return m_master.getSelectedSensorVelocity(0) * (1.0 / 2048) * 1.75 * 600.0;
 	}
 
 	/**
@@ -129,7 +125,7 @@ public class ShooterSubsystem extends PIDSubsystem {
 		compTab.addNumber("RPM", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
-				return getCurrentRPM();
+				return -getCurrentRPM();
 			}
 		});
 
