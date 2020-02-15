@@ -35,6 +35,5 @@ public class RunPath {
                 AutoConstants.R_CONTROLLER,
                 // RamseteCommand passes volts to the callback
                 (!isReverse ? drive::tankDriveVolts : drive::tankDriveVoltsReverse), drive);
-
     }
 }

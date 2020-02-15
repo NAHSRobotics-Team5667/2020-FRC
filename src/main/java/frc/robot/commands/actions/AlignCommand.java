@@ -69,7 +69,7 @@ public class AlignCommand extends CommandBase {
 
 		}
 
-		if (RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))) {
+		if (!RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))) {
 			m_drive.setDriveMode(DriveModes.MANUAL);
 		}
 

@@ -211,8 +211,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("raw_lv", leftVolts);
 		SmartDashboard.putNumber("raw_rv", -rightVolts);
 
-		m_leftMaster.set(-leftVolts);
-		m_rightMaster.set(rightVolts);
+		m_leftMaster.set(rightVolts);
+		m_rightMaster.set(-leftVolts);
 	}
 
 	/**
