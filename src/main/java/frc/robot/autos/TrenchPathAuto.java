@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.ShootAndHoldCommand;
-import frc.robot.commands.ShootAutonomously;
+import frc.robot.commands.shooter.ShootAutonomously;
 import frc.robot.commands.intake.LoadCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -27,7 +27,7 @@ public class TrenchPathAuto {
 	public static SequentialCommandGroup getAuto(Trajectory path, DriveTrainSubsystem drive, IntakeSubsystem intake,
 			ShooterSubsystem shooter) {
 
-		RamseteCommand ramseteCommand = RunPath.getCommand(path, drive);
+		RamseteCommand ramseteCommand = RunPath.getCommand(path, drive, true);
 
 		ShootAutonomously phase1 = new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM);
 

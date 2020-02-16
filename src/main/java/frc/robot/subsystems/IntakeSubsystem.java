@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.Rev2mDistanceSensor.Port;
@@ -19,12 +20,13 @@ import frc.robot.sensors.Rev2mTOF;
 public class IntakeSubsystem extends SubsystemBase {
 
 	private WPI_VictorSPX m_intake;
-	private Solenoid m_rSolenoid, m_lSolenoid;
+	private Solenoid m_solenoid;
 	private WPI_VictorSPX m_belt;
-	public Rev2mTOF tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches, RangeProfile.kHighAccuracy,
-			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
+	public Rev2mTOF tof_sensor;
 
-	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+	private boolean m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
+
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	/**
 	 * Subsystem that handles the intake functionality
@@ -34,17 +36,41 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @param lSolenoid - The left solenoid
 	 * @param belt      - The motor that controls the belt
 	 */
-	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid rSolenoid, Solenoid lSolenoid, WPI_VictorSPX belt) {
+	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid, WPI_VictorSPX belt) {
 		m_intake = intake;
 		m_belt = belt;
 
 		m_intake.setNeutralMode(NeutralMode.Brake);
 		m_belt.setNeutralMode(NeutralMode.Brake);
 
-		m_rSolenoid = rSolenoid;
-		m_lSolenoid = lSolenoid;
+		m_solenoid = solenoid;
 
-		tof_sensor.enable();
+		// tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches,
+		// RangeProfile.kHighAccuracy,
+		// Constants.IntakeConstants.SENSOR_RANGE_INCHES);
+		// tof_sensor.enable();
+
+		retractIntake();
+		outputTelemetry();
+	}
+
+	/**
+	 * Subsystem that handles the intake functionality
+	 * 
+	 * @param intake   - The intake motor
+	 * @param solenoid - The solenoid
+	 */
+	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid) {
+		m_intake = intake;
+
+		m_intake.setNeutralMode(NeutralMode.Brake);
+
+		m_solenoid = solenoid;
+
+		// tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches,
+		// RangeProfile.kHighAccuracy,
+		// Constants.IntakeConstants.SENSOR_RANGE_INCHES);
+		// tof_sensor.enable();
 	}
 
 	@Override
@@ -56,18 +82,18 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Extends the intake outside of frame perimeter
 	 */
 	public void extendIntake() {
-		m_rSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
-		m_lSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
-		m_intake.set(Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
+		m_solenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_intake.set(ControlMode.PercentOutput, Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
+		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
 	/**
 	 * Retracts the intake inside of frame perimeter
 	 */
 	public void retractIntake() {
-		m_rSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
-		m_lSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
+		m_solenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.stopMotor();
+		m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
 	/**
@@ -88,7 +114,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Toggle the intake
 	 */
 	public void toggle() {
-		if (m_lSolenoid.get() == Constants.IntakeConstants.SOLENOID_FIRED) {
+		if (m_status == Constants.IntakeConstants.SOLENOID_FIRED) {
 			retractIntake();
 		} else {
 			extendIntake();
@@ -103,7 +129,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		compTab.addBoolean("Intake", new BooleanSupplier() {
 			@Override
 			public boolean getAsBoolean() {
-				return (m_lSolenoid.get() && m_rSolenoid.get()) == Constants.IntakeConstants.SOLENOID_FIRED;
+				return m_status == Constants.IntakeConstants.SOLENOID_FIRED;
 			}
 		}).withWidget(BuiltInWidgets.kBooleanBox);
 	}

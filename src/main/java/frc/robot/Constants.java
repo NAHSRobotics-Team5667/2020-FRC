@@ -48,16 +48,14 @@ public final class Constants {
         public static final double SENSOR_RANGE_INCHES = 6;
         public static final int START_BALL_COUNT = 3;
 
-        public static final int MOTOR_PORT = 7;
-        public static final int BELT_PORT = 8;
+        public static final int MOTOR_PORT = 1;
+        public static final int BELT_PORT = 2;
 
-        public static final int R_SOLENOID = 1;
-        public static final int L_SOLENOID = 2;
+        public static final int SOLENOID_PORT = 0;
     }
 
     public final static class ShooterConstants {
-        public static final int RIGHT_SHOOTER_PORT = 4;
-        public static final int LEFT_SHOOTER_PORT = 5;
+        public static final int PORT = 4;
 
         public static final int AUTO_LINE_RPM = 4000;
         public static final int TRENCH_RPM = 7000;
@@ -67,7 +65,7 @@ public final class Constants {
         public static final double ksVolts = 0;
         public static final double kP = 0.0001;
         public static final double kD = 0;
-        public static final double ENCODER_CONSTANT = (1 / 2048);
+        public static final double ENCODER_CONSTANT = (1 / 2048) * 2;
     }
 
     public final static class WheelConstants {
@@ -91,7 +89,8 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static double MAG = 1;
+        public static final double ENCODER_CONSTANT = MAG * (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = true;
 
         public static final double MAX_SPEED_TELE = 3.25;

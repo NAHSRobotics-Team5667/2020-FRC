@@ -21,7 +21,10 @@ import frc.robot.subsystems.DriveTrainSubsystem;
  * Get a Ramsete Command that drives a path
  */
 public class RunPath {
-    public static RamseteCommand getCommand(Trajectory path, DriveTrainSubsystem drive) {
+    public static RamseteCommand getCommand(Trajectory path, DriveTrainSubsystem drive, boolean isReverse) {
+        if (isReverse)
+            drive.reverseEncoders();
+
         drive.resetOdometry(path.getInitialPose());
         drive.setNeutralMode(NeutralMode.Coast);
         return new RamseteCommand(path, drive::getPose,
@@ -31,7 +34,7 @@ public class RunPath {
                 DriveConstants.kDriveKinematics, drive::getWheelSpeeds, AutoConstants.L_CONTROLLER,
                 AutoConstants.R_CONTROLLER,
                 // RamseteCommand passes volts to the callback
-                drive::tankDriveVolts, drive);
+                (!isReverse ? drive::tankDriveVolts : drive::tankDriveVoltsReverse), drive);
 
     }
 }
