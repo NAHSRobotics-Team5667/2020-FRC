@@ -32,14 +32,14 @@ public class ClimbSubsystem extends SubsystemBase {
 	 * 
 	 * @param speed - the speed for the motor to move
 	 */
-	public void DriveWinch(double speed) {
+	public void driveWinch(double speed) {
 		m_winchFx.set(speed);
 	}
 
 	/**
 	 * Stops the winch motor
 	 */
-	public void StopWinch() {
+	public void stopWinch() {
 		m_winchFx.stopMotor();
 	}
 
@@ -48,14 +48,14 @@ public class ClimbSubsystem extends SubsystemBase {
 	 * 
 	 * @param speed - the speed for the hook to move
 	 */
-	public void DriveHook(double speed) {
+	public void driveHook(double speed) {
 		m_riserFx.set(speed);
 	}
 
 	/**
 	 * Stops the hook motor
 	 */
-	public void StopHook() {
+	public void stopHook() {
 		m_riserFx.stopMotor();
 	}
 

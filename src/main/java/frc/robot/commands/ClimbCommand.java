@@ -42,8 +42,8 @@ public class ClimbCommand extends CommandBase {
 		 * When a trigger's pressed, the motor moves up or down to the target height.
 		 * This has been Haikus with Olu.
 		 */
-		m_climbSubsystem.DriveWinch(RobotContainer.getController().getLeftY());
-		m_climbSubsystem.DriveHook(RobotContainer.getController().getRightY());
+		m_climbSubsystem.driveWinch(RobotContainer.getController().getLeftY());
+		m_climbSubsystem.driveHook(RobotContainer.getController().getRightY());
 	}
 
 	// Called once the command ends or is interrupted.
