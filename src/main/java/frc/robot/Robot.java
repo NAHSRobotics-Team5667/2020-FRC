@@ -8,11 +8,13 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LED;
-import frc.robot.utils.LimeLight;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,6 +27,10 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand = null;
 	private RobotContainer m_robotContainer;
 
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Auto");
+
+	private SendableChooser<Integer> m_chooser = new SendableChooser<>();
+
 	/**
 	 * This function is run when the robot is first started up and should be used
 	 * for any initialization code.
@@ -34,7 +40,18 @@ public class Robot extends TimedRobot {
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
+		Shuffleboard.selectTab("Auto");
+
 		m_robotContainer = new RobotContainer();
+		m_chooser.setDefaultOption("Far Trench", 0);
+		m_chooser.addOption("Middle Trench", 1);
+		m_chooser.addOption("Close Trench", 2);
+		m_chooser.addOption("Shoot & Stay", 3);
+		m_chooser.addOption("Straight 2M", 4);
+		m_chooser.addOption("S Path", 5);
+		m_chooser.addOption("Null", 99);
+
+		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 	}
 
 	/**
@@ -77,7 +94,8 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		Shuffleboard.selectTab("Auto");
+		m_autonomousCommand = m_robotContainer.getAutonomousCommand(m_chooser.getSelected());
 
 		// schedule the autonomous command (example)
 		if (m_autonomousCommand != null) {
@@ -100,7 +118,7 @@ public class Robot extends TimedRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-
+		Shuffleboard.selectTab("Teleop");
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}

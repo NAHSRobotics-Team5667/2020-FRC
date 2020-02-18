@@ -229,7 +229,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return left encoder position
 	 */
 	public double getLeftEncoderPosition() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
 	}
 
 	/**
@@ -238,7 +238,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return right encoder position
 	 */
 	public double getRightEncoderPosition() {
-		return -m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.encoderConstant;
+		return -m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
 	}
 
 	/**
@@ -247,7 +247,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the left encoder velocity in m/s
 	 */
 	public double getLeftEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.encoderConstant * 10;
+		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
 	}
 
 	/**
@@ -276,10 +276,13 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_drive.feed();
 	}
 
+	/**
+	 * Output the Drive Train telemtry
+	 */
 	public void outputTelemetry() {
 		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
 
-		autoTab.addNumber("Right Position", new DoubleSupplier() {
+		autoTab.addNumber("r_pos", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getRightEncoderPosition();

@@ -40,95 +40,50 @@ public final class Constants {
 
     public static RobotState m_RobotState = new RobotState(null);
 
-    public final static class LedConstants {
-        public static final int LED_PORT = 0;
-        public static final int LED_AMOUNT = 20;
-        public static final double FLASH_TIME = 0.5;
+    public final static class IntakeConstants {
+        public static final double INTAKE_MOTOR_SPEED = 1;
+        public static final double BELT_MOTOR_SPEED = 1;
 
-        public static enum Colors {
-            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(153, 50, 204), YELLOW(255, 255, 0), WHITE(255, 255, 255),
-            GREEN(0, 255, 0);
+        public static final boolean SOLENOID_FIRED = true;
+        public static final double SENSOR_RANGE_INCHES = 6;
+        public static final int START_BALL_COUNT = 3;
 
-            private int r, g, b;
+        public static final int MOTOR_PORT = 7;
+        public static final int BELT_PORT = 8;
 
-            private Colors(int r, int g, int b) {
-                this.r = r;
-                this.g = g;
-                this.b = b;
-            }
-
-            public int[] getColor() {
-                return new int[] { r, g, b };
-            }
-        }
+        public static final int R_SOLENOID = 1;
+        public static final int L_SOLENOID = 2;
     }
 
-    public final static class AutoConstants {
-        public static final double kRamseteB = 2;
-        public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = 1;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
-        public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
-                DriveConstants.kD);
-        public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
-                DriveConstants.kD);
+    public final static class ShooterConstants {
+        public static final int RIGHT_SHOOTER_PORT = 4;
+        public static final int LEFT_SHOOTER_PORT = 5;
 
+        public static final int AUTO_LINE_RPM = 4000;
+        public static final int TRENCH_RPM = 7000;
+
+        public static final int IDLE_VOLTAGE = 3;
+
+        public static final double ksVolts = 0;
+        public static final double kP = 0.0001;
+        public static final double kD = 0;
+        public static final double ENCODER_CONSTANT = (1 / 2048);
     }
 
-    public final static class Autos {
-        public final static class Default {
-            public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
-                    new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
-                            Constants.DriveConstants.kvVoltSecondsPerMeter,
-                            Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
-                    Constants.DriveConstants.kDriveKinematics, 6);
+    public final static class WheelConstants {
+        public static final double ROTATIONS = 2.7 * 3;
+        public static final int MOTOR = 4;
+        public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
+    }
 
-            // Create config for trajectory
-            public static final TrajectoryConfig config = new TrajectoryConfig(
-                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
-                    Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-                            // Add kinematics to ensure max speed is actually obeyed
-                            .setKinematics(Constants.DriveConstants.kDriveKinematics)
-                            // Apply the voltage constraint
-                            .addConstraint(autoVoltageConstraint);
+    public final static class ClimbConstants {
+        public static final int ENCODER_CONSTANT = 1;
+    }
 
-            // An example trajectory to follow. All units in meters.
-            public static final Trajectory S_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
-                    // Start at the origin facing the +X direction
-                    new Pose2d(0, 0, new Rotation2d(0)),
-                    // Pass through these two interior waypoints, making an 's' curve path
-                    List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(3, 0, new Rotation2d(0)),
-                    // Pass config
-                    config);
-            public static final Trajectory STRAIGHT_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
-                    // Start at the origin facing the +X direction
-                    new Pose2d(0, 0, new Rotation2d(0)),
-                    // Pass through these two interior waypoints
-                    List.of(new Translation2d(1, 0)),
-                    // End 3 meters straight ahead of where we started, facing forward
-                    new Pose2d(2, 0, new Rotation2d(0)),
-                    // Pass config
-                    config);
-
-        }
-
-        public static final class PathWeaver {
-
-            public static final class Test {
-                public static Trajectory getTrajectory() {
-                    try {
-                        return TrajectoryUtil
-                                .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/Unnamed.wpilib.json"));
-                    } catch (IOException e) {
-                        System.out.println("CANNOT READ Trajectory");
-                        return null;
-                    }
-                }
-
-            }
-        }
+    public final static class VisionConstants {
+        public static final double H1 = 0; // Height of limelight from the ground
+        public static final double H2 = 0; // Height of target
+        public static final double A1 = 0; // Limelight mounting angle
     }
 
     public final static class DriveConstants {
@@ -136,16 +91,16 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static final double encoderConstant = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = true;
 
         public static final double MAX_SPEED_TELE = 3.25;
         public static final double MAX_ANGULAR_VEL = 320;
 
-        public static final int rightMaster = 1;
-        public static final int leftMaster = 3;
-        public static final int rightSlave = 0;
-        public static final int leftSlave = 2;
+        public static final int RIGHT_MASTER = 1;
+        public static final int LEFT_MASTER = 3;
+        public static final int RIGHT_SLAVE = 0;
+        public static final int LEFT_SLAVE = 2;
 
         public static final double ksVolts = 0.0869 / 10;
         public static final double kvVoltSecondsPerMeter = 2.46 / 10;
@@ -161,38 +116,66 @@ public final class Constants {
 
     }
 
-    public final static class VisionConstants {
-        public static final double H1 = 0; // Height of limelight from the ground
-        public static final double H2 = 0; // Height of target
-        public static final double A1 = 0; // Limelight mounting angle
+    public final static class AutoConstants {
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = 0.7;
+        public static final double kMaxSpeedMetersPerSecond = 1;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
+                DriveConstants.kD);
+        public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
+                DriveConstants.kD);
 
-        public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
-    public final static class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = 1;
-        public static final double BELT_MOTOR_SPEED = 1;
-        public static final boolean SOLENOID_FIRED = true;
-        public static final double SENSOR_RANGE_INCHES = 6;
-        public static final int START_BALL_COUNT = 3;
-    }
+    public final static class PATHS {
+        public static final DifferentialDriveVoltageConstraint autoVoltageConstraint = new DifferentialDriveVoltageConstraint(
+                new SimpleMotorFeedforward(Constants.DriveConstants.ksVolts,
+                        Constants.DriveConstants.kvVoltSecondsPerMeter,
+                        Constants.DriveConstants.kaVoltSecondsSquaredPerMeter),
+                Constants.DriveConstants.kDriveKinematics, 6);
 
-    public final static class ShooterConstants {
-        public static final int RIGHT_SHOOTER_PORT = 4;
-        public static final int LEFT_SHOOTER_PORT = 5;
-        public static final int ANGLE_SHOOTER_PORT = 6;
-        public static final int RIGHT_ENCODER_PORT_A = 8;
-        public static final int RIGHT_ENCODER_PORT_B = 9;
-        public static final int LEFT_ENCODER_PORT_A = 10;
-        public static final int LEFT_ENCODER_PORT_B = 11;
-        public static final int ANGLE_ENCODER_PORT_A = 12;
-        public static final int ANGLE_ENCODER_PORT_B = 13;
-    }
+        // Create config for trajectory
+        public static final TrajectoryConfig config = new TrajectoryConfig(
+                Constants.AutoConstants.kMaxSpeedMetersPerSecond,
+                Constants.AutoConstants.kMaxAccelerationMetersPerSecondSquared)
+                        // Add kinematics to ensure max speed is actually obeyed
+                        .setKinematics(Constants.DriveConstants.kDriveKinematics)
+                        // Apply the voltage constraint
+                        .addConstraint(autoVoltageConstraint);
 
-    public final static class WheelConstants {
-        public static final double ROTATIONS = 2.7 * 3;
-        public static final int MOTOR = 4;
-        public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
+        // An example trajectory to follow. All units in meters.
+        public static final Trajectory S_TRAJECTORY = TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints, making an 's' curve path
+                List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(3, 0, new Rotation2d(0)),
+                // Pass config
+                config);
+
+        public static final Trajectory STRAIGHT_TRAJECTORY_2M = TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints
+                List.of(new Translation2d(1, 0)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(2, 0, new Rotation2d(0)),
+                // Pass config
+                config);
+
+        public static final class PathWeaver {
+            public static Trajectory getTrajectory(String path) {
+                try {
+                    return TrajectoryUtil
+                            .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/" + path + ".wpilib.json"));
+                } catch (IOException e) {
+                    System.out.println("CANNOT READ Trajectory");
+                    return null;
+                }
+            }
+        }
     }
 
     public final static class ControllerConstants {
@@ -222,9 +205,5 @@ public final class Constants {
         public static final int BUTTON_MENU_PORT = 8; // Menu Button
         public static final int BUTTON_START_PORT = 7; // Start button
 
-    }
-
-    public final static class ClimbConstants {
-        public static final int ENCODER_CONSTANT = 1;
     }
 }

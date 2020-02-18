@@ -14,55 +14,62 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+/**
+ * Class that manipulates the Wheel of Fortune
+ */
 public class WheelSubsystem extends SubsystemBase {
 	private WPI_TalonFX m_motor;
-	private ColorSensorV3 m_colorV3;
+	private ColorSensorV3 m_colorV3 = new ColorSensorV3(Port.kOnboard);
 	private ColorMatch m_colorMatch = new ColorMatch();
+
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	private final Color kBlueTarget = ColorMatch.makeColor(0.143, 0.427, 0.429);
 	private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
 	private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
 	private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
 
-	ShuffleboardTab wheelTab = Shuffleboard.getTab("Wheel");
+	ShuffleboardTab wheelTab = Shuffleboard.getTab("Tune");
 
 	/**
-	 * Creates a new WheelSubsystem.
+	 * A Subsystem that manipulates the wheel of fortune
 	 * 
-	 * @param motor      - the wheel motor
-	 * 
-	 * @param encoder    - the wheel encoder
-	 * 
-	 * @param colorV3    - the color sensor
-	 * 
-	 * @param colorMatch - color match
-	 * 
+	 * @param motor - The motor spinning the wheel
 	 */
-	public WheelSubsystem(WPI_TalonFX motor, ColorSensorV3 colorV3) {
+	public WheelSubsystem(WPI_TalonFX motor) {
 		m_motor = motor;
-		m_colorV3 = colorV3;
 
+		// Reset the motor to default configuration
 		m_motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 		m_motor.setSelectedSensorPosition(0);
 		m_motor.setNeutralMode(NeutralMode.Brake);
-
+		// Set the colors
 		m_colorMatch.addColorMatch(kBlueTarget);
 		m_colorMatch.addColorMatch(kGreenTarget);
 		m_colorMatch.addColorMatch(kRedTarget);
 		m_colorMatch.addColorMatch(kYellowTarget);
+
+		outputTelemetry();
+	}
+
+	@Override
+	public void periodic() {
+		// This method will be called once per scheduler run
 	}
 
 	/**
-	 * gets the target color letter and returns the color the robot will see at
-	 * target color
+	 * Get the target color based on the FMS data
+	 * 
+	 * @return - The target color as a string
 	 */
 	public String targetColor() {
 		String gameData = DriverStation.getInstance().getGameSpecificMessage();
@@ -100,7 +107,9 @@ public class WheelSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Gets the current count of wheel
+	 * Get the current amount of rotations completed
+	 * 
+	 * @return - The amount of rotations the wheel has completed
 	 */
 	public double getRotations() {
 		return m_motor.getSelectedSensorPosition(0) / 2048 * (Math.PI * Units.inchesToMeters(4));
@@ -116,8 +125,9 @@ public class WheelSubsystem extends SubsystemBase {
 	}
 
 	/**
+	 * Has the wheel rotated the amount of times desired
 	 * 
-	 * @return
+	 * @return - boolean (have we rotated enough times)
 	 */
 	public boolean hasRotated() {
 		return (m_motor.getSelectedSensorPosition(0) / 2048
@@ -125,8 +135,9 @@ public class WheelSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Gets the closest color from the current color to the colors shown on the
-	 * control panel.
+	 * Get the closest detected color
+	 * 
+	 * @return - The closest color detected by the color sensor
 	 */
 	public String getClosestColor() {
 		Color detectedColor = m_colorV3.getColor();
@@ -154,22 +165,29 @@ public class WheelSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * @param speed : Speed that the wheel motor moves
+	 * Rotate the wheel at a set speed
+	 * 
+	 * @param speed - The desired wheel speed
 	 */
 	public void rotateSpeed(double speed) {
 		m_motor.set(speed);
 	}
 
 	/**
-	 * Stops the wheel motor
+	 * Turn the motor off
 	 */
 	public void turnOffMotor() {
 		m_motor.stopMotor();
 	}
 
-	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
+	/**
+	 * Output telemetry function
+	 */
+	public void outputTelemetry() {
+		// TODO: Make String Suppliers
 		wheelTab.add("Detected Color", getClosestColor());
+		compTab.add("Target Color", targetColor());
+		compTab.add("Current Color", getClosestColor());
+		compTab.add("Rotations", getRotations());
 	}
 }
