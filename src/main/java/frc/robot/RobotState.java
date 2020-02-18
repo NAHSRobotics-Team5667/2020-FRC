@@ -37,11 +37,10 @@ public class RobotState {
 		 * INTAKE - The robot is currently intaking
 		 */
 		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.PURPLE),
-		AUTO(2, Constants.LedConstants.Colors.GREEN), VISION(3, Constants.LedConstants.Colors.GREEN),
+		AUTO(2, Constants.LedConstants.Colors.PINK), VISION(3, Constants.LedConstants.Colors.GREEN),
 		SHOOTING(4, Constants.LedConstants.Colors.PURPLE), CLIMBING(5, Constants.LedConstants.Colors.RED),
 		ROTATION(6, Constants.LedConstants.Colors.RED), POSITION(7, Constants.LedConstants.Colors.RED),
-		INTAKING(8, Constants.LedConstants.Colors.BLUE);
-
+		INTAKING(8, Constants.LedConstants.Colors.YELLOW);
 		private int state;
 		private int[] color;
 

@@ -32,8 +32,6 @@ public class LED {
 
     private boolean shouldAlternate = false;
 
-    private int[] YELLOW = new int[] { 255, 255, 0 };
-
     public LED() {
         m_adressableLed.setLength(Constants.LedConstants.LED_AMOUNT);
         m_adressableLed.setData(m_ledBuffer);
@@ -75,21 +73,20 @@ public class LED {
             oneColor();
         }
         if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
-            breathColor();
+            breatheColor(5);
         }
         if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
-            oneColor();
+            breatheColor(1);
         }
         if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
-            // breathAlternateColor();
-            alternateColor(Constants.LedConstants.Colors.YELLOW.getColor());
+            alternateColorBreathe(Constants.LedConstants.Colors.YELLOW.getColor(), 5, 5);
         }
         if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
             getAllianceColor();
-            breathColor();
+            breatheColor(1);
         }
         if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
-            breathAlternateColor(Constants.LedConstants.Colors.GREEN.getColor());
+            alternateColor(Constants.LedConstants.Colors.PURPLE.getColor(), 2);
         }
     }
 
@@ -104,8 +101,8 @@ public class LED {
         m_adressableLed.setData(m_ledBuffer);
     }
 
-    private void breathColor() {
-        cycle = (cycle + 1) % 360;
+    private void breatheColor(int speed) {
+        cycle = (cycle + speed) % 360;
         double wave = Math.sin(cycle * 0.0174533);
 
         for (int i = 0; i < Constants.LedConstants.LED_AMOUNT; i++) {
@@ -128,23 +125,33 @@ public class LED {
         }
     }
 
-    private void breathAlternateColor(int[] alternateColor) {
+    private void breatheAlternateColor(int[] alternateColor, int speed) {
         if (cycle % 180 == 0)
             shouldAlternate = !shouldAlternate;
         if (shouldAlternate)
             colorVals = alternateColor;
-        breathColor();
+        breatheColor(speed);
 
     }
 
-    private void alternateColor(int[] alternateColor) {
-        cycle = (cycle + 5) % 361;
+    private void alternateColorBreathe(int[] alternateColor, int speed, int spacing) {
+        cycle = (cycle + speed) % 361;
         double wave = Math.sin(cycle * 0.0174533);
 
         for (int i = 0; i < Constants.LedConstants.LED_AMOUNT; i++) {
-            int r = (int) Math.abs(Math.round((i % 4 != 0 ? colorVals[0] * wave : alternateColor[0] * wave)));
-            int g = (int) Math.abs(Math.round((i % 4 != 0 ? colorVals[1] * wave : alternateColor[1] * wave)));
-            int b = (int) Math.abs(Math.round((i % 4 != 0 ? colorVals[2] * wave : alternateColor[2] * wave)));
+            int r = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[0] * wave : alternateColor[0] * wave)));
+            int g = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[1] * wave : alternateColor[1] * wave)));
+            int b = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[2] * wave : alternateColor[2] * wave)));
+            m_ledBuffer.setRGB(i, r, g, b);
+        }
+        m_adressableLed.setData(m_ledBuffer);
+    }
+
+    private void alternateColor(int[] alternateColor, int spacing) {
+        for (int i = 0; i < Constants.LedConstants.LED_AMOUNT; i++) {
+            int r = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[0] : alternateColor[0])));
+            int g = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[1] : alternateColor[1])));
+            int b = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[2] : alternateColor[2])));
             m_ledBuffer.setRGB(i, r, g, b);
         }
         m_adressableLed.setData(m_ledBuffer);

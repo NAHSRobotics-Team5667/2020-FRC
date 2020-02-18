@@ -46,8 +46,8 @@ public final class Constants {
         public static final double FLASH_TIME = 2;
 
         public static enum Colors {
-            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(128, 0, 255), YELLOW(255, 255, 0), WHITE(255, 255, 255),
-            GREEN(0, 255, 0);
+            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(25, 0, 51), YELLOW(255, 255, 0), WHITE(255, 255, 255),
+            GREEN(0, 255, 0), MAROON(69, 0, 0), GOLD(128, 128, 0), PINK(255, 0, 178);
 
             private int r, g, b;
 
