@@ -7,53 +7,48 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.SpeedController;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-	private SpeedController m_rightWheel, m_leftWheel;
-	private Encoder m_rightEncoder, m_leftEncoder;
+	private WPI_TalonFX m_slaveWheel, m_masterWheel;
 
 	/**
 	 * Creates a shooter subsystem
 	 * 
-	 * @param rightWheel   - motor controller that controls the right shooter wheel
-	 * @param leftWheel    - motor controller that controls the left shooter wheel
-	 * 
-	 * @param rightEncoder - encoder to track the progress of the right shooter
-	 *                     wheel
-	 * @param leftEncoder  - encoder to track the progress of the left shooter wheel
+	 * @param slaveWheel  - motor controller that follows
+	 * @param masterWheel - motor controller that controls the slave wheel
 	 */
 
-	public ShooterSubsystem(SpeedController rightWheel, SpeedController leftWheel, Encoder rightEncoder,
-			Encoder leftEncoder) {
-		m_rightWheel = rightWheel;
-		m_leftWheel = leftWheel;
-		m_rightEncoder = rightEncoder;
-		m_leftEncoder = leftEncoder;
+	public ShooterSubsystem(WPI_TalonFX slaveWheel, WPI_TalonFX masterWheel) {
+		m_slaveWheel = slaveWheel;
+		m_masterWheel = masterWheel;
+		m_masterWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_masterWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+		m_slaveWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.follow(m_masterWheel);
 	}
 
 	/**
-	 * Calculates the speed of the shooting wheels
+	 * Calculates the speed of the wheels needed
 	 */
-	public void calculateSpeeds() {
-		// to calculate the different speeds of the right and left motors based on angle
+	public void calculateSpeed() {
+
 	}
 
 	/**
 	 * Fires the shooting wheels
 	 * 
-	 * @param rightSpeed - the speed of the right shooting wheel
-	 * @param leftSpeed  - the speed of the left shooting wheel
+	 * @param speed - the speed of the wheels thats needed
 	 */
-	public void fire(double rightSpeed, double leftSpeed) {
+	public void fire(double speed) {
 		Constants.m_RobotState.setState(States.SHOOTING);
-		m_rightWheel.set(rightSpeed);
-		m_leftWheel.set(leftSpeed);
+		m_masterWheel.set(speed);
 	}
 
 	/**
@@ -61,22 +56,15 @@ public class ShooterSubsystem extends SubsystemBase {
 	 * 
 	 */
 	public void stopFire() {
-		m_rightWheel.stopMotor();
-		m_leftWheel.stopMotor();
+		m_masterWheel.stopMotor();
 	}
 
 	/**
 	 * Resets the encoder for the right shooter wheel
 	 */
-	public void resetRightEncoder() {
-		m_rightEncoder.reset();
-	}
-
-	/**
-	 * Resets the encoder for the left shooter wheel
-	 */
-	public void resetLeftEncoder() {
-		m_leftEncoder.reset();
+	public void resetEncoder() {
+		m_masterWheel.setSelectedSensorPosition(0);
+		m_slaveWheel.setSelectedSensorPosition(0);
 	}
 
 	@Override
