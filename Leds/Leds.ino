@@ -1,8 +1,8 @@
 #include <FastLED.h>
 
-#define NUM_LEDS 120
+#define NUM_LEDS 178
 #define DATA_PIN 11
-#define FLASH_TIME 500
+#define FLASH_TIME 100
 #define COLOR_ORDER GRB
 #define MAX_BRIGHTNESS    255
 

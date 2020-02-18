@@ -40,6 +40,29 @@ public final class Constants {
 
     public static RobotState m_RobotState = new RobotState(null);
 
+    public final static class LedConstants {
+        public static final int LED_PORT = 0;
+        public static final int LED_AMOUNT = 178;
+        public static final double FLASH_TIME = 2;
+
+        public static enum Colors {
+            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(128, 0, 255), YELLOW(255, 255, 0), WHITE(255, 255, 255),
+            GREEN(0, 255, 0);
+
+            private int r, g, b;
+
+            private Colors(int r, int g, int b) {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+
+            public int[] getColor() {
+                return new int[] { r, g, b };
+            }
+        }
+    }
+
     public final static class IntakeConstants {
         public static final double INTAKE_MOTOR_SPEED = 1;
         public static final double BELT_MOTOR_SPEED = 1;
