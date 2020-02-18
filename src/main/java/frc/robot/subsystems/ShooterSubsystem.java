@@ -123,11 +123,22 @@ public class ShooterSubsystem extends PIDSubsystem {
 
 	}
 
+	/**
+	 * Sets the shooter to the desired speed
+	 * 
+	 * @param output   - calculated value to set the motor at
+	 * @param setpoint - the goal speed of the motor
+	 */
 	@Override
 	protected void useOutput(double output, double setpoint) {
 		setVoltage(Constants.ShooterConstants.ksVolts + output);
 	}
 
+	/**
+	 * Returns the RPM of the shooter
+	 * 
+	 * @return - the current RPM of the shooter
+	 */
 	@Override
 	protected double getMeasurement() {
 		return getCurrentRPM();
