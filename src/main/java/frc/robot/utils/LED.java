@@ -32,7 +32,7 @@ public class LED {
 
     private boolean shouldAlternate = false;
 
-    private int[] alternateColor = new int[] { 255, 255, 0 };
+    private int[] YELLOW = new int[] { 255, 255, 0 };
 
     public LED() {
         m_adressableLed.setLength(Constants.LedConstants.LED_AMOUNT);
@@ -82,14 +82,14 @@ public class LED {
         }
         if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
             // breathAlternateColor();
-            alternateColor();
+            alternateColor(Constants.LedConstants.Colors.YELLOW.getColor());
         }
         if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
             getAllianceColor();
             breathColor();
         }
-        if (Constants.m_RobotState.getCurrentState() == States.VISION) {
-            breathColor();
+        if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
+            breathAlternateColor(Constants.LedConstants.Colors.GREEN.getColor());
         }
     }
 
@@ -128,7 +128,7 @@ public class LED {
         }
     }
 
-    private void breathAlternateColor() {
+    private void breathAlternateColor(int[] alternateColor) {
         if (cycle % 180 == 0)
             shouldAlternate = !shouldAlternate;
         if (shouldAlternate)
@@ -137,7 +137,7 @@ public class LED {
 
     }
 
-    private void alternateColor() {
+    private void alternateColor(int[] alternateColor) {
         cycle = (cycle + 5) % 361;
         double wave = Math.sin(cycle * 0.0174533);
 
