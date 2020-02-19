@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
@@ -76,6 +77,14 @@ public class RobotContainer {
 				new Solenoid(Constants.IntakeConstants.R_SOLENOID), new Solenoid(Constants.IntakeConstants.L_SOLENOID),
 				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
 
+		// ---------- Run belts when the sensor detects a ball & stop when we don't -------
+		// m_intake.tof_sensor.trigger.whenActive(m_intake::startBelt, m_intake);
+		// m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
+
+		// m_shooter.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
+		// m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
+
+
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 
 	}
@@ -101,10 +110,13 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		if (selection <= 3)
+		if (selection <= 6)
 			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
-		else if (selection > 3 && selection < paths.length)
+		else if (selection > 7 && selection < paths.length)
 			return RunPath.getCommand(paths[selection], m_drive);
+		else if (selection == 7)
+			// Code for shoot and stay
+			return null;
 		else
 			return null;
 	}

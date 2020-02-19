@@ -7,14 +7,16 @@
 
 package frc.robot.sensors;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Rev2mTOF extends SubsystemBase {
+public class Rev2mTOF {
 
 	private Rev2mDistanceSensor sensor;
 	private double threshold;
@@ -22,6 +24,15 @@ public class Rev2mTOF extends SubsystemBase {
 	private boolean lastStatus = false;
 	private boolean currentStatus = false;
 	private boolean notChecked = true;
+
+	public Trigger trigger = new Trigger(new BooleanSupplier(){
+	
+		@Override
+		public boolean getAsBoolean() {
+			update();
+			return isDetecting();
+		}
+	});
 
 	/**
 	 * Create a Rev 2 Meter Distance Sensor Trigger
@@ -84,7 +95,6 @@ public class Rev2mTOF extends SubsystemBase {
 		currentStatus = isDetecting();
 		if (lastStatus && !currentStatus)
 			notChecked = true;
-
 	}
 
 	/**
@@ -99,11 +109,5 @@ public class Rev2mTOF extends SubsystemBase {
 	 */
 	public void disable() {
 		sensor.setEnabled(false);
-	}
-
-	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
-		update();
 	}
 }

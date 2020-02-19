@@ -44,11 +44,15 @@ public class Robot extends TimedRobot {
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);
-		m_chooser.addOption("Middle Trench", 1);
-		m_chooser.addOption("Close Trench", 2);
-		m_chooser.addOption("Shoot & Stay", 3);
-		m_chooser.addOption("Straight 2M", 4);
-		m_chooser.addOption("S Path", 5);
+		m_chooser.addOption("Far Rendevous", 1);
+		m_chooser.addOption("Middle Trench", 2);
+		m_chooser.addOption("Middle Rendevous", 3);
+		m_chooser.addOption("Close Trench", 4);
+		m_chooser.addOption("Close Rendevous", 5);
+		m_chooser.addOption("Ball Theif", 6);
+		m_chooser.addOption("Shoot & Stay", 7);
+		m_chooser.addOption("Straight 2M", 8);
+		m_chooser.addOption("S Path", 9);
 		m_chooser.addOption("Null", 99);
 
 		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
