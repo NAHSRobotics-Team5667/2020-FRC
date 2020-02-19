@@ -56,6 +56,7 @@ public class Robot extends TimedRobot {
 		m_chooser.addOption("Null", 99);
 
 		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+
 	}
 
 	/**

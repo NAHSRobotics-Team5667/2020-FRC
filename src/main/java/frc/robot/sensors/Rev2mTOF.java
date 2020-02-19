@@ -25,8 +25,8 @@ public class Rev2mTOF {
 	private boolean currentStatus = false;
 	private boolean notChecked = true;
 
-	public Trigger trigger = new Trigger(new BooleanSupplier(){
-	
+	public Trigger trigger = new Trigger(new BooleanSupplier() {
+
 		@Override
 		public boolean getAsBoolean() {
 			update();
