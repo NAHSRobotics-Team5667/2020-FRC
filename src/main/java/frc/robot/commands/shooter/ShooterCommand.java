@@ -5,55 +5,46 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
-public class LoadCommand extends CommandBase {
-	private IntakeSubsystem m_intake;
-	private int targetCount;
-	private int initialCount;
+public class ShooterCommand extends CommandBase {
+
+	private ShooterSubsystem m_shooter;
 
 	/**
-	 * Creates a new LoadCommand.
+	 * Creates a new ShooterCommand.
 	 */
-	public LoadCommand(IntakeSubsystem intake, int targetCount) {
+	public ShooterCommand(ShooterSubsystem shooter) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		m_intake = intake;
-		addRequirements(m_intake);
-		this.targetCount = targetCount;
+		m_shooter = shooter;
+		addRequirements(m_shooter);
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		initialCount = RobotContainer.ballCount;
-		m_intake.extendIntake();
+		m_shooter.stopFire();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (m_intake.tof_sensor.isDetecting()) {
-			m_intake.startBelt();
-		} else {
-			m_intake.stopBelt();
-		}
-
+		m_shooter.fire(RobotContainer.getController().getRightTrigger());
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		m_intake.stopBelt();
-		m_intake.retractIntake();
+		m_shooter.stopFire();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount - initialCount == targetCount;
+		return false;
 	}
 }

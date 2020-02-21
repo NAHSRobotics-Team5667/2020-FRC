@@ -5,63 +5,53 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.ShooterSubsystem;
 
-public class ShootAutonomously extends CommandBase {
-	private ShooterSubsystem m_shooter;
+public class IntakeCommand extends CommandBase {
 	private IntakeSubsystem m_intake;
-	private int targetRPM;
 
 	/**
-	 * Creates a new ShootAuto.
+	 * Creates a new IntakeCommand.
 	 */
-	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, int targetRPM) {
+	public IntakeCommand(IntakeSubsystem intake) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		m_shooter = shooter;
 		m_intake = intake;
-
-		addRequirements(m_shooter, m_intake);
-
-		this.targetRPM = targetRPM;
+		addRequirements(m_intake);
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		m_shooter.setSetpoint(targetRPM);
 		m_intake.retractIntake();
-		m_intake.stopBelt();
-		m_shooter.enable();
+		m_intake.startBelt();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (m_shooter.getController().atSetpoint()) {
-			m_intake.startBelt();
-		} else {
+		if (RobotContainer.getController().getBumper(RobotContainer.getController().getRightHand()))
+			m_intake.driveBelt(Constants.IntakeConstants.BELT_MOTOR_SPEED);
+		else if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand()))
+			m_intake.driveBelt(-Constants.IntakeConstants.BELT_MOTOR_SPEED);
+		else
 			m_intake.stopBelt();
-		}
 
-		if (m_shooter.tof_sensor.hasPassed())
-			RobotContainer.ballCount -= 1;
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
-		m_shooter.disable();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount == 0;
+		return false;
 	}
 }

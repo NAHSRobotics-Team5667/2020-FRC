@@ -15,6 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
@@ -23,6 +26,7 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -40,6 +44,11 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 	private ShuffleboardTab graphTab = Shuffleboard.getTab("Graphs");
 	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+
+	private NetworkTable live_dashboard = NetworkTableInstance.getDefault().getTable("Live_Dashboard");
+	private NetworkTableEntry robotX = live_dashboard.getEntry("robotX");
+	private NetworkTableEntry robotY = live_dashboard.getEntry("robotY");
+	private NetworkTableEntry robotHeading = live_dashboard.getEntry("robotHeading");
 
 	public static enum DriveModes {
 		MANUAL(0), AUTO(1);
@@ -105,6 +114,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
+		robotX.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getX()));
+		robotY.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getY()));
+		robotHeading.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getRotation().getRadians()));
 		outputTelemetry();
 	}
 

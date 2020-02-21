@@ -29,6 +29,8 @@ import frc.robot.RobotState.States;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
+import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.sensors.Rev2mTOF;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -71,12 +73,11 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
 
-		// m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
-		// new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
+		// m_wheel = new WheelSubsystem(new
+		// WPI_TalonFX(Constants.WheelConstants.MOTOR));
 
-		// m_shooter = new ShooterSubsystem(new
-		// WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-		// new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
+		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
+				new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
 
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
 				new Solenoid(Constants.IntakeConstants.R_SOLENOID), new Solenoid(Constants.IntakeConstants.L_SOLENOID),
@@ -89,10 +90,11 @@ public class RobotContainer {
 		}, m_intake);
 		m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
 		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
-
 		m_shooter.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
+		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
+		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
 
 	}
 

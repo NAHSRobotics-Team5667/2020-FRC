@@ -78,6 +78,15 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	/**
+	 * Drive the belt at a set speed
+	 * 
+	 * @param speed - The speed at which to run the belt
+	 */
+	public void driveBelt(double speed) {
+		m_belt.set(speed);
+	}
+
+	/**
 	 * Stop the belt
 	 */
 	public void stopBelt() {

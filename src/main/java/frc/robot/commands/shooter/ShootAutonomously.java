@@ -5,55 +5,60 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.intake;
+package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
-public class LoadCommand extends CommandBase {
+public class ShootAutonomously extends CommandBase {
+	private ShooterSubsystem m_shooter;
 	private IntakeSubsystem m_intake;
-	private int targetCount;
-	private int initialCount;
+	private int targetRPM;
 
 	/**
-	 * Creates a new LoadCommand.
+	 * Creates a new ShootAuto.
 	 */
-	public LoadCommand(IntakeSubsystem intake, int targetCount) {
+	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, int targetRPM) {
 		// Use addRequirements() here to declare subsystem dependencies.
+		m_shooter = shooter;
 		m_intake = intake;
-		addRequirements(m_intake);
-		this.targetCount = targetCount;
+
+		addRequirements(m_shooter, m_intake);
+
+		this.targetRPM = targetRPM;
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		initialCount = RobotContainer.ballCount;
-		m_intake.extendIntake();
+		m_shooter.setSetpoint(targetRPM);
+		m_intake.retractIntake();
+		m_intake.stopBelt();
+		m_shooter.enable();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (m_intake.tof_sensor.isDetecting()) {
+		if (m_shooter.getController().atSetpoint()) {
 			m_intake.startBelt();
 		} else {
 			m_intake.stopBelt();
 		}
-
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
-		m_intake.retractIntake();
+		m_shooter.disable();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount - initialCount == targetCount;
+		return RobotContainer.ballCount == 0;
 	}
 }
