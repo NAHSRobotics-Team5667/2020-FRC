@@ -7,36 +7,36 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.Rev2mDistanceSensor.Port;
-import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
-import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
-import frc.robot.RobotState.States;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.shooter.ShooterCommand;
-import frc.robot.sensors.Rev2mTOF;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WheelSubsystem;
 import frc.robot.utils.Controller;
+import frc.robot.utils.LimeLight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -65,9 +65,6 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
-		// Configure the button bindings
-		configureButtonBindings();
-
 		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.RIGHT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
@@ -76,19 +73,19 @@ public class RobotContainer {
 		// m_wheel = new WheelSubsystem(new
 		// WPI_TalonFX(Constants.WheelConstants.MOTOR));
 
-		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.RIGHT_SHOOTER_PORT),
-				new WPI_TalonFX(Constants.ShooterConstants.LEFT_SHOOTER_PORT));
+		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.PORT));
 
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
-				new Solenoid(Constants.IntakeConstants.R_SOLENOID), new Solenoid(Constants.IntakeConstants.L_SOLENOID),
+				new Solenoid(Constants.IntakeConstants.SOLENOID),
 				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
 
 		// ---------- Run belts when the sensor detects a ball & stop when we don't
-		m_intake.tof_sensor.trigger.whenActive(() -> {
-			if (ballCount < 5)
-				m_intake.startBelt();
-		}, m_intake);
-		m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
+		// m_intake.tof_sensor.trigger.whenActive(() -> {
+		// if (ballCount < 5)
+		// m_intake.startBelt();
+		// }, m_intake);
+		// m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
+
 		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
 		m_shooter.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
 
@@ -96,6 +93,24 @@ public class RobotContainer {
 		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
 		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
 
+		// Configure the button bindings
+		configureButtonBindings();
+
+		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
+
+			@Override
+			public double getAsDouble() {
+				return (double) ballCount;
+			}
+		});
+
+		Shuffleboard.getTab("Teleop").addNumber("Distance", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return LimeLight.getInstance().getDistance(Constants.VisionConstants.H1, Constants.VisionConstants.H2,
+						Constants.VisionConstants.A1, LimeLight.getInstance().getYAngle());
+			}
+		});
 	}
 
 	/**
@@ -144,6 +159,10 @@ public class RobotContainer {
 	 */
 	public void feedMotorSafety() {
 		m_drive.feedMotorSafety();
+	}
+
+	public void setNeutralMode(NeutralMode mode) {
+		m_drive.setNeutralMode(mode);
 	}
 
 }

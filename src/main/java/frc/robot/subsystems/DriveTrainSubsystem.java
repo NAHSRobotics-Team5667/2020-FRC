@@ -108,6 +108,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 		resetOdometry(new Pose2d());
+
+		outputTelemetry();
+
 	}
 
 	@Override
@@ -117,7 +120,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		robotX.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getX()));
 		robotY.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getY()));
 		robotHeading.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getRotation().getRadians()));
-		outputTelemetry();
 	}
 
 	/**

@@ -14,10 +14,14 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState.States;
 import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.DriveTrainSubsystem.DriveModes;
+import frc.robot.utils.LimeLight;
+import frc.robot.utils.PIDFController;
 
 public class DriveTrainCommand extends CommandBase {
 
 	private DriveTrainSubsystem m_drive;
+	private PIDFController angleController = new PIDFController("Angle", 0.01, 0, 0.0001, 0);
 
 	/**
 	 * Create a Drive Train Subsystem
@@ -39,11 +43,29 @@ public class DriveTrainCommand extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		if (RobotContainer.getController().getYButton()) {
+			m_drive.setDriveMode(DriveModes.AUTO);
+			LimeLight.getInstance().turnLightOn();
+		} else {
+			m_drive.setDriveMode(DriveModes.MANUAL);
+			LimeLight.getInstance().turnLightOff();
+		}
+
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
-		m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
-		// Drive using joysticks
-		m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
-				RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
+		if (m_drive.getDriveMode() == DriveModes.MANUAL) {
+			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
+			// Drive using joysticks
+			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
+					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
+		} else if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO
+				&& LimeLight.getInstance().hasValidTarget()) {
+
+			double angle = -angleController.calculate(LimeLight.getInstance().getXAngle());
+			double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) + angle;
+			m_drive.tankDriveVolts(output, -output);
+			m_drive.feedMotorSafety();
+
+		}
 
 		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
 				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING

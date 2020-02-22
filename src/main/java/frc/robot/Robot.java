@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -15,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LED;
+import frc.robot.utils.LimeLight;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,6 +45,7 @@ public class Robot extends TimedRobot {
 		// and put our
 		// autonomous chooser on the dashboard.
 		Shuffleboard.selectTab("Auto");
+		CameraServer.getInstance().startAutomaticCapture();
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);
@@ -56,6 +61,8 @@ public class Robot extends TimedRobot {
 		m_chooser.addOption("Null", 99);
 
 		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+
+		LimeLight.getInstance().turnLightOn();
 
 	}
 
@@ -91,6 +98,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		// LimeLight.getInstance().turnLightOff();
 	}
 
 	/**
@@ -127,6 +135,7 @@ public class Robot extends TimedRobot {
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}
+		m_robotContainer.setNeutralMode(NeutralMode.Coast);
 	}
 
 	/**
