@@ -86,6 +86,10 @@ public class ShooterSubsystem extends PIDSubsystem {
 		m_master.set(speed);
 	}
 
+	public void fireRPM(double desiredRPM) {
+		fire((desiredRPM * Constants.ShooterConstants.kvVoltSecondsPerMeter + Constants.ShooterConstants.ksVolts) / 12);
+	}
+
 	/**
 	 * Fire the shooting wheels using specific voltage
 	 * 

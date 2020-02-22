@@ -20,7 +20,7 @@ import frc.robot.sensors.Rev2mTOF;
 public class IntakeSubsystem extends SubsystemBase {
 
 	private WPI_VictorSPX m_intake;
-	private Solenoid m_solenoid;
+	private Solenoid m_solenoid, m_solenoid2;
 	private WPI_VictorSPX m_belt;
 	public Rev2mTOF tof_sensor;
 
@@ -36,7 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @param lSolenoid - The left solenoid
 	 * @param belt      - The motor that controls the belt
 	 */
-	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid, WPI_VictorSPX belt) {
+	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid, Solenoid solenoid2, WPI_VictorSPX belt) {
 		m_intake = intake;
 		m_belt = belt;
 
@@ -44,6 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_belt.setNeutralMode(NeutralMode.Brake);
 
 		m_solenoid = solenoid;
+		m_solenoid2 = solenoid2;
 
 		// tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches,
 		// RangeProfile.kHighAccuracy,

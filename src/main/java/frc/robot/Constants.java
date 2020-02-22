@@ -52,6 +52,7 @@ public final class Constants {
         public static final int BELT_PORT = 2;
 
         public static final int SOLENOID_PORT = 0;
+        public static final int SOLENOID_2_PORT = 7;
     }
 
     public final static class ShooterConstants {
@@ -62,7 +63,9 @@ public final class Constants {
 
         public static final int IDLE_VOLTAGE = 3;
 
-        public static final double ksVolts = 0;
+        public static final double ksVolts = 0.44;
+        public static final double kvVoltSecondsPerMeter = 5.82e-8;
+        public static final double kaVoltSecondsSquaredPerMeter = 1.13e-8;
         public static final double kP = 0.0001;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (1 / 2048) * 2;
