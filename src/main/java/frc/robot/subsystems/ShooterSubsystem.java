@@ -7,6 +7,7 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -23,22 +24,21 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
 import frc.robot.sensors.Rev2mTOF;
 
-public class ShooterSubsystem extends PIDSubsystem {
+public class ShooterSubsystem extends SubsystemBase {
 
 	private WPI_TalonFX m_master;
-	public Rev2mTOF tof_sensor = new Rev2mTOF("Shooter", Port.kOnboard, Unit.kInches, RangeProfile.kHighAccuracy,
-			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
-
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
-	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
 
 	private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(Constants.ShooterConstants.ksVolts,
-			Constants.ShooterConstants.OkvVoltSecondsPerMeter,
-			Constants.ShooterConstants.OkaVoltSecondsSquaredPerMeter);
+			Constants.ShooterConstants.kvVoltSecondsPerMeter, Constants.ShooterConstants.kaVoltSecondsSquaredPerMeter);
+
+	private PIDController m_controller = new PIDController(Constants.ShooterConstants.kP, Constants.ShooterConstants.kI,
+			Constants.ShooterConstants.kD);
 
 	/**
 	 * Creates a shooter subsystem
@@ -47,17 +47,15 @@ public class ShooterSubsystem extends PIDSubsystem {
 	 */
 
 	public ShooterSubsystem(WPI_TalonFX master) {
-		super(new PIDController(Constants.ShooterConstants.kP, 0, Constants.ShooterConstants.kD));
 
 		m_master = master;
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
+		TalonFXConfiguration configuration = new TalonFXConfiguration();
+		configuration.openloopRamp = 2;
 		m_master.setSelectedSensorPosition(0);
 
 		setNeutralMode(NeutralMode.Coast);
-
-		tof_sensor.enable();
-		tof_sensor.getSensor().setAutomaticMode(true);
 
 		outputTelemetry();
 	}
@@ -82,9 +80,9 @@ public class ShooterSubsystem extends PIDSubsystem {
 	}
 
 	public void fireRPM(double desiredRPM) {
-		double val = ff.calculate(desiredRPM);
-		fire(val);
-		System.out.println(val);
+		m_controller.setSetpoint(desiredRPM);
+		double ff = Constants.ShooterConstants.ksVolts + desiredRPM * Constants.ShooterConstants.kvVoltSecondsPerMeter;
+		setVoltage(m_controller.calculate(getCurrentRPM()) + ff);
 	}
 
 	/**
@@ -119,6 +117,10 @@ public class ShooterSubsystem extends PIDSubsystem {
 		return -m_master.getSelectedSensorVelocity(0) * Constants.ShooterConstants.ENCODER_CONSTANT * 600.0;
 	}
 
+	public void resetIError() {
+		m_controller.reset();
+	}
+
 	/**
 	 * Output the shooter's telemetry
 	 */
@@ -128,31 +130,7 @@ public class ShooterSubsystem extends PIDSubsystem {
 			public double getAsDouble() {
 				return getCurrentRPM();
 			}
-		}); // .withWidget(BuiltInWidgets.kGraph);
-		// autoTab.add("Shooter RPM",
-		// getCurrentRPM()).withWidget(BuiltInWidgets.kGraph);
+		}).withWidget(BuiltInWidgets.kGraph);
 
 	}
-
-	/**
-	 * Sets the shooter to the desired speed
-	 * 
-	 * @param output   - calculated value to set the motor at
-	 * @param setpoint - the goal speed of the motor
-	 */
-	@Override
-	protected void useOutput(double output, double setpoint) {
-		setVoltage(Constants.ShooterConstants.ksVolts + output);
-	}
-
-	/**
-	 * Returns the RPM of the shooter
-	 * 
-	 * @return - the current RPM of the shooter
-	 */
-	@Override
-	protected double getMeasurement() {
-		return getCurrentRPM();
-	}
-
 }

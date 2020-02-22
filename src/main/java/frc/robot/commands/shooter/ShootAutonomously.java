@@ -33,27 +33,27 @@ public class ShootAutonomously extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		m_shooter.setSetpoint(targetRPM);
+		// m_shooter.setSetpoint(targetRPM);
 		m_intake.retractIntake();
 		m_intake.stopBelt();
-		m_shooter.enable();
+		// m_shooter.enable();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (m_shooter.getController().atSetpoint()) {
-			m_intake.startBelt();
-		} else {
-			m_intake.stopBelt();
-		}
+		// if (m_shooter.getController().atSetpoint()) {
+		// m_intake.startBelt();
+		// } else {
+		// m_intake.stopBelt();
+		// }
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
-		m_shooter.disable();
+		// m_shooter.disable();
 	}
 
 	// Returns true when the command should end.

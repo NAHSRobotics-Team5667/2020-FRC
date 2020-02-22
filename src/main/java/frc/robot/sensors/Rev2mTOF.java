@@ -52,6 +52,8 @@ public class Rev2mTOF {
 		sensor = new Rev2mDistanceSensor(port, units, rangeProfile);
 		this.threshold = threshold;
 		this.name = name;
+		this.sensor.setAutomaticMode(true);
+		this.sensor.setEnabled(true);
 		outputTelemetry();
 	}
 

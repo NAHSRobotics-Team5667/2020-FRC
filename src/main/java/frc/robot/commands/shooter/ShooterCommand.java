@@ -7,6 +7,8 @@
 
 package frc.robot.commands.shooter;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -15,6 +17,8 @@ import frc.robot.utils.LimeLight;
 
 public class ShooterCommand extends CommandBase {
 	private ShooterSubsystem m_shooter;
+	private PIDController pidController = new PIDController(Constants.ShooterConstants.kP, 0,
+			Constants.ShooterConstants.kD);
 
 	/**
 	 * Creates a new ShooterCommand.
@@ -23,6 +27,7 @@ public class ShooterCommand extends CommandBase {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
 		addRequirements(m_shooter);
+		Shuffleboard.getTab("Teleop").add("Shooter PID", pidController);
 	}
 
 	// Called when the command is initially scheduled.
@@ -36,11 +41,14 @@ public class ShooterCommand extends CommandBase {
 	public void execute() {
 		if (RobotContainer.getController().getXButton()) {
 			if (LimeLight.getInstance().getPipeIndex() == 0) {
-				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
+				// pidController.setSetpoint(Constants.ShooterConstants.AUTO_LINE_RPM);
+				m_shooter.fireRPM(6000);
 			} else {
+				// pidController.setSetpoint(Constants.ShooterConstants.TRENCH_RPM);
 				m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
 			}
 		} else {
+			m_shooter.resetIError();
 			m_shooter.fire(RobotContainer.getController().getRightTrigger());
 		}
 	}

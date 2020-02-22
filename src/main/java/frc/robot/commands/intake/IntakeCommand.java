@@ -41,6 +41,12 @@ public class IntakeCommand extends CommandBase {
 		else
 			m_intake.stopBelt();
 
+		// if (RobotContainer.getController().getLeftTrigger() > .5) {
+		// m_intake.driveIntake(RobotContainer.getController().getLeftTrigger());
+		// } else {
+		// m_intake.stopIntakeMotor();
+		// }
+
 	}
 
 	// Called once the command ends or is interrupted.

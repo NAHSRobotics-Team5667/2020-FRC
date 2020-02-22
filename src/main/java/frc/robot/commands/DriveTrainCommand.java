@@ -21,7 +21,7 @@ import frc.robot.utils.PIDFController;
 public class DriveTrainCommand extends CommandBase {
 
 	private DriveTrainSubsystem m_drive;
-	private PIDFController angleController = new PIDFController("Angle", 0.009, 0, 0, 0);
+	private PIDFController angleController = new PIDFController("Angle", 0.01, 0, 0, 0);
 
 	/**
 	 * Create a Drive Train Subsystem
@@ -38,6 +38,7 @@ public class DriveTrainCommand extends CommandBase {
 	@Override
 	public void initialize() {
 		m_drive.stop();
+		LimeLight.getInstance().turnLightOn();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -45,10 +46,8 @@ public class DriveTrainCommand extends CommandBase {
 	public void execute() {
 		if (RobotContainer.getController().getYButton()) {
 			m_drive.setDriveMode(DriveModes.AUTO);
-			LimeLight.getInstance().turnLightOn();
 		} else {
 			m_drive.setDriveMode(DriveModes.MANUAL);
-			LimeLight.getInstance().turnLightOff();
 		}
 
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();

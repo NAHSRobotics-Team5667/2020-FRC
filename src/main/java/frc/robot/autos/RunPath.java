@@ -24,7 +24,6 @@ public class RunPath {
     public static RamseteCommand getCommand(Trajectory path, DriveTrainSubsystem drive, boolean isReverse) {
         if (isReverse)
             drive.reverseEncoders();
-
         drive.resetOdometry(path.getInitialPose());
         drive.setNeutralMode(NeutralMode.Coast);
         return new RamseteCommand(path, drive::getPose,
@@ -34,6 +33,6 @@ public class RunPath {
                 DriveConstants.kDriveKinematics, drive::getWheelSpeeds, AutoConstants.L_CONTROLLER,
                 AutoConstants.R_CONTROLLER,
                 // RamseteCommand passes volts to the callback
-                (!isReverse ? drive::tankDriveVolts : drive::tankDriveVoltsReverse), drive);
+                (!isReverse ? drive::tankDriveVoltsReverse : drive::tankDriveVolts), drive);
     }
 }

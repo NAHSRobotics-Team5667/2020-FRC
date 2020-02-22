@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
@@ -52,8 +53,10 @@ public class RobotContainer {
 	private static Controller m_controller = new Controller(Constants.ControllerConstants.CONTROLLER_PORT);
 
 	private Trajectory[] paths = new Trajectory[] { PATHS.PathWeaver.getTrajectory("FAR_TRENCH"),
-			PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"), null,
-			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH") };
+			PATHS.PathWeaver.getTrajectory("FAR_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"),
+			PATHS.PathWeaver.getTrajectory("MIDDLE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
+			PATHS.PathWeaver.getTrajectory("CLOSE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("BALL_THIEF"), null,
+			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, null };
 
 	public boolean done = false;
 	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
@@ -85,9 +88,6 @@ public class RobotContainer {
 		// ---------- Run belts when the sensor detects a ball & stop when we don't
 		m_intake.tof_sensor.trigger.whenActive(m_intake::startBelt, m_intake);
 		m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
-
-		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
-		m_shooter.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
@@ -141,15 +141,18 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		if (selection <= 6)
-			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
-		else if (selection > 7 && selection < paths.length)
-			return RunPath.getCommand(paths[selection], m_drive, true);
-		else if (selection == 7)
-			// Code for shoot and stay
-			return null;
-		else
-			return null;
+		// if (selection <= 6)
+		// return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake,
+		// m_shooter);
+		// else if (selection > 7 && selection < paths.length)
+		// return RunPath.getCommand(paths[selection], m_drive, false).andThen(new
+		// RunCommand(m_drive::stop));
+		// else if (selection == 7)
+		// // Code for shoot and stay
+		// return null;
+		// else
+		// return null;
+		return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
 	}
 
 	/**

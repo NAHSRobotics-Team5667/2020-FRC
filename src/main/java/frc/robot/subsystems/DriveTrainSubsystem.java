@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
@@ -223,8 +224,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		SmartDashboard.putNumber("raw_lv", leftVolts);
 		SmartDashboard.putNumber("raw_rv", -rightVolts);
 
-		m_leftMaster.set(rightVolts);
-		m_rightMaster.set(-leftVolts);
+		m_leftMaster.set(-rightVolts);
+		m_rightMaster.set(leftVolts);
 	}
 
 	/**
@@ -257,7 +258,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return left encoder position
 	 */
 	public double getLeftEncoderPosition() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT
+				* DriveConstants.MAG;
 	}
 
 	/**
@@ -266,7 +268,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return right encoder position
 	 */
 	public double getRightEncoderPosition() {
-		return -m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
+		return -m_rightMaster.getSelectedSensorPosition(0) * DriveConstants.ENCODER_CONSTANT
+				* Constants.DriveConstants.MAG;
 	}
 
 	/**
@@ -275,7 +278,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the left encoder velocity in m/s
 	 */
 	public double getLeftEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * DriveConstants.ENCODER_CONSTANT * 10
+				* Constants.DriveConstants.MAG;
 	}
 
 	/**
@@ -284,7 +288,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
+		return -m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10
+				* DriveConstants.MAG;
 	}
 
 	/**

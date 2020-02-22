@@ -51,9 +51,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		m_solenoid = solenoid;
 		m_solenoid2 = solenoid2;
-
-		tof_sensor.enable();
-		tof_sensor.getSensor().setAutomaticMode(true);
 	}
 
 	@Override
@@ -102,6 +99,14 @@ public class IntakeSubsystem extends SubsystemBase {
 	 */
 	public void stopBelt() {
 		m_belt.stopMotor();
+	}
+
+	public void driveIntake(double speed) {
+		m_intake.set(-Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
+	}
+
+	public void stopIntakeMotor() {
+		m_intake.stopMotor();
 	}
 
 	/**

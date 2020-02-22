@@ -82,16 +82,15 @@ public final class Constants {
         public static final int PORT = 4;
 
         public static final double AUTO_LINE_RPM = 4000;
-        public static final double TRENCH_RPM = 7000;
+        public static final double TRENCH_RPM = 6000;
 
         public static final int IDLE_VOLTAGE = 3;
 
-        public static final double ksVolts = 0.44;
-        public static final double OkvVoltSecondsPerMeter = 5.82e-8;
-        public static final double OkaVoltSecondsSquaredPerMeter = 1.13e-8;
-        public static final double kvVoltSecondsPerMeter = 9e-4; // 5.82e-8;
-        public static final double kaVoltSecondsSquaredPerMeter = 1.13e-4; // 1.13e-8;
-        public static final double kP = 0.0001;
+        public static final double ksVolts = 1;
+        public static final double kvVoltSecondsPerMeter = 0.0613 / 70;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.00831 / 100;
+        public static final double kP = 0.385 / 120;
+        public static final double kI = kP / 4;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
     }
@@ -117,7 +116,7 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static double MAG = 1;
+        public static double MAG = -1;
         public static final double ENCODER_CONSTANT = MAG * (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = true;
 
@@ -197,8 +196,9 @@ public final class Constants {
                 try {
                     return TrajectoryUtil
                             .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/" + path + ".wpilib.json"));
-                } catch (IOException e) {
-                    System.out.println("CANNOT READ Trajectory");
+                } catch (Exception e) {
+                    System.out.println("CANNOT READ Trajectory - " + path);
+                    System.out.println("WITH ERROR: " + e.toString());
                     return null;
                 }
             }

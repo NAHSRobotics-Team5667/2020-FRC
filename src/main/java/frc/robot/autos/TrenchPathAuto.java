@@ -33,8 +33,8 @@ public class TrenchPathAuto {
 
 		ParallelCommandGroup phase2 = new ParallelCommandGroup(
 				new Command[] { ramseteCommand, new InstantCommand(() -> {
-					shooter.setSetpoint(ShooterConstants.TRENCH_RPM);
-					shooter.enable();
+					// shooter.setSetpoint(ShooterConstants.TRENCH_RPM);
+					// shooter.enable();
 				}), new LoadCommand(intake, 3) });
 
 		ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, shooter, intake, ShooterConstants.TRENCH_RPM);
