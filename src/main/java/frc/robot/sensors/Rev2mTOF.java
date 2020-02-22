@@ -7,14 +7,19 @@
 
 package frc.robot.sensors;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Rev2mTOF extends SubsystemBase {
+public class Rev2mTOF {
 
 	private Rev2mDistanceSensor sensor;
 	private double threshold;
@@ -23,6 +28,19 @@ public class Rev2mTOF extends SubsystemBase {
 	private boolean currentStatus = false;
 	private boolean notChecked = true;
 
+	public Trigger trigger = new Trigger(new BooleanSupplier() {
+
+		@Override
+		public boolean getAsBoolean() {
+			update();
+			return isDetecting();
+		}
+	});
+
+	private String name;
+
+	private ShuffleboardTab tab = Shuffleboard.getTab("Teleop");
+
 	/**
 	 * Create a Rev 2 Meter Distance Sensor Trigger
 	 * 
@@ -30,9 +48,11 @@ public class Rev2mTOF extends SubsystemBase {
 	 * @param units        - The units to measure the sensor in
 	 * @param rangeProfile - Range Mode
 	 */
-	public Rev2mTOF(Port port, Unit units, RangeProfile rangeProfile, double threshold) {
+	public Rev2mTOF(String name, Port port, Unit units, RangeProfile rangeProfile, double threshold) {
 		sensor = new Rev2mDistanceSensor(port, units, rangeProfile);
 		this.threshold = threshold;
+		this.name = name;
+		outputTelemetry();
 	}
 
 	/**
@@ -84,7 +104,6 @@ public class Rev2mTOF extends SubsystemBase {
 		currentStatus = isDetecting();
 		if (lastStatus && !currentStatus)
 			notChecked = true;
-
 	}
 
 	/**
@@ -101,9 +120,12 @@ public class Rev2mTOF extends SubsystemBase {
 		sensor.setEnabled(false);
 	}
 
-	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
-		update();
+	public void outputTelemetry() {
+		tab.addNumber(name + "_REV", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return sensor.getRange();
+			}
+		});
 	}
 }

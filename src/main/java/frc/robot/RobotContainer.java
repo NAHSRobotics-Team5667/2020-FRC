@@ -7,16 +7,20 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -27,12 +31,14 @@ import frc.robot.autos.RunPath;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
+import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.WheelSubsystem;
 import frc.robot.utils.Controller;
+import frc.robot.utils.LimeLight;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -66,20 +72,45 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
 
-		// m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR),
-		// new ColorSensorV3(Constants.WheelConstants.COLOR_SENSOR_PORT));
+		// m_wheel = new WheelSubsystem(new
+		// WPI_TalonFX(Constants.WheelConstants.MOTOR));
 
 		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.PORT));
 
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
-				new Solenoid(Constants.IntakeConstants.SOLENOID_PORT));
+				new Solenoid(Constants.IntakeConstants.SOLENOID_PORT),
+				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
+				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
+
+		// ---------- Run belts when the sensor detects a ball & stop when we don't
+		m_intake.tof_sensor.trigger.whenActive(m_intake::startBelt, m_intake);
+		m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
+
+		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
+		m_shooter.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
+		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
 		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
 
 		// Configure the button bindings
 		configureButtonBindings();
 
+		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
+
+			@Override
+			public double getAsDouble() {
+				return (double) ballCount;
+			}
+		});
+
+		Shuffleboard.getTab("Teleop").addNumber("Distance", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return LimeLight.getInstance().getDistance(Constants.VisionConstants.H1, Constants.VisionConstants.H2,
+						Constants.VisionConstants.A1, LimeLight.getInstance().getYAngle());
+			}
+		});
 	}
 
 	/**
@@ -91,11 +122,17 @@ public class RobotContainer {
 	private void configureButtonBindings() {
 		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
 		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
-		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
+		// Button x = new JoystickButton(getController(),
+		// Constants.ControllerConstants.BUTTON_X_PORT);
 		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
+		Button start = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_START_PORT);
+		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
 		a.whenPressed(() -> m_intake.toggle());
 		y.whenPressed(new AlignCommand(m_drive));
+		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
+		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));
+
 	}
 
 	/**
@@ -104,14 +141,13 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-
-		if (selection <= 3)
+		if (selection <= 6)
 			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
-		else if (selection > 3 && selection < paths.length)
-			return RunPath.getCommand(paths[selection], m_drive, true).andThen(() -> {
-				m_drive.setNeutralMode(NeutralMode.Brake);
-				m_drive.drive(0, 0, false);
-			});
+		else if (selection > 7 && selection < paths.length)
+			return RunPath.getCommand(paths[selection], m_drive, true);
+		else if (selection == 7)
+			// Code for shoot and stay
+			return null;
 		else
 			return null;
 	}
@@ -130,6 +166,10 @@ public class RobotContainer {
 	 */
 	public void feedMotorSafety() {
 		m_drive.feedMotorSafety();
+	}
+
+	public void setNeutralMode(NeutralMode mode) {
+		m_drive.setNeutralMode(mode);
 	}
 
 }

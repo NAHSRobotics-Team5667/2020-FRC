@@ -8,8 +8,10 @@
 package frc.robot.commands.shooter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utils.LimeLight;
 
 public class ShooterCommand extends CommandBase {
 	private ShooterSubsystem m_shooter;
@@ -32,7 +34,15 @@ public class ShooterCommand extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		m_shooter.fire(-RobotContainer.getController().getRightTrigger());
+		if (RobotContainer.getController().getXButton()) {
+			if (LimeLight.getInstance().getPipeIndex() == 0) {
+				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
+			} else {
+				m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
+			}
+		} else {
+			m_shooter.fire(RobotContainer.getController().getRightTrigger());
+		}
 	}
 
 	// Called once the command ends or is interrupted.

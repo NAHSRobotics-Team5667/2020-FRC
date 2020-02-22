@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -15,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.utils.LED;
+import frc.robot.utils.LimeLight;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,17 +45,25 @@ public class Robot extends TimedRobot {
 		// and put our
 		// autonomous chooser on the dashboard.
 		Shuffleboard.selectTab("Auto");
+		CameraServer.getInstance().startAutomaticCapture();
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);
-		m_chooser.addOption("Middle Trench", 5); // 1
-		m_chooser.addOption("Close Trench", 2);
-		m_chooser.addOption("Shoot & Stay", 3);
-		m_chooser.addOption("Straight 2M", 4);
-		m_chooser.addOption("S Path", 5);
+		m_chooser.addOption("Far Rendevous", 1);
+		m_chooser.addOption("Middle Trench", 2);
+		m_chooser.addOption("Middle Rendevous", 3);
+		m_chooser.addOption("Close Trench", 4);
+		m_chooser.addOption("Close Rendevous", 5);
+		m_chooser.addOption("Ball Theif", 6);
+		m_chooser.addOption("Shoot & Stay", 7);
+		m_chooser.addOption("Straight 2M", 8);
+		m_chooser.addOption("S Path", 9);
 		m_chooser.addOption("Null", 99);
 
 		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+
+		LimeLight.getInstance().turnLightOff();
+
 	}
 
 	/**
@@ -86,6 +98,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
+		LimeLight.getInstance().turnLightOff();
 	}
 
 	/**
@@ -122,6 +135,7 @@ public class Robot extends TimedRobot {
 		if (m_autonomousCommand != null) {
 			m_autonomousCommand.cancel();
 		}
+		m_robotContainer.setNeutralMode(NeutralMode.Coast);
 	}
 
 	/**

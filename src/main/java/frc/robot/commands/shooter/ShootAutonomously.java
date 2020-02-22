@@ -15,12 +15,12 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class ShootAutonomously extends CommandBase {
 	private ShooterSubsystem m_shooter;
 	private IntakeSubsystem m_intake;
-	private int targetRPM;
+	private double targetRPM;
 
 	/**
 	 * Creates a new ShootAuto.
 	 */
-	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, int targetRPM) {
+	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, double targetRPM) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
 		m_intake = intake;
@@ -47,9 +47,6 @@ public class ShootAutonomously extends CommandBase {
 		} else {
 			m_intake.stopBelt();
 		}
-
-		if (m_shooter.tof_sensor.hasPassed())
-			RobotContainer.ballCount -= 1;
 	}
 
 	// Called once the command ends or is interrupted.

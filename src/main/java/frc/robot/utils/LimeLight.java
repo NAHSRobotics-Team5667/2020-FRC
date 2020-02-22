@@ -345,7 +345,7 @@ public class LimeLight {
      * @return The distance between the robot and the limelight
      */
     public double getDistance(double h1, double h2, double a1, double a2) {
-        return (h2 - h1) / Math.tan(a1 + a2);
+        return (h2 - h1) / Math.abs(Math.tan(a1 + a2));
     }
 
     /**

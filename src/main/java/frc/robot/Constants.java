@@ -40,9 +40,32 @@ public final class Constants {
 
     public static RobotState m_RobotState = new RobotState(null);
 
+    public final static class LedConstants {
+        public static final int LED_PORT = 0;
+        public static final int LED_AMOUNT = 178;
+        public static final double FLASH_TIME = 2;
+
+        public static enum Colors {
+            RED(255, 0, 0), BLUE(0, 0, 255), PURPLE(25, 0, 51), YELLOW(255, 255, 0), WHITE(255, 255, 255),
+            GREEN(0, 255, 0), MAROON(69, 0, 0), GOLD(128, 128, 0), PINK(255, 0, 178);
+
+            private int r, g, b;
+
+            private Colors(int r, int g, int b) {
+                this.r = r;
+                this.g = g;
+                this.b = b;
+            }
+
+            public int[] getColor() {
+                return new int[] { r, g, b };
+            }
+        }
+    }
+
     public final static class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = 1;
-        public static final double BELT_MOTOR_SPEED = 1;
+        public static final double INTAKE_MOTOR_SPEED = .8;
+        public static final double BELT_MOTOR_SPEED = .5;
 
         public static final boolean SOLENOID_FIRED = true;
         public static final double SENSOR_RANGE_INCHES = 6;
@@ -58,17 +81,19 @@ public final class Constants {
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final int AUTO_LINE_RPM = 4000;
-        public static final int TRENCH_RPM = 7000;
+        public static final double AUTO_LINE_RPM = 4000;
+        public static final double TRENCH_RPM = 7000;
 
         public static final int IDLE_VOLTAGE = 3;
 
         public static final double ksVolts = 0.44;
-        public static final double kvVoltSecondsPerMeter = 5.82e-8;
-        public static final double kaVoltSecondsSquaredPerMeter = 1.13e-8;
+        public static final double OkvVoltSecondsPerMeter = 5.82e-8;
+        public static final double OkaVoltSecondsSquaredPerMeter = 1.13e-8;
+        public static final double kvVoltSecondsPerMeter = 9e-4; // 5.82e-8;
+        public static final double kaVoltSecondsSquaredPerMeter = 1.13e-4; // 1.13e-8;
         public static final double kP = 0.0001;
         public static final double kD = 0;
-        public static final double ENCODER_CONSTANT = (1 / 2048) * 2;
+        public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
     }
 
     public final static class WheelConstants {
@@ -82,9 +107,9 @@ public final class Constants {
     }
 
     public final static class VisionConstants {
-        public static final double H1 = 0; // Height of limelight from the ground
-        public static final double H2 = 0; // Height of target
-        public static final double A1 = 0; // Limelight mounting angle
+        public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
+        public static final double H2 = Units.inchesToMeters(98.25); // Height of target
+        public static final double A1 = 10; // Limelight mounting angle
     }
 
     public final static class DriveConstants {

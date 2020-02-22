@@ -4,6 +4,7 @@ import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
@@ -22,11 +23,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	private WPI_VictorSPX m_intake;
 	private Solenoid m_solenoid, m_solenoid2;
 	private WPI_VictorSPX m_belt;
-	public Rev2mTOF tof_sensor;
+	public Rev2mTOF tof_sensor = new Rev2mTOF("Intake", Port.kMXP, Unit.kInches, RangeProfile.kHighAccuracy,
+			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
 
-	private boolean m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
+	private boolean m_status = false;
 
-	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
 
 	/**
 	 * Subsystem that handles the intake functionality
@@ -40,38 +42,18 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_intake = intake;
 		m_belt = belt;
 
+		VictorSPXConfiguration config = new VictorSPXConfiguration();
+
+		m_intake.configAllSettings(config);
+
 		m_intake.setNeutralMode(NeutralMode.Brake);
 		m_belt.setNeutralMode(NeutralMode.Brake);
 
 		m_solenoid = solenoid;
 		m_solenoid2 = solenoid2;
 
-		// tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches,
-		// RangeProfile.kHighAccuracy,
-		// Constants.IntakeConstants.SENSOR_RANGE_INCHES);
-		// tof_sensor.enable();
-
-		retractIntake();
-		outputTelemetry();
-	}
-
-	/**
-	 * Subsystem that handles the intake functionality
-	 * 
-	 * @param intake   - The intake motor
-	 * @param solenoid - The solenoid
-	 */
-	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid) {
-		m_intake = intake;
-
-		m_intake.setNeutralMode(NeutralMode.Brake);
-
-		m_solenoid = solenoid;
-
-		// tof_sensor = new Rev2mTOF(Port.kOnboard, Unit.kInches,
-		// RangeProfile.kHighAccuracy,
-		// Constants.IntakeConstants.SENSOR_RANGE_INCHES);
-		// tof_sensor.enable();
+		tof_sensor.enable();
+		tof_sensor.getSensor().setAutomaticMode(true);
 	}
 
 	@Override
@@ -84,6 +66,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 */
 	public void extendIntake() {
 		m_solenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_solenoid2.set(Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.set(ControlMode.PercentOutput, Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
 		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
 	}
@@ -93,6 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 */
 	public void retractIntake() {
 		m_solenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
+		m_solenoid2.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.stopMotor();
 		m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
 	}
@@ -102,6 +86,15 @@ public class IntakeSubsystem extends SubsystemBase {
 	 */
 	public void startBelt() {
 		m_belt.set(Constants.IntakeConstants.BELT_MOTOR_SPEED);
+	}
+
+	/**
+	 * Drive the belt at a set speed
+	 * 
+	 * @param speed - The speed at which to run the belt
+	 */
+	public void driveBelt(double speed) {
+		m_belt.set(speed);
 	}
 
 	/**

@@ -32,7 +32,7 @@ public class ShootAndHoldCommand extends SequentialCommandGroup {
    * @param targetRPM - The target RPM when shooting
    */
   public ShootAndHoldCommand(DriveTrainSubsystem drive, ShooterSubsystem shooter, IntakeSubsystem intake,
-      int targetRPM) {
+      double targetRPM) {
     // Align -> Hold -> Shoot
     super(new AlignCommand(drive),
         new HoldPositionCommand(drive).alongWith(new ShootAutonomously(shooter, intake, targetRPM)));
