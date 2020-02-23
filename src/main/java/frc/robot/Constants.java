@@ -64,11 +64,11 @@ public final class Constants {
     }
 
     public final static class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = .8;
-        public static final double BELT_MOTOR_SPEED = .5;
+        public static final double INTAKE_MOTOR_SPEED = .9;
+        public static final double BELT_MOTOR_SPEED = .25;
 
         public static final boolean SOLENOID_FIRED = true;
-        public static final double SENSOR_RANGE_INCHES = 6;
+        public static final double SENSOR_RANGE_INCHES = 5;
         public static final int START_BALL_COUNT = 3;
 
         public static final int MOTOR_PORT = 1;
@@ -81,8 +81,8 @@ public final class Constants {
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final double AUTO_LINE_RPM = 4000;
-        public static final double TRENCH_RPM = 6000;
+        public static final double AUTO_LINE_RPM = 3750;
+        public static final double TRENCH_RPM = 4250;
 
         public static final int IDLE_VOLTAGE = 3;
 
@@ -93,11 +93,13 @@ public final class Constants {
         public static final double kI = kP / 4;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
+        public static final double SPIKE = 40;
+        public static final double SPIKE_TIME = 2;
     }
 
     public final static class WheelConstants {
         public static final double ROTATIONS = 2.7 * 3;
-        public static final int MOTOR = 4;
+        public static final int MOTOR = 5;
         public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
@@ -109,6 +111,9 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
+        public static final double kP = 0.02;
+        public static final double kI = kP / 4;
+        public static final double kD = 0;
     }
 
     public final static class DriveConstants {

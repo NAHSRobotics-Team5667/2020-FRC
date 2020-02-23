@@ -14,20 +14,17 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.revrobotics.Rev2mDistanceSensor.Port;
-import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
-import com.revrobotics.Rev2mDistanceSensor.Unit;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
 import frc.robot.RobotState.States;
-import frc.robot.sensors.Rev2mTOF;
 
 public class ShooterSubsystem extends SubsystemBase {
 
@@ -40,6 +37,16 @@ public class ShooterSubsystem extends SubsystemBase {
 	private PIDController m_controller = new PIDController(Constants.ShooterConstants.kP, Constants.ShooterConstants.kI,
 			Constants.ShooterConstants.kD);
 
+	public Timer timer = new Timer();
+
+	public Trigger currentSpike = new Trigger(new BooleanSupplier() {
+		@Override
+		public boolean getAsBoolean() {
+			return m_master.getStatorCurrent() > Constants.ShooterConstants.SPIKE
+					&& timer.hasPeriodPassed(Constants.ShooterConstants.SPIKE_TIME);
+		}
+	});
+
 	/**
 	 * Creates a shooter subsystem
 	 * 
@@ -47,17 +54,21 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 
 	public ShooterSubsystem(WPI_TalonFX master) {
-
-		m_master = master;
+		this.m_master = master;
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = 2;
+		configuration.openloopRamp = 4;
 		m_master.setSelectedSensorPosition(0);
 
 		setNeutralMode(NeutralMode.Coast);
 
 		outputTelemetry();
+
+		m_controller.setTolerance(0, 50);
+
+		timer.reset();
+		timer.start();
 	}
 
 	@Override
@@ -121,6 +132,10 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_controller.reset();
 	}
 
+	public PIDController getController() {
+		return m_controller;
+	}
+
 	/**
 	 * Output the shooter's telemetry
 	 */
@@ -132,5 +147,12 @@ public class ShooterSubsystem extends SubsystemBase {
 			}
 		}).withWidget(BuiltInWidgets.kGraph);
 
+		compTab.addNumber("Shooter Current", new DoubleSupplier() {
+
+			@Override
+			public double getAsDouble() {
+				return m_master.getStatorCurrent();
+			}
+		}).withWidget(BuiltInWidgets.kGraph);
 	}
 }

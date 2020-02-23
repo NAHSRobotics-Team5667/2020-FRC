@@ -15,11 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,11 +27,11 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
 import frc.robot.autos.RunPath;
-import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.wheel.RotationCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -75,8 +73,7 @@ public class RobotContainer {
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_SLAVE), new AHRS(SPI.Port.kMXP));
 
-		// m_wheel = new WheelSubsystem(new
-		// WPI_TalonFX(Constants.WheelConstants.MOTOR));
+		m_wheel = new WheelSubsystem(new WPI_TalonFX(Constants.WheelConstants.MOTOR));
 
 		m_shooter = new ShooterSubsystem(new WPI_TalonFX(Constants.ShooterConstants.PORT));
 
@@ -85,9 +82,8 @@ public class RobotContainer {
 				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
 				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
 
-		// ---------- Run belts when the sensor detects a ball & stop when we don't
-		m_intake.tof_sensor.trigger.whenActive(m_intake::startBelt, m_intake);
-		m_intake.tof_sensor.trigger.whenInactive(m_intake::stopBelt, m_intake);
+		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
+		m_shooter.currentSpike.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
 
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
@@ -97,7 +93,6 @@ public class RobotContainer {
 		configureButtonBindings();
 
 		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
-
 			@Override
 			public double getAsDouble() {
 				return (double) ballCount;
@@ -130,9 +125,9 @@ public class RobotContainer {
 
 		a.whenPressed(() -> m_intake.toggle());
 		y.whenPressed(new AlignCommand(m_drive));
+		b.whenPressed(new RotationCommand(m_wheel));
 		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
 		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));
-
 	}
 
 	/**

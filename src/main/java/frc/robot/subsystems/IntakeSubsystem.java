@@ -28,7 +28,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	private boolean m_status = false;
 
-	private ShuffleboardTab compTab = Shuffleboard.getTab("Competition");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	/**
 	 * Subsystem that handles the intake functionality
@@ -51,6 +51,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		m_solenoid = solenoid;
 		m_solenoid2 = solenoid2;
+
+		outputTelemetry();
 	}
 
 	@Override
@@ -102,7 +104,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public void driveIntake(double speed) {
-		m_intake.set(-Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
+		m_intake.set(-speed);
 	}
 
 	public void stopIntakeMotor() {
@@ -118,6 +120,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		} else {
 			extendIntake();
 		}
+	}
+
+	public boolean isExtended() {
+		return m_status == Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
 	/**

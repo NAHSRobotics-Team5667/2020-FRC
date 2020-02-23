@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.commands.shooter.ShootAndHoldCommand;
 import frc.robot.commands.shooter.ShootAutonomously;
+import frc.robot.commands.actions.HoldPositionCommand;
 import frc.robot.commands.intake.LoadCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -27,21 +29,20 @@ public class TrenchPathAuto {
 	public static SequentialCommandGroup getAuto(Trajectory path, DriveTrainSubsystem drive, IntakeSubsystem intake,
 			ShooterSubsystem shooter) {
 
-		RamseteCommand ramseteCommand = RunPath.getCommand(path, drive, true);
+		RamseteCommand ramseteCommand = RunPath.getCommand(path, drive, false);
 
-		ShootAutonomously phase1 = new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM);
+		ShootAndHoldCommand phase1 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
+				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM));
 
 		ParallelCommandGroup phase2 = new ParallelCommandGroup(
-				new Command[] { ramseteCommand, new InstantCommand(() -> {
-					// shooter.setSetpoint(ShooterConstants.TRENCH_RPM);
-					// shooter.enable();
-				}), new LoadCommand(intake, 3) });
+				new Command[] { ramseteCommand, new LoadCommand(intake, 3) });
 
-		ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, shooter, intake, ShooterConstants.TRENCH_RPM);
+		ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
+				new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM));
 
-		return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3 }).andThen(() -> {
+		return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3 }).andThen(new RunCommand(() -> {
 			drive.setNeutralMode(NeutralMode.Brake);
 			drive.drive(0, 0, false);
-		});
+		}));
 	}
 }

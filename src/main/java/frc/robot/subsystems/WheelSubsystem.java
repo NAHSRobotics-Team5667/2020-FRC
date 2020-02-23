@@ -28,7 +28,7 @@ import frc.robot.Constants;
  */
 public class WheelSubsystem extends SubsystemBase {
 	private WPI_TalonFX m_motor;
-	private ColorSensorV3 m_colorV3 = new ColorSensorV3(Port.kOnboard);
+	private ColorSensorV3 m_colorV3 = null; // new ColorSensorV3(Port.kOnboard);
 	private ColorMatch m_colorMatch = new ColorMatch();
 
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
@@ -180,14 +180,18 @@ public class WheelSubsystem extends SubsystemBase {
 		m_motor.stopMotor();
 	}
 
+	public void resetEncoder() {
+		m_motor.setSelectedSensorPosition(0);
+	}
+
 	/**
 	 * Output telemetry function
 	 */
 	public void outputTelemetry() {
 		// TODO: Make String Suppliers
-		wheelTab.add("Detected Color", getClosestColor());
-		compTab.add("Target Color", targetColor());
-		compTab.add("Current Color", getClosestColor());
+		// wheelTab.add("Detected Color", getClosestColor());
+		// compTab.add("Target Color", targetColor());
+		// compTab.add("Current Color", getClosestColor());
 		compTab.add("Rotations", getRotations());
 	}
 }

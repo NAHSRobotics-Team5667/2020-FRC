@@ -42,7 +42,7 @@ public class ShooterCommand extends CommandBase {
 		if (RobotContainer.getController().getXButton()) {
 			if (LimeLight.getInstance().getPipeIndex() == 0) {
 				// pidController.setSetpoint(Constants.ShooterConstants.AUTO_LINE_RPM);
-				m_shooter.fireRPM(6000);
+				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
 			} else {
 				// pidController.setSetpoint(Constants.ShooterConstants.TRENCH_RPM);
 				m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);

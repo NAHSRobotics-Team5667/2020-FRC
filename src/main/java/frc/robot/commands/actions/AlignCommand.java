@@ -23,7 +23,8 @@ import frc.robot.utils.PIDFController;
 public class AlignCommand extends CommandBase {
 	private DriveTrainSubsystem m_drive;
 
-	private PIDFController angleController = new PIDFController("Angle", 0.02, 0, 0.001, 0);
+	private PIDFController angleController = new PIDFController("Angle", Constants.VisionConstants.kP,
+			Constants.VisionConstants.kI, Constants.VisionConstants.kD, 0);
 	private ShuffleboardTab alignmentTab = Shuffleboard.getTab("Auto Alignment");
 
 	/**

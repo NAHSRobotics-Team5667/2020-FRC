@@ -28,18 +28,23 @@ public class IntakeCommand extends CommandBase {
 	@Override
 	public void initialize() {
 		m_intake.retractIntake();
-		m_intake.startBelt();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (RobotContainer.getController().getBumper(RobotContainer.getController().getRightHand()))
-			m_intake.driveBelt(Constants.IntakeConstants.BELT_MOTOR_SPEED);
-		else if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand()))
-			m_intake.driveBelt(-Constants.IntakeConstants.BELT_MOTOR_SPEED);
-		else
+		if (RobotContainer.getController().getBumper(RobotContainer.getController().getRightHand())) {
+			m_intake.driveBelt(.8);
+			m_intake.driveIntake(-.3);
+		} else if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand()))
+			m_intake.driveBelt(-.8);
+		else if (m_intake.tof_sensor.isDetecting() && m_intake.isExtended() && RobotContainer.ballCount != 3) {
+			m_intake.startBelt();
+		} else {
 			m_intake.stopBelt();
+			if (!m_intake.isExtended())
+				m_intake.stopIntakeMotor();
+		}
 
 		// if (RobotContainer.getController().getLeftTrigger() > .5) {
 		// m_intake.driveIntake(RobotContainer.getController().getLeftTrigger());

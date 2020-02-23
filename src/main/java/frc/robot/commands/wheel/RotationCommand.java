@@ -46,7 +46,8 @@ public class RotationCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Constants.m_RobotState.setState(States.IDLE);
-    wheelSubsystem.rotateSpeed(0);
+    wheelSubsystem.turnOffMotor();
+    wheelSubsystem.resetEncoder();
   }
 
   // Returns true when the command should end.
