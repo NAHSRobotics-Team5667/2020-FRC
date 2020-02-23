@@ -21,7 +21,7 @@ import frc.robot.utils.PIDFController;
 public class DriveTrainCommand extends CommandBase {
 
 	private DriveTrainSubsystem m_drive;
-	private PIDFController angleController = new PIDFController("Angle", 0.01, 0.01 / 4, 0, 0);
+	private PIDFController angleController = new PIDFController("Angle", 0.5, 0.2, 0, 0);
 
 	/**
 	 * Create a Drive Train Subsystem
@@ -51,14 +51,16 @@ public class DriveTrainCommand extends CommandBase {
 			// Drive using joysticks
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
 					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
-		} 
+		}
 		// else if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO
-		// 		&& LimeLight.getInstance().hasValidTarget()) {
+		// && LimeLight.getInstance().hasValidTarget()) {
 
-		// 	double angle = -angleController.calculate(LimeLight.getInstance().getXAngle());
-		// 	double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) + angle;
-		// 	m_drive.tankDriveVolts(output, -output);
-		// 	m_drive.feedMotorSafety();
+		// double angle =
+		// -angleController.calculate(LimeLight.getInstance().getXAngle());
+		// double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) +
+		// angle;
+		// m_drive.tankDriveVolts(output, -output);
+		// m_drive.feedMotorSafety();
 
 		// }
 
