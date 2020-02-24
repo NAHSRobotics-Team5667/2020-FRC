@@ -7,6 +7,9 @@
 
 package frc.robot.subsystems;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -28,7 +31,7 @@ import frc.robot.Constants;
  */
 public class WheelSubsystem extends SubsystemBase {
 	private WPI_TalonFX m_motor;
-	private ColorSensorV3 m_colorV3 = null; // new ColorSensorV3(Port.kOnboard);
+	private ColorSensorV3 m_colorV3 = new ColorSensorV3(Port.kOnboard);
 	private ColorMatch m_colorMatch = new ColorMatch();
 
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
@@ -37,8 +40,6 @@ public class WheelSubsystem extends SubsystemBase {
 	private final Color kGreenTarget = ColorMatch.makeColor(0.197, 0.561, 0.240);
 	private final Color kRedTarget = ColorMatch.makeColor(0.561, 0.232, 0.114);
 	private final Color kYellowTarget = ColorMatch.makeColor(0.361, 0.524, 0.113);
-
-	ShuffleboardTab wheelTab = Shuffleboard.getTab("Tune");
 
 	/**
 	 * A Subsystem that manipulates the wheel of fortune
@@ -101,9 +102,9 @@ public class WheelSubsystem extends SubsystemBase {
 			}
 		} else {
 			// Code for no data received yet
-			return null;
+			return "null";
 		}
-		return null;
+		return "null";
 	}
 
 	/**
@@ -156,11 +157,6 @@ public class WheelSubsystem extends SubsystemBase {
 			colorString = "Unknown";
 		}
 
-		wheelTab.add("Red", detectedColor.red);
-		wheelTab.add("Green", detectedColor.green);
-		wheelTab.add("Blue", detectedColor.blue);
-		wheelTab.add("Green", detectedColor.green);
-
 		return colorString;
 	}
 
@@ -188,10 +184,24 @@ public class WheelSubsystem extends SubsystemBase {
 	 * Output telemetry function
 	 */
 	public void outputTelemetry() {
-		// TODO: Make String Suppliers
-		// wheelTab.add("Detected Color", getClosestColor());
-		// compTab.add("Target Color", targetColor());
-		// compTab.add("Current Color", getClosestColor());
-		compTab.add("Rotations", getRotations());
+		compTab.addString("Target Color", new Supplier<String>() {
+			@Override
+			public String get() {
+				return targetColor();
+			}
+		});
+
+		compTab.addString("Current Color", new Supplier<String>() {
+			@Override
+			public String get() {
+				return getClosestColor();
+			}
+		});
+		compTab.addNumber("Rotations", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getRotations();
+			}
+		});
 	}
 }

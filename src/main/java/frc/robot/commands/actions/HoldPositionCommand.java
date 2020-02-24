@@ -20,6 +20,8 @@ public class HoldPositionCommand extends CommandBase {
 	public HoldPositionCommand(DriveTrainSubsystem drive) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = drive;
+		addRequirements(m_drive);
+		System.out.println("START HOLD");
 	}
 
 	// Called when the command is initially scheduled.
@@ -34,13 +36,14 @@ public class HoldPositionCommand extends CommandBase {
 	@Override
 	public void execute() {
 		m_drive.tankDriveVolts(Constants.AutoConstants.L_CONTROLLER.calculate(m_drive.getLeftEncoderPosition()),
-			Constants.AutoConstants.R_CONTROLLER.calculate(m_drive.getRightEncoderPosition()));
+				Constants.AutoConstants.R_CONTROLLER.calculate(m_drive.getRightEncoderPosition()));
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		m_drive.stop();
+		System.out.println("END HOLD");
 	}
 
 	// Returns true when the command should end.

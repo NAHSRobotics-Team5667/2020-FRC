@@ -65,7 +65,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		outputTelemetry();
 
-		m_controller.setTolerance(0, 50);
+		m_controller.setTolerance(150, 150);
 
 		timer.reset();
 		timer.start();
@@ -145,14 +145,6 @@ public class ShooterSubsystem extends SubsystemBase {
 			public double getAsDouble() {
 				return getCurrentRPM();
 			}
-		}).withWidget(BuiltInWidgets.kGraph);
-
-		compTab.addNumber("Shooter Current", new DoubleSupplier() {
-
-			@Override
-			public double getAsDouble() {
-				return m_master.getStatorCurrent();
-			}
-		}).withWidget(BuiltInWidgets.kGraph);
+		});
 	}
 }

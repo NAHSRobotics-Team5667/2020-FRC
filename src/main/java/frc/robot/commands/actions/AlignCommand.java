@@ -8,6 +8,7 @@
 package frc.robot.commands.actions;
 
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -22,7 +23,7 @@ import frc.robot.utils.PIDFController;
 
 public class AlignCommand extends CommandBase {
 	private DriveTrainSubsystem m_drive;
-
+	private boolean isAutoAligning = true;
 	private PIDFController angleController = new PIDFController("Angle", Constants.VisionConstants.kP,
 			Constants.VisionConstants.kI, Constants.VisionConstants.kD, 0);
 	private ShuffleboardTab alignmentTab = Shuffleboard.getTab("Auto Alignment");
@@ -31,24 +32,36 @@ public class AlignCommand extends CommandBase {
 	 * Creates a new AlignCommand.
 	 */
 	public AlignCommand(DriveTrainSubsystem drive) {
+		System.out.println("STARTING ALIGN COMMAND");
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = drive;
 		addRequirements(m_drive);
+		// alignmentTab.add("Angle Controller", angleController);
 
-		alignmentTab.add(angleController);
-		alignmentTab.addNumber("setpoint", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return LimeLight.getInstance().getXAngle();
-			}
-		});
+		// alignmentTab.addNumber("setpoint", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return LimeLight.getInstance().getXAngle();
+		// }
+		// });
 
-		alignmentTab.addNumber("output", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return angleController.getPositionError();
-			}
-		});
+		// alignmentTab.addNumber("output", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return angleController.getPositionError();
+		// }
+		// });
+
+		// alignmentTab.addBoolean("isAligning", new BooleanSupplier() {
+
+		// @Override
+		// public boolean getAsBoolean() {
+		// return isAutoAligning;
+		// }
+		// });
+
+		angleController.setTolerance(1, 3);
+
 	}
 
 	// Called when the command is initially scheduled.
@@ -62,15 +75,19 @@ public class AlignCommand extends CommandBase {
 	@Override
 	public void execute() {
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
-
 			double angle = -angleController.calculate(LimeLight.getInstance().getXAngle());
-			double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) + angle;
+			double output = Constants.DriveConstants.ksVolts + angle;
 			m_drive.tankDriveVolts(output, -output);
 			m_drive.feedMotorSafety();
 
+		} else {
+			m_drive.feedMotorSafety();
+			m_drive.stop();
 		}
 
-		if (!RobotContainer.getController().getSticks().equals(Map.of("LSX", 0, "LSY", 0, "RSX", 0, "RSY", 0))) {
+		Map<String, Double> sticks = RobotContainer.getController().getSticks();
+		if (Math.abs(sticks.get("LSX")) > .2 || Math.abs(sticks.get("LSY")) > .2 || Math.abs(sticks.get("RSX")) > .2
+				|| Math.abs(sticks.get("RSY")) > .2) {
 			m_drive.setDriveMode(DriveModes.MANUAL);
 		}
 
@@ -79,13 +96,25 @@ public class AlignCommand extends CommandBase {
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		LimeLight.getInstance().turnLightOff();
+		m_drive.stop();
+		m_drive.setDriveMode(DriveModes.MANUAL);
+		isAutoAligning = false;
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return m_drive.getDriveMode() == DriveModes.MANUAL || !LimeLight.getInstance().hasValidTarget()
-				|| angleController.atSetpoint();
+		if (m_drive.getDriveMode() == DriveModes.MANUAL) {
+			System.out.println("ENDED BC MANUAL");
+			return true;
+		} else if (!LimeLight.getInstance().hasValidTarget()) {
+			System.out.println("ENDED BC NO TARGET");
+			return true;
+		} else if (angleController.atSetpoint()) {
+			System.out.println("ENDED BC AT ANGLE");
+			return true;
+		} else {
+			return false;
+		}
 	}
 }

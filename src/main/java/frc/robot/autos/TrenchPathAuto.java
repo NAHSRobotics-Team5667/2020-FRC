@@ -34,15 +34,19 @@ public class TrenchPathAuto {
 		ShootAndHoldCommand phase1 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
 				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM));
 
-		ParallelCommandGroup phase2 = new ParallelCommandGroup(
-				new Command[] { ramseteCommand, new LoadCommand(intake, 3) });
+		return phase1.andThen(new RunCommand(drive::stop));
 
-		ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
-				new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM));
+		// ParallelCommandGroup phase2 = new ParallelCommandGroup(
+		// new Command[] { ramseteCommand, new LoadCommand(intake, 3) });
 
-		return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3 }).andThen(new RunCommand(() -> {
-			drive.setNeutralMode(NeutralMode.Brake);
-			drive.drive(0, 0, false);
-		}));
+		// ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, new
+		// HoldPositionCommand(drive),
+		// new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM));
+
+		// return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3
+		// }).andThen(new RunCommand(() -> {
+		// drive.setNeutralMode(NeutralMode.Brake);
+		// drive.drive(0, 0, false);
+		// }));
 	}
 }

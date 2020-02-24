@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
 import frc.robot.autos.RunPath;
+import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.intake.IntakeCommand;
@@ -136,18 +137,15 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		// if (selection <= 6)
-		// return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake,
-		// m_shooter);
-		// else if (selection > 7 && selection < paths.length)
-		// return RunPath.getCommand(paths[selection], m_drive, false).andThen(new
-		// RunCommand(m_drive::stop));
-		// else if (selection == 7)
-		// // Code for shoot and stay
-		// return null;
-		// else
-		// return null;
-		return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
+		if (selection <= 6)
+			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
+		else if (selection > 7 && selection < paths.length)
+			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
+		else if (selection == 7)
+			// Code for shoot and stay
+			return null;
+		else
+			return null;
 	}
 
 	/**

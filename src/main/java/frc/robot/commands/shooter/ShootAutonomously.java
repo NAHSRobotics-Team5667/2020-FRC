@@ -28,6 +28,7 @@ public class ShootAutonomously extends CommandBase {
 		addRequirements(m_shooter, m_intake);
 
 		this.targetRPM = targetRPM;
+		System.out.println("STARTING SHOOT");
 	}
 
 	// Called when the command is initially scheduled.
@@ -40,6 +41,8 @@ public class ShootAutonomously extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		m_shooter.fireRPM(targetRPM);
+
 		if (m_shooter.getController().atSetpoint()) {
 			m_intake.startBelt();
 		} else {
@@ -51,11 +54,12 @@ public class ShootAutonomously extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
+		System.out.println("END SHOOT");
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount == 0;
+		return RobotContainer.ballCount < 0;
 	}
 }

@@ -60,9 +60,9 @@ public class Robot extends TimedRobot {
 		m_chooser.addOption("S Path", 9);
 		m_chooser.addOption("Null", 99);
 
-		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
-		LimeLight.getInstance().turnLightOff();
+		LimeLight.getInstance().turnLightOn();
 
 	}
 
@@ -99,7 +99,6 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		LimeLight.getInstance().turnLightOff();
 	}
 
 	/**

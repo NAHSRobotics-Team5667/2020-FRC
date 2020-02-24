@@ -9,9 +9,11 @@ package frc.robot.commands;
 
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState.States;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem.DriveModes;
@@ -21,7 +23,8 @@ import frc.robot.utils.PIDFController;
 public class DriveTrainCommand extends CommandBase {
 
 	private DriveTrainSubsystem m_drive;
-	private PIDFController angleController = new PIDFController("Angle", 0.5, 0.2, 0, 0);
+	private PIDFController angleController = new PIDFController("Angle", VisionConstants.kP, VisionConstants.kI,
+			VisionConstants.kD, 0);
 
 	/**
 	 * Create a Drive Train Subsystem
@@ -32,6 +35,7 @@ public class DriveTrainCommand extends CommandBase {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = DriveTrain;
 		addRequirements(m_drive);
+		Shuffleboard.getTab("Auto Alignment").add("Angle", angleController);
 	}
 
 	// Called when the command is initially scheduled.
@@ -52,17 +56,6 @@ public class DriveTrainCommand extends CommandBase {
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
 					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
 		}
-		// else if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO
-		// && LimeLight.getInstance().hasValidTarget()) {
-
-		// double angle =
-		// -angleController.calculate(LimeLight.getInstance().getXAngle());
-		// double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) +
-		// angle;
-		// m_drive.tankDriveVolts(output, -output);
-		// m_drive.feedMotorSafety();
-
-		// }
 
 		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
 				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING

@@ -89,7 +89,7 @@ public final class Constants {
         public static final double ksVolts = 1;
         public static final double kvVoltSecondsPerMeter = 0.0613 / 70;
         public static final double kaVoltSecondsSquaredPerMeter = 0.00831 / 100;
-        public static final double kP = 0.385 / 120;
+        public static final double kP = 0.9 / 120;
         public static final double kI = kP / 4;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
@@ -111,8 +111,8 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
-        public static final double kP = 0.02;
-        public static final double kI = kP / 4;
+        public static final double kP = 0.015;
+        public static final double kI = 0.02;
         public static final double kD = 0;
     }
 

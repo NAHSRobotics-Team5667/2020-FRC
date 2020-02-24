@@ -17,8 +17,6 @@ import frc.robot.utils.LimeLight;
 
 public class ShooterCommand extends CommandBase {
 	private ShooterSubsystem m_shooter;
-	private PIDController pidController = new PIDController(Constants.ShooterConstants.kP, 0,
-			Constants.ShooterConstants.kD);
 
 	/**
 	 * Creates a new ShooterCommand.
@@ -27,7 +25,6 @@ public class ShooterCommand extends CommandBase {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
 		addRequirements(m_shooter);
-		Shuffleboard.getTab("Teleop").add("Shooter PID", pidController);
 	}
 
 	// Called when the command is initially scheduled.

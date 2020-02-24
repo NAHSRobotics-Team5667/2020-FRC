@@ -91,6 +91,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		TalonFXConfiguration falconConfig = new TalonFXConfiguration();
 		falconConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+		falconConfig.openloopRamp = 1;
 
 		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
@@ -325,61 +326,61 @@ public class DriveTrainSubsystem extends SubsystemBase {
 			}
 		});
 
-		autoTab.addNumber("r_pos", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return getRightEncoderPosition();
-			}
-		});
+		// autoTab.addNumber("r_pos", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return getRightEncoderPosition();
+		// }
+		// });
 
-		autoTab.addNumber("l_pos", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return getLeftEncoderPosition();
-			}
-		});
+		// autoTab.addNumber("l_pos", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return getLeftEncoderPosition();
+		// }
+		// });
 
-		autoTab.addNumber("r_vel", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return getRightEncoderRate();
-			}
-		});
+		// autoTab.addNumber("r_vel", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return getRightEncoderRate();
+		// }
+		// });
 
-		autoTab.addNumber("l_vel", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return getLeftEncoderRate();
-			}
-		});
+		// autoTab.addNumber("l_vel", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return getLeftEncoderRate();
+		// }
+		// });
 
-		graphTab.addNumber("l_volts", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return m_leftMaster.getMotorOutputVoltage();
-			}
-		}).withWidget("Graph");
+		// graphTab.addNumber("l_volts", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return m_leftMaster.getMotorOutputVoltage();
+		// }
+		// }).withWidget("Graph");
 
-		graphTab.addNumber("r_volts", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return m_rightMaster.getMotorOutputVoltage();
-			}
-		}).withWidget("Graph");
+		// graphTab.addNumber("r_volts", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return m_rightMaster.getMotorOutputVoltage();
+		// }
+		// }).withWidget("Graph");
 
-		graphTab.addNumber("r_setpoint", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return Constants.AutoConstants.R_CONTROLLER.getSetpoint();
-			}
-		}).withWidget("Graph");
+		// graphTab.addNumber("r_setpoint", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return Constants.AutoConstants.R_CONTROLLER.getSetpoint();
+		// }
+		// }).withWidget("Graph");
 
-		graphTab.addNumber("l_setpoint", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
-			}
-		}).withWidget("Graph");
+		// graphTab.addNumber("l_setpoint", new DoubleSupplier() {
+		// @Override
+		// public double getAsDouble() {
+		// return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
+		// }
+		// }).withWidget("Graph");
 
 	}
 
