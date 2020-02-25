@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem.DriveModes;
 import frc.robot.utils.LimeLight;
@@ -80,9 +81,13 @@ public class AlignCommand extends CommandBase {
 			m_drive.tankDriveVolts(output, -output);
 			m_drive.feedMotorSafety();
 
+		} else if (!LimeLight.getInstance().hasValidTarget()) {
+			m_drive.tankDriveVolts(DriveConstants.ksVolts + DriveConstants.kvVoltSecondsPerMeter * 10,
+					-(DriveConstants.ksVolts + DriveConstants.kvVoltSecondsPerMeter * 10));
 		} else {
 			m_drive.feedMotorSafety();
 			m_drive.stop();
+
 		}
 
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
@@ -106,9 +111,6 @@ public class AlignCommand extends CommandBase {
 	public boolean isFinished() {
 		if (m_drive.getDriveMode() == DriveModes.MANUAL) {
 			System.out.println("ENDED BC MANUAL");
-			return true;
-		} else if (!LimeLight.getInstance().hasValidTarget()) {
-			System.out.println("ENDED BC NO TARGET");
 			return true;
 		} else if (angleController.atSetpoint()) {
 			System.out.println("ENDED BC AT ANGLE");

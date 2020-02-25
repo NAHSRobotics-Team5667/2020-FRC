@@ -16,37 +16,64 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.PATHS.PathWeaver;
 import frc.robot.commands.shooter.ShootAndHoldCommand;
 import frc.robot.commands.shooter.ShootAutonomously;
+import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.actions.HoldPositionCommand;
 import frc.robot.commands.intake.LoadCommand;
+import frc.robot.commands.intake.ResetIndexCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utils.LimeLight;
 
 public class TrenchPathAuto {
-	public static SequentialCommandGroup getAuto(Trajectory path, DriveTrainSubsystem drive, IntakeSubsystem intake,
-			ShooterSubsystem shooter) {
+	public static SequentialCommandGroup getAuto(Trajectory path, Trajectory trenchPath, DriveTrainSubsystem drive,
+			IntakeSubsystem intake, ShooterSubsystem shooter) {
 
-		RamseteCommand ramseteCommand = RunPath.getCommand(path, drive, false);
+		RobotContainer.ballCount = 3;
 
-		ShootAndHoldCommand phase1 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
-				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM));
+		drive.stop();
+		drive.resetOdometry(path.getInitialPose());
+		shooter.stopFire();
+		LimeLight.getInstance().setPipeline(0);
 
-		return phase1.andThen(new RunCommand(drive::stop));
+		RamseteCommand toTrench = RunPath.getCommand(path, drive, false);
+		RamseteCommand trenchToWheel = RunPath.getCommand(trenchPath, drive, false);
 
-		// ParallelCommandGroup phase2 = new ParallelCommandGroup(
-		// new Command[] { ramseteCommand, new LoadCommand(intake, 3) });
+		SequentialCommandGroup phase1 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
+				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM))
+						.andThen(new InstantCommand(() -> {
+							drive.stop();
+							shooter.stopFire();
+						}));
 
-		// ShootAndHoldCommand phase3 = new ShootAndHoldCommand(drive, new
-		// HoldPositionCommand(drive),
-		// new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM));
+		SequentialCommandGroup phase2 = new SequentialCommandGroup(
+				new Command[] { toTrench, new ParallelCommandGroup(new LoadCommand(intake, 3), trenchToWheel) })
+						.andThen(new InstantCommand(() -> {
+							drive.stop();
+							shooter.stopFire();
+							LimeLight.getInstance().setPipeline(1);
+						}));
 
-		// return new SequentialCommandGroup(new Command[] { phase1, phase2, phase3
-		// }).andThen(new RunCommand(() -> {
-		// drive.setNeutralMode(NeutralMode.Brake);
-		// drive.drive(0, 0, false);
-		// }));
+		ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);
+		return new SequentialCommandGroup(new Command[] {
+				// Phase 1
+				phase1,
+				// Phase 2
+				phase2,
+				// Phase 3
+				resetIndex.andThen(new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
+						new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM))) })
+								.andThen(new RunCommand(() -> {
+									drive.setNeutralMode(NeutralMode.Brake);
+									drive.stop();
+									shooter.stopFire();
+									intake.stopBelt();
+									intake.stopIntakeMotor();
+								}));
 	}
 }

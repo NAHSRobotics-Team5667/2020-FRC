@@ -81,7 +81,7 @@ public final class Constants {
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final double AUTO_LINE_RPM = 3750;
+        public static final double AUTO_LINE_RPM = 3850;
         public static final double TRENCH_RPM = 4250;
 
         public static final int IDLE_VOLTAGE = 3;
@@ -93,8 +93,15 @@ public final class Constants {
         public static final double kI = kP / 4;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
-        public static final double SPIKE = 40;
-        public static final double SPIKE_TIME = 2;
+
+        public static final double AUTO_LINE_THRESHOLD = 70;
+        public static final double AUTO_LINE_DEADBAND = 15;
+
+        public static final double TRENCH_THRESHOLD = 70;
+        public static final double TRENCH_DEADBAND = 15;
+
+        public static final double RAMP_SPIKE_TIME = 1;
+        public static final double SHOT_SPIKE_TIME = .1;
     }
 
     public final static class WheelConstants {
@@ -150,8 +157,8 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = 1;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final double kMaxSpeedMetersPerSecond = .6;
+        public static final double kMaxAccelerationMetersPerSecondSquared = .6;
         public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
                 DriveConstants.kD);
         public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
@@ -195,6 +202,14 @@ public final class Constants {
                 new Pose2d(2, 0, new Rotation2d(0)),
                 // Pass config
                 config);
+
+        public static final Trajectory TRENCH_LINE = TrajectoryGenerator.generateTrajectory(
+                // Start
+                new Pose2d(5.2, -0.7, new Rotation2d(0)),
+                // Pass through balls
+                List.of(new Translation2d(7, -0.7)),
+                // End at the end of the color wheel
+                new Pose2d(8.4, -0.7, new Rotation2d(0)), config);
 
         public static final class PathWeaver {
             public static Trajectory getTrajectory(String path) {

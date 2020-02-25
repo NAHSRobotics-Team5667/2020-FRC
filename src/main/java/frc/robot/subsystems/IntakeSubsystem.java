@@ -126,6 +126,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		return m_status == Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
+	public double getBeltSpeed() {
+		return m_belt.get();
+	}
+
 	/**
 	 * Output telemtry data
 	 */

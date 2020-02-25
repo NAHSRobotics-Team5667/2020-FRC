@@ -9,37 +9,40 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
-public class LoadCommand extends CommandBase {
+public class ResetIndexCommand extends CommandBase {
 	private IntakeSubsystem m_intake;
-	private int targetCount;
-	private int initialCount;
+	private ShooterSubsystem m_shooter;
+	private Timer timer;
 
 	/**
-	 * Creates a new LoadCommand.
+	 * Creates a new ResetIndexCommand.
 	 */
-	public LoadCommand(IntakeSubsystem intake, int targetCount) {
+	public ResetIndexCommand(IntakeSubsystem intake, ShooterSubsystem shooter) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_intake = intake;
-		addRequirements(m_intake);
-		this.targetCount = targetCount;
+		m_shooter = shooter;
+		addRequirements(m_intake, m_shooter);
+		timer = new Timer();
+		timer.reset();
+		timer.start();
 
+		System.out.println("STARTED RESET INDEX");
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		initialCount = RobotContainer.ballCount;
-		m_intake.extendIntake();
+		m_intake.stopBelt();
+		m_shooter.stopFire();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		m_intake.driveBelt(.3);
+		m_intake.driveBelt(-.6);
 
 	}
 
@@ -47,12 +50,14 @@ public class LoadCommand extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
-		m_intake.retractIntake();
+		m_intake.stopIntakeMotor();
+		m_shooter.stopFire();
+		System.out.println("RESET INDEX ENDED");
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount - initialCount == targetCount;
+		return timer.hasPeriodPassed(5) && m_intake.tof_sensor.isDetecting();
 	}
 }

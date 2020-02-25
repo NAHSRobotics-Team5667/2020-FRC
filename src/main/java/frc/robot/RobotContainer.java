@@ -69,6 +69,7 @@ public class RobotContainer {
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
+		// Instantiation of Subsystems
 		m_drive = new DriveTrainSubsystem(new WPI_TalonFX(Constants.DriveConstants.RIGHT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.LEFT_MASTER),
 				new WPI_TalonFX(Constants.DriveConstants.RIGHT_SLAVE),
@@ -83,9 +84,13 @@ public class RobotContainer {
 				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
 				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
 
-		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> ballCount += 1));
-		m_shooter.currentSpike.whileActiveOnce(new InstantCommand(() -> ballCount -= 1));
+		// Trigger to handle TOF sensor
+		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> {
+			if (m_intake.getBeltSpeed() > 0)
+				ballCount += 1;
+		}));
 
+		// Set default commands
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
 		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
@@ -93,6 +98,7 @@ public class RobotContainer {
 		// Configure the button bindings
 		configureButtonBindings();
 
+		// Output Telemetry
 		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
@@ -138,7 +144,7 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand(int selection) {
 		if (selection <= 6)
-			return TrenchPathAuto.getAuto(paths[selection], m_drive, m_intake, m_shooter);
+			return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake, m_shooter);
 		else if (selection > 7 && selection < paths.length)
 			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
 		else if (selection == 7)

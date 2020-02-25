@@ -24,8 +24,7 @@ public class RunPath {
     public static RamseteCommand getCommand(Trajectory path, DriveTrainSubsystem drive, boolean isReverse) {
         if (isReverse)
             drive.reverseEncoders();
-        drive.resetOdometry(path.getInitialPose());
-        drive.setNeutralMode(NeutralMode.Coast);
+        drive.setNeutralMode(NeutralMode.Brake);
         return new RamseteCommand(path, drive::getPose,
                 new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
                 new SimpleMotorFeedforward(DriveConstants.ksVolts, DriveConstants.kvVoltSecondsPerMeter,

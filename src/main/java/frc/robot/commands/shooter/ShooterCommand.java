@@ -48,6 +48,14 @@ public class ShooterCommand extends CommandBase {
 			m_shooter.resetIError();
 			m_shooter.fire(RobotContainer.getController().getRightTrigger());
 		}
+
+		if (m_shooter.getCurrentRPM() < 10 && !RobotContainer.getController().getXButton() && m_shooter.justRamped) {
+			m_shooter.stopFire();
+		}
+
+		if (m_shooter.getCurrentRPM() > 10 && !RobotContainer.getController().getXButton() && !m_shooter.justRamped) {
+			m_shooter.fire(-.2);
+		}
 	}
 
 	// Called once the command ends or is interrupted.

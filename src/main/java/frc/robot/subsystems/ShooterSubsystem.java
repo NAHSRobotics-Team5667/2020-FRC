@@ -7,7 +7,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -22,8 +21,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 import frc.robot.RobotState.States;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -37,15 +36,10 @@ public class ShooterSubsystem extends SubsystemBase {
 	private PIDController m_controller = new PIDController(Constants.ShooterConstants.kP, Constants.ShooterConstants.kI,
 			Constants.ShooterConstants.kD);
 
-	public Timer timer = new Timer();
+	public Timer rampTimer = new Timer();
+	public Timer shotTimer = new Timer();
 
-	public Trigger currentSpike = new Trigger(new BooleanSupplier() {
-		@Override
-		public boolean getAsBoolean() {
-			return m_master.getStatorCurrent() > Constants.ShooterConstants.SPIKE
-					&& timer.hasPeriodPassed(Constants.ShooterConstants.SPIKE_TIME);
-		}
-	});
+	public boolean justRamped = false;
 
 	/**
 	 * Creates a shooter subsystem
@@ -58,7 +52,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = 4;
+		configuration.openloopRamp = 3;
 		m_master.setSelectedSensorPosition(0);
 
 		setNeutralMode(NeutralMode.Coast);
@@ -67,13 +61,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		m_controller.setTolerance(150, 150);
 
-		timer.reset();
-		timer.start();
+		shotTimer.reset();
+		shotTimer.start();
+
 	}
 
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler
+
 	}
 
 	public void setNeutralMode(NeutralMode mode) {
@@ -110,6 +106,8 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public void stopFire() {
 		m_master.stopMotor();
+		rampTimer.reset();
+		rampTimer.start();
 	}
 
 	/**
@@ -136,6 +134,10 @@ public class ShooterSubsystem extends SubsystemBase {
 		return m_controller;
 	}
 
+	public double getOutputCurrent() {
+		return m_master.getStatorCurrent();
+	}
+
 	/**
 	 * Output the shooter's telemetry
 	 */
@@ -146,5 +148,19 @@ public class ShooterSubsystem extends SubsystemBase {
 				return getCurrentRPM();
 			}
 		});
+		compTab.addNumber("Shooter Current", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getOutputCurrent();
+			}
+		});
+
+		compTab.addNumber("Shot Times", new DoubleSupplier() {
+
+			@Override
+			public double getAsDouble() {
+				return RobotContainer.ballCount;
+			}
+		}).withWidget(BuiltInWidgets.kGraph);
 	}
 }
