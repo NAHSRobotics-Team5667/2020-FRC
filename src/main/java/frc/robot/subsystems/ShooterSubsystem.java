@@ -29,6 +29,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	private WPI_TalonFX m_master;
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
+	private ShuffleboardTab graphTab = Shuffleboard.getTab("Graphs");
 
 	private SimpleMotorFeedforward ff = new SimpleMotorFeedforward(Constants.ShooterConstants.ksVolts,
 			Constants.ShooterConstants.kvVoltSecondsPerMeter, Constants.ShooterConstants.kaVoltSecondsSquaredPerMeter);
@@ -52,17 +53,15 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = 3;
+		configuration.openloopRamp = 3.5;
 		m_master.setSelectedSensorPosition(0);
 
 		setNeutralMode(NeutralMode.Coast);
 
 		outputTelemetry();
+		debug();
 
-		m_controller.setTolerance(150, 150);
-
-		shotTimer.reset();
-		shotTimer.start();
+		m_controller.setTolerance(250, 250);
 
 	}
 
@@ -147,15 +146,18 @@ public class ShooterSubsystem extends SubsystemBase {
 			public double getAsDouble() {
 				return getCurrentRPM();
 			}
-		});
-		compTab.addNumber("Shooter Current", new DoubleSupplier() {
+		}).withWidget(BuiltInWidgets.kGraph);
+	}
+
+	public void debug() {
+		graphTab.addNumber("Shooter Current", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getOutputCurrent();
 			}
 		});
 
-		compTab.addNumber("Shot Times", new DoubleSupplier() {
+		graphTab.addNumber("Shot Times", new DoubleSupplier() {
 
 			@Override
 			public double getAsDouble() {

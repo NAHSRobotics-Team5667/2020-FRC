@@ -29,24 +29,32 @@ public class CurrentSpikeCounter {
     public boolean update(double current) {
         if (!ramped && current > threshold) {
             isRamping = true;
-            System.out.println("CATCHING RAMP");
             return false;
         } else if (isRamping && current < off_val) {
             ramped = true;
             isRamping = false;
-            System.out.println("DONE RAMPING");
             return false;
         } else if (ramped && current > threshold && !isSpiking) {
             isSpiking = true;
-            System.out.println("CAUGHT SPIKE");
             return true;
         } else if (ramped && current < off_val && isSpiking) {
             isSpiking = false;
-            System.out.println("DONE SPIKING");
             return false;
         } else {
             return false;
         }
 
+    }
+
+    public boolean hasRamped() {
+        return ramped;
+    }
+
+    public boolean isRamping() {
+        return isRamping;
+    }
+
+    public boolean isSpiking() {
+        return isSpiking;
     }
 }

@@ -45,7 +45,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	private DriveModes m_driveMode = DriveModes.MANUAL;
 
 	private ShuffleboardTab graphTab = Shuffleboard.getTab("Graphs");
-	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	private NetworkTable live_dashboard = NetworkTableInstance.getDefault().getTable("Live_Dashboard");
 	private NetworkTableEntry robotX = live_dashboard.getEntry("robotX");
@@ -119,6 +119,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
+
 		robotX.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getX()));
 		robotY.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getY()));
 		robotHeading.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getRotation().getRadians()));
@@ -144,7 +145,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void drive(double throttle, double angle, boolean isQuickTurn) {
 		m_drive.arcadeDrive(throttle, angle);
-		// m_drive.curvatureDrive(throttle, angle, isQuickTurn);
+	}
+
+	public void driveCheese(double throttle, double angle, boolean isQuickTurn) {
+		m_drive.curvatureDrive(throttle, angle, isQuickTurn);
 	}
 
 	/**
@@ -319,69 +323,71 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * Output the Drive Train telemtry
 	 */
 	public void outputTelemetry() {
-		autoTab.addString("Pose", new Supplier<String>() {
+		compTab.addString("Pose", new Supplier<String>() {
 			@Override
 			public String get() {
 				return m_odometry.getPoseMeters().toString();
 			}
 		});
+	}
 
-		// autoTab.addNumber("r_pos", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return getRightEncoderPosition();
-		// }
-		// });
+	public void debug() {
 
-		// autoTab.addNumber("l_pos", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return getLeftEncoderPosition();
-		// }
-		// });
+		graphTab.addNumber("r_pos", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getRightEncoderPosition();
+			}
+		});
 
-		// autoTab.addNumber("r_vel", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return getRightEncoderRate();
-		// }
-		// });
+		graphTab.addNumber("l_pos", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getLeftEncoderPosition();
+			}
+		});
 
-		// autoTab.addNumber("l_vel", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return getLeftEncoderRate();
-		// }
-		// });
+		graphTab.addNumber("r_vel", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getRightEncoderRate();
+			}
+		});
 
-		// graphTab.addNumber("l_volts", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return m_leftMaster.getMotorOutputVoltage();
-		// }
-		// }).withWidget("Graph");
+		graphTab.addNumber("l_vel", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return getLeftEncoderRate();
+			}
+		});
 
-		// graphTab.addNumber("r_volts", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return m_rightMaster.getMotorOutputVoltage();
-		// }
-		// }).withWidget("Graph");
+		graphTab.addNumber("l_volts", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_leftMaster.getMotorOutputVoltage();
+			}
+		}).withWidget("Graph");
 
-		// graphTab.addNumber("r_setpoint", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return Constants.AutoConstants.R_CONTROLLER.getSetpoint();
-		// }
-		// }).withWidget("Graph");
+		graphTab.addNumber("r_volts", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return m_rightMaster.getMotorOutputVoltage();
+			}
+		}).withWidget("Graph");
 
-		// graphTab.addNumber("l_setpoint", new DoubleSupplier() {
-		// @Override
-		// public double getAsDouble() {
-		// return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
-		// }
-		// }).withWidget("Graph");
+		graphTab.addNumber("r_setpoint", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return Constants.AutoConstants.R_CONTROLLER.getSetpoint();
+			}
+		}).withWidget("Graph");
 
+		graphTab.addNumber("l_setpoint", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
+			}
+		}).withWidget("Graph");
 	}
 
 }

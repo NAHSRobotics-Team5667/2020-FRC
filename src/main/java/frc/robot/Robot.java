@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -31,7 +32,7 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand = null;
 	private RobotContainer m_robotContainer;
 
-	private ShuffleboardTab compTab = Shuffleboard.getTab("Auto");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	private SendableChooser<Integer> m_chooser = new SendableChooser<>();
 
@@ -44,8 +45,10 @@ public class Robot extends TimedRobot {
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
-		Shuffleboard.selectTab("Auto");
-		CameraServer.getInstance().startAutomaticCapture();
+		Shuffleboard.selectTab("Teleop");
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setResolution(240, 180);
+		camera.setFPS(18);
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);
@@ -95,6 +98,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void disabledInit() {
 		m_robotContainer.setNeutralMode(NeutralMode.Brake);
+		LimeLight.getInstance().setPipeline(0);
 	}
 
 	@Override
@@ -107,7 +111,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		Shuffleboard.selectTab("Auto");
+		Shuffleboard.selectTab("Teleop");
 		m_autonomousCommand = m_robotContainer.getAutonomousCommand(m_chooser.getSelected());
 
 		// schedule the autonomous command (example)

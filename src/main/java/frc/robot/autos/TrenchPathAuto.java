@@ -52,14 +52,15 @@ public class TrenchPathAuto {
 						}));
 
 		SequentialCommandGroup phase2 = new SequentialCommandGroup(
-				new Command[] { toTrench, new ParallelCommandGroup(new LoadCommand(intake, 3), trenchToWheel) })
-						.andThen(new InstantCommand(() -> {
-							drive.stop();
-							shooter.stopFire();
-							LimeLight.getInstance().setPipeline(1);
-						}));
+				new Command[] { toTrench.andThen(() -> LimeLight.getInstance().setPipeline(1)),
+						new ParallelCommandGroup(new LoadCommand(intake, 3), trenchToWheel) })
+								.andThen(new InstantCommand(() -> {
+									drive.stop();
+									shooter.stopFire();
+								}));
 
 		ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);
+
 		return new SequentialCommandGroup(new Command[] {
 				// Phase 1
 				phase1,

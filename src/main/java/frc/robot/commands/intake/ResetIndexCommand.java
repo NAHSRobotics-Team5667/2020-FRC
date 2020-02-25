@@ -26,10 +26,6 @@ public class ResetIndexCommand extends CommandBase {
 		m_shooter = shooter;
 		addRequirements(m_intake, m_shooter);
 		timer = new Timer();
-		timer.reset();
-		timer.start();
-
-		System.out.println("STARTED RESET INDEX");
 	}
 
 	// Called when the command is initially scheduled.
@@ -37,12 +33,14 @@ public class ResetIndexCommand extends CommandBase {
 	public void initialize() {
 		m_intake.stopBelt();
 		m_shooter.stopFire();
+		timer.reset();
+		timer.start();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		m_intake.driveBelt(-.6);
+		m_intake.driveBelt(-.4);
 
 	}
 
@@ -52,12 +50,11 @@ public class ResetIndexCommand extends CommandBase {
 		m_intake.stopBelt();
 		m_intake.stopIntakeMotor();
 		m_shooter.stopFire();
-		System.out.println("RESET INDEX ENDED");
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return timer.hasPeriodPassed(5) && m_intake.tof_sensor.isDetecting();
+		return timer.hasPeriodPassed(.25) && m_intake.tof_sensor.isDetecting();
 	}
 }

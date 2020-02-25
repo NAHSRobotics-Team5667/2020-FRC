@@ -35,7 +35,6 @@ public class DriveTrainCommand extends CommandBase {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = DriveTrain;
 		addRequirements(m_drive);
-		Shuffleboard.getTab("Auto Alignment").add("Angle", angleController);
 	}
 
 	// Called when the command is initially scheduled.

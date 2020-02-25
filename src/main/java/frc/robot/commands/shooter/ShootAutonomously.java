@@ -23,6 +23,7 @@ public class ShootAutonomously extends CommandBase {
 	private double targetRPM;
 
 	private boolean location = LimeLight.getInstance().getPipeIndex() == 0;
+	private boolean hasRamped = false;
 
 	private CurrentSpikeCounter spikeCounter = new CurrentSpikeCounter(
 			location ? Constants.ShooterConstants.AUTO_LINE_THRESHOLD : Constants.ShooterConstants.TRENCH_THRESHOLD,
@@ -71,6 +72,10 @@ public class ShootAutonomously extends CommandBase {
 		// } else {
 		// m_intake.stopBelt();
 		// }
+
+		if (!hasRamped && m_shooter.getController().atSetpoint()) {
+			hasRamped = true;
+		}
 
 		if (spikeCounter.update(m_shooter.getOutputCurrent())) {
 			System.out.println("SHOT BALL!");

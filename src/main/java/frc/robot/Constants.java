@@ -82,7 +82,7 @@ public final class Constants {
         public static final int PORT = 4;
 
         public static final double AUTO_LINE_RPM = 3850;
-        public static final double TRENCH_RPM = 4250;
+        public static final double TRENCH_RPM = 4550;
 
         public static final int IDLE_VOLTAGE = 3;
 
@@ -94,8 +94,8 @@ public final class Constants {
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
 
-        public static final double AUTO_LINE_THRESHOLD = 70;
-        public static final double AUTO_LINE_DEADBAND = 15;
+        public static final double AUTO_LINE_THRESHOLD = 80;
+        public static final double AUTO_LINE_DEADBAND = 25;
 
         public static final double TRENCH_THRESHOLD = 70;
         public static final double TRENCH_DEADBAND = 15;
@@ -157,7 +157,7 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = .6;
+        public static final double kMaxSpeedMetersPerSecond = 1;
         public static final double kMaxAccelerationMetersPerSecondSquared = .6;
         public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
                 DriveConstants.kD);

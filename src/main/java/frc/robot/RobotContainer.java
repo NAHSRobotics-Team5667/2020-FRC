@@ -32,6 +32,7 @@ import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.wheel.PositionCommand;
 import frc.robot.commands.wheel.RotationCommand;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -124,8 +125,7 @@ public class RobotContainer {
 	private void configureButtonBindings() {
 		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
 		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
-		// Button x = new JoystickButton(getController(),
-		// Constants.ControllerConstants.BUTTON_X_PORT);
+		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
 		Button start = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_START_PORT);
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
@@ -133,6 +133,7 @@ public class RobotContainer {
 		a.whenPressed(() -> m_intake.toggle());
 		y.whenPressed(new AlignCommand(m_drive));
 		b.whenPressed(new RotationCommand(m_wheel));
+
 		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
 		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));
 	}
