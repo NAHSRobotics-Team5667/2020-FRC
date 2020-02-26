@@ -21,6 +21,7 @@ public class ShootAutonomously extends CommandBase {
 	private ShooterSubsystem m_shooter;
 	private IntakeSubsystem m_intake;
 	private double targetRPM;
+	private int target_shots;
 
 	private boolean location = LimeLight.getInstance().getPipeIndex() == 0;
 	private boolean hasRamped = false;
@@ -32,7 +33,7 @@ public class ShootAutonomously extends CommandBase {
 	/**
 	 * Creates a new ShootAuto.
 	 */
-	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, double targetRPM) {
+	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, double targetRPM, int amt) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
 		m_intake = intake;
@@ -40,6 +41,7 @@ public class ShootAutonomously extends CommandBase {
 		addRequirements(m_shooter, m_intake);
 
 		this.targetRPM = targetRPM;
+		target_shots = RobotContainer.ballCount - amt;
 
 		System.out.println("STARTING SHOOT");
 
@@ -62,7 +64,6 @@ public class ShootAutonomously extends CommandBase {
 		}
 
 		if (spikeCounter.update(m_shooter.getOutputCurrent())) {
-			System.out.println("SHOT BALL!");
 			RobotContainer.ballCount -= 1;
 		}
 
@@ -79,13 +80,13 @@ public class ShootAutonomously extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
+		m_intake.stopIntakeMotor();
 		m_shooter.stopFire();
-		System.out.println("END SHOOT");
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return RobotContainer.ballCount <= 0;
+		return RobotContainer.ballCount <= 0 || RobotContainer.ballCount == target_shots;
 	}
 }

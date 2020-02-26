@@ -203,6 +203,16 @@ public final class Constants {
                 // Pass config
                 config);
 
+        public static final Trajectory STRAIGHT_TRAJECTORY_1M = TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints
+                List.of(new Translation2d(.5, 0)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(1, 0, new Rotation2d(0)),
+                // Pass config
+                config);
+
         public static final Trajectory TRENCH_LINE = TrajectoryGenerator.generateTrajectory(
                 // Start
                 new Pose2d(5.2, -0.7, new Rotation2d(0)),
@@ -233,6 +243,9 @@ public final class Constants {
         public static final int S_RIGHT_Y_PORT = 5; // Right stick y
         public static final int S_LEFT_X_PORT = 0; // Left stick x
         public static final int S_LEFT_Y_PORT = 1; // Left stick y
+
+        public static final int S_LEFT = 9; // Left stick button
+        public static final int S_RIGHT = 10; // Right stick button
 
         // Triggers
         public static final int TRIGGER_RIGHT_PORT = 3; // Right trigger

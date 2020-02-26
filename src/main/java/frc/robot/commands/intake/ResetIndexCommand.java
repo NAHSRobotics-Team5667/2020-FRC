@@ -41,6 +41,7 @@ public class ResetIndexCommand extends CommandBase {
 	@Override
 	public void execute() {
 		m_intake.driveBelt(-.4);
+		m_shooter.fire(-1);
 
 	}
 

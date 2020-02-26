@@ -49,6 +49,7 @@ public class Robot extends TimedRobot {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(240, 180);
 		camera.setFPS(18);
+		Shuffleboard.getTab("Teleop").add("Intake", camera);
 
 		m_robotContainer = new RobotContainer();
 		m_chooser.setDefaultOption("Far Trench", 0);

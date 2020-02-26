@@ -27,10 +27,12 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.PATHS;
 import frc.robot.autos.RunPath;
+import frc.robot.autos.ShootAndStay;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.intake.ResetIndexCommand;
 import frc.robot.commands.shooter.ShooterCommand;
 import frc.robot.commands.wheel.PositionCommand;
 import frc.robot.commands.wheel.RotationCommand;
@@ -127,10 +129,19 @@ public class RobotContainer {
 		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
 		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
+
+		Button left_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_LEFT);
+		Button right_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_RIGHT);
+
 		Button start = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_START_PORT);
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
-		a.whenPressed(() -> m_intake.toggle());
+		right_stick.whenPressed(() -> {
+			m_intake.toggle();
+			if (!m_intake.isExtended())
+				new ResetIndexCommand(m_intake, m_shooter).schedule();
+		});
+
 		y.whenPressed(new AlignCommand(m_drive));
 		b.whenPressed(new RotationCommand(m_wheel));
 
@@ -145,12 +156,14 @@ public class RobotContainer {
 	 */
 	public Command getAutonomousCommand(int selection) {
 		if (selection <= 6)
+			// Trench Autos
 			return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake, m_shooter);
-		else if (selection > 7 && selection < paths.length)
-			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
 		else if (selection == 7)
 			// Code for shoot and stay
-			return null;
+			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.STRAIGHT_TRAJECTORY_1M);
+		else if (selection > 7 && selection < paths.length)
+			// Default Path Commands
+			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
 		else
 			return null;
 	}

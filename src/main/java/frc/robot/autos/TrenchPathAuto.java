@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.PATHS.PathWeaver;
-import frc.robot.commands.shooter.ShootAndHoldCommand;
+import frc.robot.commands.shooter.ShootAndAlignCommand;
 import frc.robot.commands.shooter.ShootAutonomously;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.actions.HoldPositionCommand;
@@ -44,8 +44,8 @@ public class TrenchPathAuto {
 		RamseteCommand toTrench = RunPath.getCommand(path, drive, false);
 		RamseteCommand trenchToWheel = RunPath.getCommand(trenchPath, drive, false);
 
-		SequentialCommandGroup phase1 = new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
-				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM))
+		SequentialCommandGroup phase1 = new ShootAndAlignCommand(drive,
+				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount))
 						.andThen(new InstantCommand(() -> {
 							drive.stop();
 							shooter.stopFire();
@@ -68,14 +68,13 @@ public class TrenchPathAuto {
 				// Phase 2
 				phase2,
 				// Phase 3
-				resetIndex.andThen(new ShootAndHoldCommand(drive, new HoldPositionCommand(drive),
-						new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_RPM))) })
-								.andThen(new RunCommand(() -> {
-									drive.setNeutralMode(NeutralMode.Brake);
-									drive.stop();
-									shooter.stopFire();
-									intake.stopBelt();
-									intake.stopIntakeMotor();
-								}));
+				resetIndex.andThen(new ShootAndAlignCommand(drive, new ShootAutonomously(shooter, intake,
+						ShooterConstants.TRENCH_RPM, RobotContainer.ballCount))) }).andThen(new RunCommand(() -> {
+							drive.setNeutralMode(NeutralMode.Brake);
+							drive.stop();
+							shooter.stopFire();
+							intake.stopBelt();
+							intake.stopIntakeMotor();
+						}));
 	}
 }
