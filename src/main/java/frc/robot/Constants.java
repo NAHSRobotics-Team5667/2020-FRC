@@ -82,7 +82,7 @@ public final class Constants {
         public static final int PORT = 4;
 
         public static final double AUTO_LINE_RPM = 3850;
-        public static final double TRENCH_RPM = 4550;
+        public static final double TRENCH_RPM = 4100;
 
         public static final int IDLE_VOLTAGE = 3;
 

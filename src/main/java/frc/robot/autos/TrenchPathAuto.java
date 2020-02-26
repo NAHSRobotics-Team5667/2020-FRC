@@ -53,8 +53,9 @@ public class TrenchPathAuto {
 
 		SequentialCommandGroup phase2 = new SequentialCommandGroup(
 				new Command[] { toTrench.andThen(() -> LimeLight.getInstance().setPipeline(1)),
-						new ParallelCommandGroup(new LoadCommand(intake, 3), trenchToWheel) })
+						new ParallelCommandGroup(new LoadCommand(intake, 1), trenchToWheel) })
 								.andThen(new InstantCommand(() -> {
+									drive.setNeutralMode(NeutralMode.Brake);
 									drive.stop();
 									shooter.stopFire();
 								}));

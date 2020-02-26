@@ -56,22 +56,6 @@ public class ShootAutonomously extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		// if (m_shooter.getOutputCurrent() > Constants.ShooterConstants.SPIKE &&
-		// !passedREV) {
-		// passedREV = true;
-		// }
-
-		// if (passedREV && !once && m_shooter.getController().atSetpoint()) {
-		// timer.start();
-		// once = true;
-		// }
-
-		// m_shooter.fireRPM(targetRPM);
-		// if (passedREV && once) {
-		// m_intake.driveBelt(.3);
-		// } else {
-		// m_intake.stopBelt();
-		// }
 
 		if (!hasRamped && m_shooter.getController().atSetpoint()) {
 			hasRamped = true;
@@ -85,6 +69,7 @@ public class ShootAutonomously extends CommandBase {
 		m_shooter.fireRPM(targetRPM);
 		if (m_shooter.getController().atSetpoint()) {
 			m_intake.driveBelt(.6);
+			m_intake.driveIntake(-0.4);
 		} else {
 			m_intake.stopBelt();
 		}

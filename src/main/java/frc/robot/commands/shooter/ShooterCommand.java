@@ -45,8 +45,14 @@ public class ShooterCommand extends CommandBase {
 				m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
 			}
 		} else {
-			m_shooter.resetIError();
-			m_shooter.fire(RobotContainer.getController().getRightTrigger());
+			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
+				m_shooter.fire(-1);
+			} else {
+				m_shooter.fire(RobotContainer.getController().getRightTrigger());
+				if (Math.abs(m_shooter.getCurrentRPM()) < 10) {
+					m_shooter.resetIError();
+				}
+			}
 		}
 	}
 
