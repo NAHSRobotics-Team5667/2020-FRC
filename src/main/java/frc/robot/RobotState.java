@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.LedConstants.Colors;
 
 /**
@@ -36,11 +39,11 @@ public class RobotState {
 		 * 
 		 * INTAKE - The robot is currently intaking
 		 */
-		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.PURPLE),
-		AUTO(2, Constants.LedConstants.Colors.PINK), VISION(3, Constants.LedConstants.Colors.GREEN),
-		SHOOTING(4, Constants.LedConstants.Colors.PURPLE), CLIMBING(5, Constants.LedConstants.Colors.RED),
-		ROTATION(6, Constants.LedConstants.Colors.RED), POSITION(7, Constants.LedConstants.Colors.RED),
-		INTAKING(8, Constants.LedConstants.Colors.YELLOW);
+		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.BLUE),
+		AUTO(2, Constants.LedConstants.Colors.YELLOW), SHOOTING(4, Constants.LedConstants.Colors.PURPLE),
+		CLIMBING(5, Constants.LedConstants.Colors.RED), ROTATION(6, Constants.LedConstants.Colors.RED),
+		POSITION(7, Constants.LedConstants.Colors.RED), INTAKING(8, Constants.LedConstants.Colors.YELLOW);
+
 		private int state;
 		private int[] color;
 
@@ -74,6 +77,13 @@ public class RobotState {
 			currentState = state;
 		else
 			currentState = States.IDLE;
+
+		Shuffleboard.getTab("Teleop").addString("Robot State", new Supplier<String>() {
+			@Override
+			public String get() {
+				return state.toString();
+			}
+		});
 	}
 
 	/**

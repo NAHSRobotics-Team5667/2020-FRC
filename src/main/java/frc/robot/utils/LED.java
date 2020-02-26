@@ -71,22 +71,20 @@ public class LED {
         if (Constants.m_RobotState.getCurrentState() == States.IDLE) {
             getAllianceColor();
             oneColor();
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
+        } else if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
             breatheColor(5);
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
+        } else if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
             breatheColor(1);
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
-            alternateColorBreathe(Constants.LedConstants.Colors.YELLOW.getColor(), 5, 5);
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
+        } else if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
+            breatheColor(1);
+        } else if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
             getAllianceColor();
             breatheColor(1);
-        }
-        if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
+        } else if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
             alternateColor(Constants.LedConstants.Colors.PURPLE.getColor(), 2);
+        } else {
+            getAllianceColor();
+            oneColor();
         }
     }
 

@@ -60,6 +60,7 @@ public final class Constants {
             public int[] getColor() {
                 return new int[] { r, g, b };
             }
+
         }
     }
 

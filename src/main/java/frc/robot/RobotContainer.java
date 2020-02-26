@@ -11,6 +11,7 @@ import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import com.kauailabs.navx.frc.AHRS;
 
@@ -85,7 +86,7 @@ public class RobotContainer {
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
 				new Solenoid(Constants.IntakeConstants.SOLENOID_PORT),
 				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
-				new WPI_VictorSPX(Constants.IntakeConstants.BELT_PORT));
+				new WPI_TalonSRX(Constants.IntakeConstants.BELT_PORT));
 
 		// Trigger to handle TOF sensor
 		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> {
@@ -155,16 +156,18 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		if (selection <= 6)
+		if (selection <= 6) {
 			// Trench Autos
 			return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake, m_shooter);
-		else if (selection == 7)
+		} else if (selection == 7) {
 			// Code for shoot and stay
+			m_drive.resetOdometry(Constants.PATHS.STRAIGHT_TRAJECTORY_1M.getInitialPose());
 			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.STRAIGHT_TRAJECTORY_1M);
-		else if (selection > 7 && selection < paths.length)
+		} else if (selection > 7 && selection < paths.length) {
 			// Default Path Commands
+			m_drive.resetOdometry(paths[selection].getInitialPose());
 			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
-		else
+		} else
 			return null;
 	}
 
