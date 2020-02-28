@@ -74,6 +74,7 @@ public class LED {
         } else if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
             breatheColor(5);
         } else if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
+            getAllianceColor();
             breatheColor(1);
         } else if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
             breatheColor(1);
@@ -81,7 +82,7 @@ public class LED {
             getAllianceColor();
             breatheColor(1);
         } else if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
-            alternateColor(Constants.LedConstants.Colors.PURPLE.getColor(), 2);
+            oneColor();
         } else {
             getAllianceColor();
             oneColor();

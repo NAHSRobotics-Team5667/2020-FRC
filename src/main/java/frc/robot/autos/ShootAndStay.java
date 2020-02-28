@@ -8,6 +8,7 @@
 package frc.robot.autos;
 
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -26,8 +27,14 @@ public class ShootAndStay extends SequentialCommandGroup {
 	 */
 	public ShootAndStay(ShooterSubsystem shooter, DriveTrainSubsystem drivetrain, IntakeSubsystem intake,
 			Trajectory path) {
-		super(new ShootAndAlignCommand(drivetrain, new ShootAutonomously(shooter, intake,
-				Constants.ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount)),
-				RunPath.getCommand(path, drivetrain, true));
+		super(new ShootAndAlignCommand(drivetrain,
+				new ShootAutonomously(shooter, intake, Constants.ShooterConstants.AUTO_LINE_RPM,
+						RobotContainer.ballCount)),
+				RunPath.getCommand(path, drivetrain, true).andThen(new RunCommand(() -> {
+					drivetrain.stop();
+					shooter.stopFire();
+					intake.stopIntakeMotor();
+					intake.stopBelt();
+				})));
 	}
 }

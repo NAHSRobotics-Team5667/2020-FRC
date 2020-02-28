@@ -51,16 +51,16 @@ public class TrenchPathAuto {
 							shooter.stopFire();
 						}));
 
-		SequentialCommandGroup phase2 = new SequentialCommandGroup(
-				new Command[] { toTrench.andThen(() -> LimeLight.getInstance().setPipeline(1)),
-						new ParallelCommandGroup(new LoadCommand(intake, 1), trenchToWheel) })
-								.andThen(new InstantCommand(() -> {
-									drive.setNeutralMode(NeutralMode.Brake);
-									drive.stop();
-									shooter.stopFire();
-								}));
+		SequentialCommandGroup phase2 = new SequentialCommandGroup(new Command[] { toTrench.andThen(() -> {
+			LimeLight.getInstance().setPipeline(1);
+		}), new ParallelCommandGroup(new LoadCommand(intake, 1),
+				trenchToWheel.andThen(new InstantCommand(drive::stop))) }).andThen(new InstantCommand(() -> {
+					drive.setNeutralMode(NeutralMode.Brake);
+					drive.stop();
+					shooter.stopFire();
+				}));
 
-		ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);
+		// ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);
 
 		return new SequentialCommandGroup(new Command[] {
 				// Phase 1
@@ -68,8 +68,8 @@ public class TrenchPathAuto {
 				// Phase 2
 				phase2,
 				// Phase 3
-				resetIndex.andThen(new ShootAndAlignCommand(drive, new ShootAutonomously(shooter, intake,
-						ShooterConstants.TRENCH_RPM, RobotContainer.ballCount))) }).andThen(new RunCommand(() -> {
+				new ShootAndAlignCommand(drive, new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_END_RPM,
+						RobotContainer.ballCount)) }).andThen(new RunCommand(() -> {
 							drive.setNeutralMode(NeutralMode.Brake);
 							drive.stop();
 							shooter.stopFire();

@@ -29,6 +29,6 @@ public class ShootAndAlignCommand extends ParallelCommandGroup {
 	 */
 	public ShootAndAlignCommand(DriveTrainSubsystem drive, ShootAutonomously shootCommand) {
 		// Align -> Hold -> Shoot
-		super(new AlignCommand(drive), shootCommand);
+		super(new AlignCommand(drive), shootCommand.withTimeout(6));
 	}
 }

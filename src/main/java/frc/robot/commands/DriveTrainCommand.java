@@ -52,14 +52,17 @@ public class DriveTrainCommand extends CommandBase {
 		if (m_drive.getDriveMode() == DriveModes.MANUAL) {
 			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
 			// Drive using joysticks
+
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
 					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
+
 		}
 
 		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
 				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING
 				&& Constants.m_RobotState.getCurrentState() != States.POSITION
-				&& Constants.m_RobotState.getCurrentState() != States.AUTO) {
+				&& Constants.m_RobotState.getCurrentState() != States.AUTO
+				&& Constants.m_RobotState.getCurrentState() != States.INTAKING) {
 			Constants.m_RobotState.setState(States.DRIVE);
 		}
 	}

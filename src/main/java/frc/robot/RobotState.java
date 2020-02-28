@@ -40,9 +40,9 @@ public class RobotState {
 		 * INTAKE - The robot is currently intaking
 		 */
 		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.BLUE),
-		AUTO(2, Constants.LedConstants.Colors.YELLOW), SHOOTING(4, Constants.LedConstants.Colors.PURPLE),
-		CLIMBING(5, Constants.LedConstants.Colors.RED), ROTATION(6, Constants.LedConstants.Colors.RED),
-		POSITION(7, Constants.LedConstants.Colors.RED), INTAKING(8, Constants.LedConstants.Colors.YELLOW);
+		AUTO(2, Constants.LedConstants.Colors.YELLOW), SHOOTING(3, Constants.LedConstants.Colors.PURPLE),
+		CLIMBING(4, Constants.LedConstants.Colors.RED), ROTATION(5, Constants.LedConstants.Colors.RED),
+		POSITION(6, Constants.LedConstants.Colors.RED), INTAKING(7, Constants.LedConstants.Colors.YELLOW);
 
 		private int state;
 		private int[] color;
@@ -70,6 +70,29 @@ public class RobotState {
 		public int[] getColor() {
 			return color;
 		}
+
+		public String getString() {
+			switch (state) {
+			case 0:
+				return "IDLE";
+			case 1:
+				return "DRIVE";
+			case 2:
+				return "AUTO";
+			case 3:
+				return "SHOOTING";
+			case 4:
+				return "CLIMBING";
+			case 5:
+				return "ROTATION";
+			case 6:
+				return "POSITION";
+			case 7:
+				return "INTAKING";
+			default:
+				return "IDLE";
+			}
+		}
 	}
 
 	public RobotState(States state) {
@@ -81,7 +104,7 @@ public class RobotState {
 		Shuffleboard.getTab("Teleop").addString("Robot State", new Supplier<String>() {
 			@Override
 			public String get() {
-				return state.toString();
+				return currentState.getString();
 			}
 		});
 	}

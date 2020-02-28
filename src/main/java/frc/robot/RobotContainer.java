@@ -137,14 +137,13 @@ public class RobotContainer {
 		Button start = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_START_PORT);
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
-		right_stick.whenPressed(() -> {
+		a.whenPressed(() -> {
 			m_intake.toggle();
-			if (!m_intake.isExtended())
-				new ResetIndexCommand(m_intake, m_shooter).schedule();
 		});
 
 		y.whenPressed(new AlignCommand(m_drive));
 		b.whenPressed(new RotationCommand(m_wheel));
+		right_stick.whenPressed(new PositionCommand(m_wheel));
 
 		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
 		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));

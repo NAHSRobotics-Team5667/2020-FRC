@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
+import frc.robot.RobotState.States;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -38,10 +39,10 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
  */
 public final class Constants {
 
-    public static RobotState m_RobotState = new RobotState(null);
+    public static RobotState m_RobotState = new RobotState(States.IDLE);
 
     public final static class LedConstants {
-        public static final int LED_PORT = 0;
+        public static final int LED_PORT = 9;
         public static final int LED_AMOUNT = 178;
         public static final double FLASH_TIME = 2;
 
@@ -73,7 +74,7 @@ public final class Constants {
         public static final int START_BALL_COUNT = 3;
 
         public static final int MOTOR_PORT = 1;
-        public static final int BELT_PORT = 2;
+        public static final int BELT_PORT = 6;
 
         public static final int SOLENOID_PORT = 0;
         public static final int SOLENOID_2_PORT = 7;
@@ -83,7 +84,8 @@ public final class Constants {
         public static final int PORT = 4;
 
         public static final double AUTO_LINE_RPM = 3850;
-        public static final double TRENCH_RPM = 4100;
+        public static final double TRENCH_RPM = 10000;
+        public static final double TRENCH_END_RPM = 4250;
 
         public static final int IDLE_VOLTAGE = 3;
 
@@ -95,8 +97,8 @@ public final class Constants {
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
 
-        public static final double AUTO_LINE_THRESHOLD = 80;
-        public static final double AUTO_LINE_DEADBAND = 25;
+        public static final double AUTO_LINE_THRESHOLD = 65;
+        public static final double AUTO_LINE_DEADBAND = 15;
 
         public static final double TRENCH_THRESHOLD = 70;
         public static final double TRENCH_DEADBAND = 15;
@@ -120,8 +122,8 @@ public final class Constants {
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
         public static final double kP = 0.015;
-        public static final double kI = 0.02;
-        public static final double kD = 0;
+        public static final double kI = kP / 3.7;
+        public static final double kD = 0.001;
     }
 
     public final static class DriveConstants {
@@ -158,8 +160,8 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = 1;
-        public static final double kMaxAccelerationMetersPerSecondSquared = .6;
+        public static final double kMaxSpeedMetersPerSecond = .8;
+        public static final double kMaxAccelerationMetersPerSecondSquared = .5;
         public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
                 DriveConstants.kD);
         public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
@@ -208,9 +210,9 @@ public final class Constants {
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints
-                List.of(new Translation2d(.5, 0)),
+                List.of(new Translation2d(.25, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(1, 0, new Rotation2d(0)),
+                new Pose2d(.5, 0, new Rotation2d(0)),
                 // Pass config
                 config);
 
@@ -218,9 +220,9 @@ public final class Constants {
                 // Start
                 new Pose2d(5.2, -0.7, new Rotation2d(0)),
                 // Pass through balls
-                List.of(new Translation2d(7, -0.7)),
+                List.of(new Translation2d(5.885, -0.7)),
                 // End at the end of the color wheel
-                new Pose2d(8.4, -0.7, new Rotation2d(0)), config);
+                new Pose2d(6.57, -0.7, new Rotation2d(0)), config);
 
         public static final class PathWeaver {
             public static Trajectory getTrajectory(String path) {

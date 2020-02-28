@@ -54,6 +54,7 @@ public class Rev2mTOF {
 		this.name = name;
 		this.sensor.setAutomaticMode(true);
 		this.sensor.setEnabled(true);
+		outputTelemetry();
 	}
 
 	/**

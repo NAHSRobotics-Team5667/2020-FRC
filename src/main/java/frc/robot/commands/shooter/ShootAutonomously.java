@@ -69,8 +69,8 @@ public class ShootAutonomously extends CommandBase {
 
 		m_shooter.fireRPM(targetRPM);
 		if (m_shooter.getController().atSetpoint()) {
-			m_intake.driveBelt(.6);
-			m_intake.driveIntake(-0.4);
+			m_intake.driveBelt(.7);
+			m_intake.driveIntake(-0.8);
 		} else {
 			m_intake.stopBelt();
 		}

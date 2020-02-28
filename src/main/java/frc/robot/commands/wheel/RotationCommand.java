@@ -34,7 +34,7 @@ public class RotationCommand extends CommandBase {
   @Override
   public void initialize() {
     Constants.m_RobotState.setState(States.ROTATION);
-    wheelSubsystem.rotateSpeed(0.2);
+    wheelSubsystem.rotateSpeed(0.1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

@@ -79,22 +79,22 @@ public class WheelSubsystem extends SubsystemBase {
 			case 'B':
 				// the robot will see red at this point
 				// so spin until it sees red
-				return "Red";
+				return "Yellow";
 
 			case 'G':
 				// the robot will see yellow at this point
 				// so spin until it sees yellow
-				return "Yellow";
+				return "Blue";
 
 			case 'R':
 				// the robot will see blue at this point
 				// so spin until it sees blue
-				return "Blue";
+				return "Green";
 
 			case 'Y':
 				// the robot will see green at this point
 				// so spin until it sees green
-				return "Green";
+				return "Red";
 
 			default:
 				// This is corrupt data

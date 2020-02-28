@@ -12,11 +12,15 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.RobotState.States;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.utils.CurrentSpikeCounter;
 import frc.robot.utils.LimeLight;
 
 public class ShooterCommand extends CommandBase {
 	private ShooterSubsystem m_shooter;
+	private CurrentSpikeCounter spike_counter = new CurrentSpikeCounter(Constants.ShooterConstants.AUTO_LINE_THRESHOLD,
+			Constants.ShooterConstants.AUTO_LINE_DEADBAND);
 
 	/**
 	 * Creates a new ShooterCommand.
@@ -31,11 +35,15 @@ public class ShooterCommand extends CommandBase {
 	@Override
 	public void initialize() {
 		m_shooter.stopFire();
+		m_shooter.resetIError();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		if (spike_counter.update(m_shooter.getOutputCurrent())) {
+			RobotContainer.ballCount -= 1;
+		}
 		if (RobotContainer.getController().getXButton()) {
 			if (LimeLight.getInstance().getPipeIndex() == 0) {
 				// pidController.setSetpoint(Constants.ShooterConstants.AUTO_LINE_RPM);
@@ -48,12 +56,11 @@ public class ShooterCommand extends CommandBase {
 			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
 				m_shooter.fire(-1);
 			} else {
-				m_shooter.fire(RobotContainer.getController().getRightTrigger());
-				if (Math.abs(m_shooter.getCurrentRPM()) < 10) {
-					m_shooter.resetIError();
-				}
+				m_shooter.stopFire();
+				Constants.m_RobotState.setState(States.DRIVE);
 			}
 		}
+
 	}
 
 	// Called once the command ends or is interrupted.

@@ -30,7 +30,7 @@ public class AlignCommand extends CommandBase {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_drive = drive;
 		addRequirements(m_drive);
-		angleController.setTolerance(1, 3);
+		angleController.setTolerance(1, 1);
 
 	}
 
@@ -52,7 +52,7 @@ public class AlignCommand extends CommandBase {
 			m_drive.feedMotorSafety();
 
 		} else if (!LimeLight.getInstance().hasValidTarget()) {
-			m_drive.drive(0, -0.3, true);
+			m_drive.drive(0, -0.4, true);
 		} else {
 			m_drive.feedMotorSafety();
 			m_drive.stop();
@@ -71,6 +71,7 @@ public class AlignCommand extends CommandBase {
 	@Override
 	public void end(boolean interrupted) {
 		m_drive.stop();
+		angleController.reset();
 		m_drive.setDriveMode(DriveModes.MANUAL);
 	}
 

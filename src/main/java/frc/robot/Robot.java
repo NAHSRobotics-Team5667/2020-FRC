@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotState.States;
 import frc.robot.utils.LED;
 import frc.robot.utils.LimeLight;
 
@@ -49,9 +50,10 @@ public class Robot extends TimedRobot {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(240, 180);
 		camera.setFPS(18);
-		Shuffleboard.getTab("Teleop").add("Intake", camera);
+		Shuffleboard.getTab("Teleop").add("Intake Cam", camera);
 
 		m_robotContainer = new RobotContainer();
+		m_robotContainer.setNeutralMode(NeutralMode.Coast);
 		m_chooser.setDefaultOption("Far Trench", 0);
 		m_chooser.addOption("Far Rendevous", 1);
 		m_chooser.addOption("Middle Trench", 2);
@@ -89,7 +91,7 @@ public class Robot extends TimedRobot {
 		// robot's periodic
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
-		// LED.getLEDInstance().setColor();
+		LED.getLEDInstance().setColor();
 
 	}
 
@@ -100,6 +102,7 @@ public class Robot extends TimedRobot {
 	public void disabledInit() {
 		m_robotContainer.setNeutralMode(NeutralMode.Brake);
 		LimeLight.getInstance().setPipeline(0);
+		Constants.m_RobotState.setState(States.IDLE);
 	}
 
 	@Override

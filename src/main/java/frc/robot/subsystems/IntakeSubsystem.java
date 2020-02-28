@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotState.States;
 import frc.robot.sensors.Rev2mTOF;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -44,18 +45,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_intake = intake;
 		m_belt = belt;
 
-		VictorSPXConfiguration config = new VictorSPXConfiguration();
-
-		m_intake.configAllSettings(config);
+		m_belt.configFactoryDefault();
 
 		m_intake.setNeutralMode(NeutralMode.Brake);
 		m_belt.setNeutralMode(NeutralMode.Brake);
-
-		SupplyCurrentLimitConfiguration current_limit = new SupplyCurrentLimitConfiguration();
-		current_limit.enable = true;
-		current_limit.currentLimit = 25;
-
-		m_belt.configSupplyCurrentLimit(current_limit);
 
 		m_solenoid = solenoid;
 		m_solenoid2 = solenoid2;
@@ -76,6 +69,18 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_solenoid2.set(Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.set(ControlMode.PercentOutput, Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
 		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
+		Constants.m_RobotState.setState(States.INTAKING);
+	}
+
+	/**
+	 * Extends the intake outside of frame perimeter
+	 */
+	public void extendIntake(double speed) {
+		m_solenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_solenoid2.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_intake.set(ControlMode.PercentOutput, speed);
+		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
+		Constants.m_RobotState.setState(States.INTAKING);
 	}
 
 	/**
@@ -86,13 +91,14 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_solenoid2.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.stopMotor();
 		m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
+		Constants.m_RobotState.setState(States.DRIVE);
 	}
 
 	/**
 	 * Start the belt
 	 */
 	public void startBelt() {
-		m_belt.set(Constants.IntakeConstants.BELT_MOTOR_SPEED);
+		m_belt.set(ControlMode.PercentOutput, Constants.IntakeConstants.BELT_MOTOR_SPEED);
 	}
 
 	/**
@@ -101,7 +107,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @param speed - The speed at which to run the belt
 	 */
 	public void driveBelt(double speed) {
-		m_belt.set(speed);
+		m_belt.set(ControlMode.PercentOutput, speed);
 	}
 
 	/**
@@ -130,12 +136,23 @@ public class IntakeSubsystem extends SubsystemBase {
 		}
 	}
 
+	/**
+	 * Toggle the intake
+	 */
+	public void toggle(double speed) {
+		if (m_status == Constants.IntakeConstants.SOLENOID_FIRED) {
+			retractIntake();
+		} else {
+			extendIntake(speed);
+		}
+	}
+
 	public boolean isExtended() {
 		return m_status == Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
 	public double getBeltSpeed() {
-		return m_belt.get();
+		return m_belt.getMotorOutputPercent();
 	}
 
 	/**

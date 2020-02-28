@@ -53,7 +53,9 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = 3.5;
+		configuration.openloopRamp = .5;
+		m_master.configAllSettings(configuration);
+
 		m_master.setSelectedSensorPosition(0);
 
 		setNeutralMode(NeutralMode.Coast);
@@ -107,7 +109,9 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.stopMotor();
 		rampTimer.reset();
 		rampTimer.start();
+		Constants.m_RobotState.setState(States.IDLE);
 	}
+
 
 	/**
 	 * Resets the encoder for the right shooter wheel
@@ -147,6 +151,14 @@ public class ShooterSubsystem extends SubsystemBase {
 				return getCurrentRPM();
 			}
 		}).withWidget(BuiltInWidgets.kGraph);
+
+		compTab.addNumber("Shooter Temp", new DoubleSupplier() {
+
+			@Override
+			public double getAsDouble() {
+				return m_master.getTemperature();
+			}
+		});
 	}
 
 	public void debug() {
