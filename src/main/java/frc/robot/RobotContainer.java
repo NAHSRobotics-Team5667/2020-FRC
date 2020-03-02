@@ -7,7 +7,9 @@
 
 package frc.robot;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -26,12 +28,15 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.PATHS;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.ShootAndStay;
 import frc.robot.autos.TrenchPathAuto;
+import frc.robot.autos.TrenchPathSide;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
+import frc.robot.commands.actions.TurnToDegrees;
 import frc.robot.commands.intake.IntakeCommand;
 import frc.robot.commands.intake.ResetIndexCommand;
 import frc.robot.commands.shooter.ShooterCommand;
@@ -59,7 +64,7 @@ public class RobotContainer {
 			PATHS.PathWeaver.getTrajectory("FAR_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("MIDDLE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("CLOSE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("BALL_THIEF"), null,
-			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, null };
+			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH_0"), null };
 
 	public boolean done = false;
 	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
@@ -117,6 +122,14 @@ public class RobotContainer {
 						Constants.VisionConstants.A1, LimeLight.getInstance().getYAngle());
 			}
 		});
+		Shuffleboard.getTab("Teleop").addString("TRENCH RPMS", new Supplier<String>() {
+
+			@Override
+			public String get() {
+				return Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM ? "HIGH"
+						: "LOW";
+			}
+		});
 	}
 
 	/**
@@ -131,6 +144,13 @@ public class RobotContainer {
 		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
 
+		Trigger up_pad = new Trigger(new BooleanSupplier() {
+			@Override
+			public boolean getAsBoolean() {
+				return getController().getDPad() == 0;
+			}
+		});
+
 		Button left_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_LEFT);
 		Button right_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_RIGHT);
 
@@ -143,7 +163,12 @@ public class RobotContainer {
 
 		y.whenPressed(new AlignCommand(m_drive));
 		b.whenPressed(new RotationCommand(m_wheel));
-		right_stick.whenPressed(new PositionCommand(m_wheel));
+
+		right_stick.whenPressed(new RotationCommand(m_wheel));
+		left_stick.whenPressed(
+				() -> Constants.ShooterConstants.TRENCH_RPM = (Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM
+						? Constants.ShooterConstants.TRENCH_FAR_RPM
+						: Constants.ShooterConstants.TRENCH_END_RPM));
 
 		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
 		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));
@@ -155,19 +180,22 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		if (selection <= 6) {
+		if (selection > 1 && selection <= 6) {
 			// Trench Autos
 			return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake, m_shooter);
 		} else if (selection == 7) {
 			// Code for shoot and stay
-			m_drive.resetOdometry(Constants.PATHS.STRAIGHT_TRAJECTORY_1M.getInitialPose());
-			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.STRAIGHT_TRAJECTORY_1M);
-		} else if (selection > 7 && selection < paths.length) {
+			m_drive.resetOdometry(Constants.PATHS.OFF_LINE.getInitialPose());
+			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.OFF_LINE);
+		} else if (selection > 7 && selection < 10) {
 			// Default Path Commands
 			m_drive.resetOdometry(paths[selection].getInitialPose());
 			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
-		} else
-			return null;
+		} else if ((selection > 9 && selection <= paths.length) || selection == 0) {
+			return TrenchPathSide.getAuto(paths[selection], Constants.PATHS.SIDE_TRENCH, m_drive, m_intake, m_shooter);
+		} else {
+			return RunPath.getCommand(paths[10], m_drive, false);
+		}
 	}
 
 	/**

@@ -12,6 +12,7 @@ import java.util.Map;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotState.States;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem.DriveModes;
@@ -40,11 +41,19 @@ public class AlignCommand extends CommandBase {
 		LimeLight.getInstance().turnLightOn();
 		m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.AUTO);
 		System.out.println("STARTING ALIGN COMMAND");
+		if (LimeLight.getInstance().getPipeIndex() == 0) {
+			angleController.setPID(Constants.VisionConstants.kP, Constants.VisionConstants.kI,
+					Constants.VisionConstants.kD);
+		} else {
+			angleController.setPID(Constants.VisionConstants.kP_far, Constants.VisionConstants.kI_far,
+					Constants.VisionConstants.kD_far);
+		}
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
+		Constants.m_RobotState.setState(States.ALIGNING);
 		if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO && LimeLight.getInstance().hasValidTarget()) {
 			double angle = -angleController.calculate(LimeLight.getInstance().getXAngle());
 			double output = Constants.DriveConstants.ksVolts + angle;
@@ -52,7 +61,7 @@ public class AlignCommand extends CommandBase {
 			m_drive.feedMotorSafety();
 
 		} else if (!LimeLight.getInstance().hasValidTarget()) {
-			m_drive.drive(0, -0.4, true);
+			m_drive.drive(0, -0.6, true);
 		} else {
 			m_drive.feedMotorSafety();
 			m_drive.stop();
@@ -73,6 +82,7 @@ public class AlignCommand extends CommandBase {
 		m_drive.stop();
 		angleController.reset();
 		m_drive.setDriveMode(DriveModes.MANUAL);
+		Constants.m_RobotState.setState(States.ALIGNED);
 	}
 
 	// Returns true when the command should end.

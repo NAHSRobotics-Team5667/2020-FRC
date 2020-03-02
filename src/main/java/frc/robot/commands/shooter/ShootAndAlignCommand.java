@@ -7,6 +7,8 @@
 
 package frc.robot.commands.shooter;
 
+import java.util.function.BooleanSupplier;
+
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.actions.AlignCommand;
@@ -29,6 +31,6 @@ public class ShootAndAlignCommand extends ParallelCommandGroup {
 	 */
 	public ShootAndAlignCommand(DriveTrainSubsystem drive, ShootAutonomously shootCommand) {
 		// Align -> Hold -> Shoot
-		super(new AlignCommand(drive), shootCommand.withTimeout(6));
+		super(new AlignCommand(drive), shootCommand);
 	}
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotState.States;
 import frc.robot.utils.LED;
 import frc.robot.utils.LimeLight;
+import frc.robot.utils.LimeLight.LightMode.SnapMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
 
 		m_robotContainer = new RobotContainer();
 		m_robotContainer.setNeutralMode(NeutralMode.Coast);
-		m_chooser.setDefaultOption("Far Trench", 0);
+		m_chooser.setDefaultOption("Far Side Trench", 0);
 		m_chooser.addOption("Far Rendevous", 1);
 		m_chooser.addOption("Middle Trench", 2);
 		m_chooser.addOption("Middle Rendevous", 3);
@@ -64,6 +65,9 @@ public class Robot extends TimedRobot {
 		m_chooser.addOption("Shoot & Stay", 7);
 		m_chooser.addOption("Straight 2M", 8);
 		m_chooser.addOption("S Path", 9);
+		m_chooser.addOption("Middle Side Trench", 10);
+		m_chooser.addOption("Far Side Trench", 11);
+
 		m_chooser.addOption("Null", 99);
 
 		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
@@ -92,6 +96,11 @@ public class Robot extends TimedRobot {
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
 		LED.getLEDInstance().setColor();
+		if (LimeLight.getInstance().hasValidTarget()) {
+			LimeLight.getInstance().takeSnapshots(SnapMode.ENABLED);
+		} else {
+			LimeLight.getInstance().takeSnapshots(SnapMode.DISABLED);
+		}
 
 	}
 

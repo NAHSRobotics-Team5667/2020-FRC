@@ -71,16 +71,15 @@ public class LED {
         if (Constants.m_RobotState.getCurrentState() == States.IDLE) {
             getAllianceColor();
             oneColor();
-        } else if (Constants.m_RobotState.getCurrentState() == States.AUTO) {
-            breatheColor(5);
         } else if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
             getAllianceColor();
             breatheColor(1);
-        } else if (Constants.m_RobotState.getCurrentState() == States.SHOOTING) {
-            breatheColor(1);
-        } else if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
-            getAllianceColor();
-            breatheColor(1);
+        } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
+            oneColor();
+        } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNING) {
+            oneColor();
+        } else if (Constants.m_RobotState.getCurrentState() == States.REVED) {
+            oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
             oneColor();
         } else {

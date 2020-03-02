@@ -84,8 +84,10 @@ public final class Constants {
         public static final int PORT = 4;
 
         public static final double AUTO_LINE_RPM = 3850;
-        public static final double TRENCH_RPM = 10000;
-        public static final double TRENCH_END_RPM = 4250;
+        public static final double TRENCH_FAR_RPM = 10000;
+        public static final double TRENCH_END_RPM = 4500;
+
+        public static double TRENCH_RPM = TRENCH_END_RPM;
 
         public static final int IDLE_VOLTAGE = 3;
 
@@ -121,9 +123,14 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
-        public static final double kP = 0.015;
-        public static final double kI = kP / 3.7;
+        public static final double kP = 0.017;
+        public static final double kI = kP / 3.6;
         public static final double kD = 0.001;
+
+        public static final double kP_far = 0.03;
+        public static final double kI_far = kP_far / 4;
+        public static final double kD_far = kD;
+
     }
 
     public final static class DriveConstants {
@@ -206,13 +213,13 @@ public final class Constants {
                 // Pass config
                 config);
 
-        public static final Trajectory STRAIGHT_TRAJECTORY_1M = TrajectoryGenerator.generateTrajectory(
+        public static final Trajectory OFF_LINE = TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints
-                List.of(new Translation2d(.25, 0)),
+                List.of(new Translation2d(1, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(.5, 0, new Rotation2d(0)),
+                new Pose2d(2, 0, new Rotation2d(0)),
                 // Pass config
                 config);
 
@@ -223,6 +230,14 @@ public final class Constants {
                 List.of(new Translation2d(5.885, -0.7)),
                 // End at the end of the color wheel
                 new Pose2d(6.57, -0.7, new Rotation2d(0)), config);
+
+        public static final Trajectory SIDE_TRENCH = TrajectoryGenerator.generateTrajectory(
+                // Start
+                new Pose2d(6.159, -1.549, new Rotation2d(90)),
+                // Pass through balls
+                List.of(new Translation2d(5.885, -0.7)),
+                // End at the end of the color wheel
+                new Pose2d(6.159, -1.069, new Rotation2d(90)), config);
 
         public static final class PathWeaver {
             public static Trajectory getTrajectory(String path) {

@@ -45,6 +45,11 @@ public class ShooterCommand extends CommandBase {
 			RobotContainer.ballCount -= 1;
 		}
 		if (RobotContainer.getController().getXButton()) {
+
+			if (m_shooter.getController().atSetpoint() && Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
+				Constants.m_RobotState.setState(States.REVED);
+			}
+
 			if (LimeLight.getInstance().getPipeIndex() == 0) {
 				// pidController.setSetpoint(Constants.ShooterConstants.AUTO_LINE_RPM);
 				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
@@ -57,7 +62,12 @@ public class ShooterCommand extends CommandBase {
 				m_shooter.fire(-1);
 			} else {
 				m_shooter.stopFire();
-				Constants.m_RobotState.setState(States.DRIVE);
+				if (Constants.m_RobotState.getCurrentState() != States.INTAKING
+						&& Constants.m_RobotState.getCurrentState() != States.ALIGNED
+						&& Constants.m_RobotState.getCurrentState() != States.ALIGNING) {
+					System.out.println("SHOOTER SET DRIVE");
+					// Constants.m_RobotState.setState(States.DRIVE);
+				}
 			}
 		}
 

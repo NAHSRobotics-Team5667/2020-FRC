@@ -83,7 +83,6 @@ public class ShooterSubsystem extends SubsystemBase {
 	 * @param speed - the speed of the wheels thats needed
 	 */
 	public void fire(double speed) {
-		Constants.m_RobotState.setState(States.SHOOTING);
 		m_master.set(-speed);
 	}
 
@@ -111,7 +110,6 @@ public class ShooterSubsystem extends SubsystemBase {
 		rampTimer.start();
 		Constants.m_RobotState.setState(States.IDLE);
 	}
-
 
 	/**
 	 * Resets the encoder for the right shooter wheel
