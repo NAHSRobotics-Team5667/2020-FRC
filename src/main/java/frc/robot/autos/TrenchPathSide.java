@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.actions.TurnToDegrees;
 import frc.robot.commands.intake.LoadCommand;
 import frc.robot.commands.shooter.ShootAndAlignCommand;
@@ -43,15 +44,15 @@ public class TrenchPathSide {
 
 		SequentialCommandGroup phase1 = new ShootAndAlignCommand(drive,
 				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount))
-						.andThen(new InstantCommand(() -> {
+						.withTimeout(4).andThen(new InstantCommand(() -> {
 							drive.stop();
 							shooter.stopFire();
 						}));
 
 		SequentialCommandGroup phase2 = new SequentialCommandGroup(new Command[] { toTrench.andThen(() -> {
-			LimeLight.getInstance().setPipeline(1);
-		}), new ParallelCommandGroup(new LoadCommand(intake, 1),
-				trenchToBall.andThen(new InstantCommand(drive::stop))) }).andThen(new InstantCommand(() -> {
+			LimeLight.getInstance().setPipeline(0);
+		}), new ParallelCommandGroup(new LoadCommand(intake, 1), trenchToBall.andThen(drive::stop)) })
+				.andThen(new InstantCommand(() -> {
 					drive.setNeutralMode(NeutralMode.Brake);
 					drive.stop();
 					shooter.stopFire();
@@ -59,9 +60,7 @@ public class TrenchPathSide {
 
 		ShootAndAlignCommand shoot = new ShootAndAlignCommand(drive,
 				new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_END_RPM, RobotContainer.ballCount));
-		TurnToDegrees turn = new TurnToDegrees(drive, -50);
-		SequentialCommandGroup phase3 = new SequentialCommandGroup(new Command[] { turn.withTimeout(1), shoot });
-		// ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);
+		SequentialCommandGroup phase3 = new SequentialCommandGroup(new Command[] { shoot });
 
 		return new SequentialCommandGroup(new Command[] {
 				// Phase 1

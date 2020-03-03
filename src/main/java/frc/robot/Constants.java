@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -83,9 +84,9 @@ public final class Constants {
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final double AUTO_LINE_RPM = 3850;
-        public static final double TRENCH_FAR_RPM = 10000;
-        public static final double TRENCH_END_RPM = 4500;
+        public static final double AUTO_LINE_RPM = 4750;
+        public static final double TRENCH_FAR_RPM = 5300;
+        public static final double TRENCH_END_RPM = 4800;
 
         public static double TRENCH_RPM = TRENCH_END_RPM;
 
@@ -123,8 +124,8 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
-        public static final double kP = 0.017;
-        public static final double kI = kP / 3.6;
+        public static final double kP = 0.018;
+        public static final double kI = kP / 4;
         public static final double kD = 0.001;
 
         public static final double kP_far = 0.03;
@@ -233,11 +234,13 @@ public final class Constants {
 
         public static final Trajectory SIDE_TRENCH = TrajectoryGenerator.generateTrajectory(
                 // Start
-                new Pose2d(6.159, -1.549, new Rotation2d(90)),
+                new Pose2d(6.244, -1.463, new Rotation2d(90)),
                 // Pass through balls
-                List.of(new Translation2d(5.885, -0.7)),
+                List.of(new Translation2d(6.244, -1.1)),
                 // End at the end of the color wheel
-                new Pose2d(6.159, -1.069, new Rotation2d(90)), config);
+                new Pose2d(6.244, -1, new Rotation2d(90)), config);
+
+        public static final Trajectory SIDE_FORWARD = PathWeaver.getTrajectory("TRENCH_LINE");
 
         public static final class PathWeaver {
             public static Trajectory getTrajectory(String path) {

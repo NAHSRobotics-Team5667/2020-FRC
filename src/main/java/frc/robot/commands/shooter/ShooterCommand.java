@@ -7,7 +7,6 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -46,17 +45,17 @@ public class ShooterCommand extends CommandBase {
 		}
 		if (RobotContainer.getController().getXButton()) {
 
-			if (m_shooter.getController().atSetpoint() && Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
-				Constants.m_RobotState.setState(States.REVED);
-			}
+			// if (m_shooter.getController().atSetpoint() &&
+			// Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
+			// Constants.m_RobotState.setState(States.REVED);
+			// }
 
-			if (LimeLight.getInstance().getPipeIndex() == 0) {
-				// pidController.setSetpoint(Constants.ShooterConstants.AUTO_LINE_RPM);
-				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
-			} else {
-				// pidController.setSetpoint(Constants.ShooterConstants.TRENCH_RPM);
-				m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
-			}
+			// if (LimeLight.getInstance().getPipeIndex() == 0) {
+			// m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
+			// } else {
+			// m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
+			// }
+			m_shooter.fireRPM(LimeLight.getInstance().getArea() * -96.4 + 4906);
 		} else {
 			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
 				m_shooter.fire(-1);

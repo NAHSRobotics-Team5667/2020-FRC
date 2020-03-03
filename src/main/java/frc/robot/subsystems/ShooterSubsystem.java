@@ -63,7 +63,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		outputTelemetry();
 		debug();
 
-		m_controller.setTolerance(250, 250);
+		m_controller.setTolerance(200, 200);
 
 	}
 

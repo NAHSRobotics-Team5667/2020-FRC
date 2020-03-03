@@ -64,9 +64,9 @@ public class RobotContainer {
 			PATHS.PathWeaver.getTrajectory("FAR_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("MIDDLE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("CLOSE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("BALL_THIEF"), null,
-			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH_0"), null };
+			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH_SIDE"),
+			null };
 
-	public boolean done = false;
 	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
 
 	private static DriveTrainSubsystem m_drive;
@@ -162,7 +162,8 @@ public class RobotContainer {
 		});
 
 		y.whenPressed(new AlignCommand(m_drive));
-		b.whenPressed(new RotationCommand(m_wheel));
+		// b.whenPressed(new RotationCommand(m_wheel));
+		b.whenPressed(new TurnToDegrees(m_drive, -60));
 
 		right_stick.whenPressed(new RotationCommand(m_wheel));
 		left_stick.whenPressed(
@@ -192,9 +193,13 @@ public class RobotContainer {
 			m_drive.resetOdometry(paths[selection].getInitialPose());
 			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
 		} else if ((selection > 9 && selection <= paths.length) || selection == 0) {
-			return TrenchPathSide.getAuto(paths[selection], Constants.PATHS.SIDE_TRENCH, m_drive, m_intake, m_shooter);
+			m_drive.resetOdometry(paths[selection].getInitialPose());
+			return TrenchPathSide.getAuto(paths[selection], Constants.PATHS.SIDE_FORWARD, m_drive, m_intake, m_shooter);
 		} else {
-			return RunPath.getCommand(paths[10], m_drive, false);
+			m_drive.resetOdometry(paths[10].getInitialPose());
+			return RunPath.getCommand(paths[10], m_drive, false).andThen(new RunCommand(() -> {
+				m_drive.stop();
+			}));
 		}
 	}
 

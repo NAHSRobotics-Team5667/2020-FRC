@@ -7,6 +7,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.cscore.UsbCamera;
@@ -73,6 +75,12 @@ public class Robot extends TimedRobot {
 		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
 
 		LimeLight.getInstance().turnLightOn();
+		compTab.addNumber("L_AREA", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return LimeLight.getInstance().getArea();
+			}
+		});
 
 	}
 
@@ -96,11 +104,11 @@ public class Robot extends TimedRobot {
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
 		LED.getLEDInstance().setColor();
-		if (LimeLight.getInstance().hasValidTarget()) {
-			LimeLight.getInstance().takeSnapshots(SnapMode.ENABLED);
-		} else {
-			LimeLight.getInstance().takeSnapshots(SnapMode.DISABLED);
-		}
+		// if (LimeLight.getInstance().hasValidTarget()) {
+		// LimeLight.getInstance().takeSnapshots(SnapMode.ENABLED);
+		// } else {
+		// LimeLight.getInstance().takeSnapshots(SnapMode.DISABLED);
+		// }
 
 	}
 
