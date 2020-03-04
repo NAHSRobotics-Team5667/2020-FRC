@@ -55,7 +55,7 @@ public class ShooterCommand extends CommandBase {
 			// } else {
 			// m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
 			// }
-			m_shooter.fireRPM(LimeLight.getInstance().getArea() * -96.4 + 4906);
+			m_shooter.fireRPM(LimeLight.getInstance().getArea() * -95.4 + 4906);
 		} else {
 			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
 				m_shooter.fire(-1);

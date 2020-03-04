@@ -124,9 +124,9 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
-        public static final double kP = 0.018;
-        public static final double kI = kP / 4;
-        public static final double kD = 0.001;
+        public static final double kP = 0.02;
+        public static final double kI = kP / 3.5;
+        public static final double kD = 0.01;
 
         public static final double kP_far = 0.03;
         public static final double kI_far = kP_far / 4;

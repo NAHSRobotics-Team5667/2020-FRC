@@ -46,6 +46,10 @@ public class IntakeCommand extends CommandBase {
 			if (!m_intake.isExtended())
 				m_intake.stopIntakeMotor();
 		}
+
+		if (RobotContainer.getController().getAButtonPressed()) {
+			m_intake.toggle();
+		}
 	}
 
 	// Called once the command ends or is interrupted.

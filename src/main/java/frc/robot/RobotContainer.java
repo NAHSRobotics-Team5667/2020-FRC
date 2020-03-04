@@ -157,10 +157,6 @@ public class RobotContainer {
 		Button start = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_START_PORT);
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
-		a.whenPressed(() -> {
-			m_intake.toggle();
-		});
-
 		y.whenPressed(new AlignCommand(m_drive));
 		// b.whenPressed(new RotationCommand(m_wheel));
 		b.whenPressed(new TurnToDegrees(m_drive, -60));
