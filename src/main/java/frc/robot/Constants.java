@@ -76,6 +76,7 @@ public final class Constants {
 
         public static final int MOTOR_PORT = 1;
         public static final int BELT_PORT = 6;
+        public static final int COLSON_PORT = 7;
 
         public static final int SOLENOID_PORT = 0;
         public static final int SOLENOID_2_PORT = 7;

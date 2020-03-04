@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
 		camera.setResolution(240, 180);
 		camera.setFPS(18);
-		Shuffleboard.getTab("Teleop").add("Intake Cam", camera);
+		Shuffleboard.getTab("Teleop").add("Intake Cam", camera).withPosition(2, 0);
 
 		m_robotContainer = new RobotContainer();
 		m_robotContainer.setNeutralMode(NeutralMode.Coast);
@@ -72,15 +72,10 @@ public class Robot extends TimedRobot {
 
 		m_chooser.addOption("Null", 99);
 
-		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 2)
+				.withSize(2, 1);
 
 		LimeLight.getInstance().turnLightOn();
-		compTab.addNumber("L_AREA", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return LimeLight.getInstance().getArea();
-			}
-		});
 
 	}
 

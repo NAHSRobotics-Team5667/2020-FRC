@@ -59,7 +59,7 @@ public class WheelSubsystem extends SubsystemBase {
 		m_colorMatch.addColorMatch(kRedTarget);
 		m_colorMatch.addColorMatch(kYellowTarget);
 
-		outputTelemetry();
+		// outputTelemetry();
 	}
 
 	@Override

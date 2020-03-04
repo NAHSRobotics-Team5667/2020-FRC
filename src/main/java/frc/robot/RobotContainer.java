@@ -91,7 +91,8 @@ public class RobotContainer {
 		m_intake = new IntakeSubsystem(new WPI_VictorSPX(Constants.IntakeConstants.MOTOR_PORT),
 				new Solenoid(Constants.IntakeConstants.SOLENOID_PORT),
 				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
-				new WPI_TalonSRX(Constants.IntakeConstants.BELT_PORT));
+				new WPI_TalonSRX(Constants.IntakeConstants.BELT_PORT),
+				new WPI_TalonFX(Constants.IntakeConstants.COLSON_PORT));
 
 		// Trigger to handle TOF sensor
 		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> {

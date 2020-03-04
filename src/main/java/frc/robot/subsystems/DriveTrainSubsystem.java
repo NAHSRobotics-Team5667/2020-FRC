@@ -112,7 +112,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
 		reverseEncoders();
 		resetOdometry(new Pose2d());
-		outputTelemetry();
+		// outputTelemetry();
 	}
 
 	@Override

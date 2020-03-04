@@ -61,7 +61,6 @@ public class ShooterSubsystem extends SubsystemBase {
 		setNeutralMode(NeutralMode.Coast);
 
 		outputTelemetry();
-		debug();
 
 		m_controller.setTolerance(200, 200);
 
@@ -173,6 +172,6 @@ public class ShooterSubsystem extends SubsystemBase {
 			public double getAsDouble() {
 				return RobotContainer.ballCount;
 			}
-		}).withWidget(BuiltInWidgets.kGraph);
+		}).withWidget(BuiltInWidgets.kGraph).withPosition(0, 0).withSize(2, 2);
 	}
 }

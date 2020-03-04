@@ -9,6 +9,7 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -39,8 +40,12 @@ public class LoadCommand extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		m_intake.driveBelt(.3);
-
+		m_intake.setColson(.3);
+		if (m_intake.getColsonCurrent() > 20) {
+			m_intake.driveBelt(Constants.IntakeConstants.BELT_MOTOR_SPEED);
+		} else {
+			m_intake.stopBelt();
+		}
 	}
 
 	// Called once the command ends or is interrupted.
