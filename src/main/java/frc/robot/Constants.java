@@ -104,7 +104,7 @@ public final class Constants {
         public static final double AUTO_LINE_THRESHOLD = 65;
         public static final double AUTO_LINE_DEADBAND = 15;
 
-        public static final double TRENCH_THRESHOLD = 70;
+        public static final double TRENCH_THRESHOLD = 65;
         public static final double TRENCH_DEADBAND = 15;
 
         public static final double RAMP_SPIKE_TIME = 1;
@@ -125,8 +125,8 @@ public final class Constants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
         public static final double A1 = 10; // Limelight mounting angle
-        public static final double kP = 0.02;
-        public static final double kI = kP / 3.5;
+        public static final double kP = 0.019;
+        public static final double kI = kP / 3.7;
         public static final double kD = 0.01;
 
         public static final double kP_far = 0.03;

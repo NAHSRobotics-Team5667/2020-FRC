@@ -43,23 +43,24 @@ public class TrenchPathSide {
 		RamseteCommand trenchToBall = RunPath.getCommand(trenchPath, drive, false);
 
 		SequentialCommandGroup phase1 = new ShootAndAlignCommand(drive,
-				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount))
-						.withTimeout(4).andThen(new InstantCommand(() -> {
-							drive.stop();
-							shooter.stopFire();
-						}));
+				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount,
+						ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND)).withTimeout(4)
+								.andThen(new InstantCommand(() -> {
+									drive.stop();
+									shooter.stopFire();
+								}));
 
 		SequentialCommandGroup phase2 = new SequentialCommandGroup(new Command[] { toTrench.andThen(() -> {
 			LimeLight.getInstance().setPipeline(0);
-		}), new ParallelCommandGroup(new LoadCommand(intake, 1), trenchToBall.andThen(drive::stop)) })
+		}), new ParallelCommandGroup(new LoadCommand(intake, 2).withTimeout(5), trenchToBall.andThen(drive::stop)) })
 				.andThen(new InstantCommand(() -> {
 					drive.setNeutralMode(NeutralMode.Brake);
 					drive.stop();
 					shooter.stopFire();
 				}));
 
-		ShootAndAlignCommand shoot = new ShootAndAlignCommand(drive,
-				new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_END_RPM, RobotContainer.ballCount));
+		ShootAndAlignCommand shoot = new ShootAndAlignCommand(drive, new ShootAutonomously(shooter, intake,
+				ShooterConstants.TRENCH_END_RPM, RobotContainer.ballCount, 1000, 1000));
 		SequentialCommandGroup phase3 = new SequentialCommandGroup(new Command[] { shoot });
 
 		return new SequentialCommandGroup(new Command[] {

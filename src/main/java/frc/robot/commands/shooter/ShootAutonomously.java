@@ -26,14 +26,13 @@ public class ShootAutonomously extends CommandBase {
 	private boolean location = LimeLight.getInstance().getPipeIndex() == 0;
 	private boolean hasRamped = false;
 
-	private CurrentSpikeCounter spikeCounter = new CurrentSpikeCounter(
-			location ? Constants.ShooterConstants.AUTO_LINE_THRESHOLD : Constants.ShooterConstants.TRENCH_THRESHOLD,
-			location ? Constants.ShooterConstants.AUTO_LINE_DEADBAND : Constants.ShooterConstants.TRENCH_DEADBAND);
+	private CurrentSpikeCounter spikeCounter;
 
 	/**
 	 * Creates a new ShootAuto.
 	 */
-	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, double targetRPM, int amt) {
+	public ShootAutonomously(ShooterSubsystem shooter, IntakeSubsystem intake, double targetRPM, int amt,
+			double THRESHOLD, double DEADBAND) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
 		m_intake = intake;
@@ -44,6 +43,8 @@ public class ShootAutonomously extends CommandBase {
 		target_shots = RobotContainer.ballCount - amt;
 
 		System.out.println("STARTING SHOOT");
+
+		spikeCounter = new CurrentSpikeCounter(THRESHOLD, DEADBAND);
 
 	}
 
@@ -69,7 +70,7 @@ public class ShootAutonomously extends CommandBase {
 
 		m_shooter.fireRPM(targetRPM);
 		if (m_shooter.getController().atSetpoint()) {
-			m_intake.driveBelt(.7);
+			m_intake.driveBelt(.8);
 			m_intake.driveIntake(-0.8);
 		} else {
 			m_intake.stopBelt();

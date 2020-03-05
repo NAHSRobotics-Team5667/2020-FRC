@@ -44,29 +44,31 @@ public class ShooterCommand extends CommandBase {
 			RobotContainer.ballCount -= 1;
 		}
 		if (RobotContainer.getController().getXButton()) {
+			if (!LimeLight.getInstance().hasValidTarget()) {
+				if (m_shooter.getController().atSetpoint()
+						&& Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
+					Constants.m_RobotState.setState(States.REVED);
+				}
 
-			// if (m_shooter.getController().atSetpoint() &&
-			// Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
-			// Constants.m_RobotState.setState(States.REVED);
-			// }
+				if (LimeLight.getInstance().getPipeIndex() == 0) {
+					m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
+				} else {
+					m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
+				}
 
-			// if (LimeLight.getInstance().getPipeIndex() == 0) {
-			// m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
-			// } else {
-			// m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
-			// }
-			m_shooter.fireRPM(LimeLight.getInstance().getArea() * -94.4 + 4900);
+			} else {
+				m_shooter.fireRPM(170.8 * Math.pow(LimeLight.getInstance().getArea(), 2)
+						+ -688.58 * LimeLight.getInstance().getArea() + 5339.53);
+				if (m_shooter.getController().atSetpoint()
+						&& Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
+					Constants.m_RobotState.setState(States.REVED);
+				}
+			}
 		} else {
 			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
 				m_shooter.fire(-1);
 			} else {
 				m_shooter.stopFire();
-				if (Constants.m_RobotState.getCurrentState() != States.INTAKING
-						&& Constants.m_RobotState.getCurrentState() != States.ALIGNED
-						&& Constants.m_RobotState.getCurrentState() != States.ALIGNING) {
-					System.out.println("SHOOTER SET DRIVE");
-					// Constants.m_RobotState.setState(States.DRIVE);
-				}
 			}
 		}
 

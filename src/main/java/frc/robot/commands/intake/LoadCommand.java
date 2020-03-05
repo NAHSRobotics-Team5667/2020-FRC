@@ -53,6 +53,7 @@ public class LoadCommand extends CommandBase {
 	public void end(boolean interrupted) {
 		m_intake.stopBelt();
 		m_intake.retractIntake();
+		m_intake.stopColson();
 	}
 
 	// Returns true when the command should end.

@@ -46,11 +46,12 @@ public class TrenchPathAuto {
 		RamseteCommand trenchToWheel = RunPath.getCommand(trenchPath, drive, false);
 
 		SequentialCommandGroup phase1 = new ShootAndAlignCommand(drive,
-				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount))
-						.andThen(new InstantCommand(() -> {
-							drive.stop();
-							shooter.stopFire();
-						}));
+				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount,
+						ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND))
+								.andThen(new InstantCommand(() -> {
+									drive.stop();
+									shooter.stopFire();
+								}));
 
 		SequentialCommandGroup phase2 = new SequentialCommandGroup(new Command[] { toTrench.andThen(() -> {
 			LimeLight.getInstance().setPipeline(1);
@@ -61,8 +62,8 @@ public class TrenchPathAuto {
 					shooter.stopFire();
 				}));
 
-		ShootAndAlignCommand shoot = new ShootAndAlignCommand(drive,
-				new ShootAutonomously(shooter, intake, ShooterConstants.TRENCH_END_RPM, RobotContainer.ballCount));
+		ShootAndAlignCommand shoot = new ShootAndAlignCommand(drive, new ShootAutonomously(shooter, intake,
+				ShooterConstants.TRENCH_END_RPM, RobotContainer.ballCount, 1000, 1000));
 		TurnToDegrees turn = new TurnToDegrees(drive, 10);
 		SequentialCommandGroup phase3 = new SequentialCommandGroup(new Command[] { turn.withTimeout(1), shoot });
 		// ResetIndexCommand resetIndex = new ResetIndexCommand(intake, shooter);

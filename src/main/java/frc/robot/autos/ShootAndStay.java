@@ -26,10 +26,10 @@ public class ShootAndStay extends SequentialCommandGroup {
 	 * Creates a new ShootAndStay.
 	 */
 	public ShootAndStay(ShooterSubsystem shooter, DriveTrainSubsystem drivetrain, IntakeSubsystem intake,
-			Trajectory path) {
+			Trajectory path, double THRESHOLD, double DEADBAND) {
 		super(new ShootAndAlignCommand(drivetrain,
 				new ShootAutonomously(shooter, intake, Constants.ShooterConstants.AUTO_LINE_RPM,
-						RobotContainer.ballCount)).withTimeout(10),
+						RobotContainer.ballCount, THRESHOLD, DEADBAND)).withTimeout(10),
 				RunPath.getCommand(path, drivetrain, false).andThen(new RunCommand(() -> {
 					drivetrain.stop();
 					shooter.stopFire();

@@ -74,9 +74,10 @@ public class LED {
         } else if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
             getAllianceColor();
             breatheColor(1);
-        } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
-            oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNING) {
+            getOppositeAllianceColor();
+            oneColor();
+        } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
             oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.REVED) {
             oneColor();
@@ -120,6 +121,17 @@ public class LED {
             colorVals = new int[] { 0, 0, 255 };
         } else if (DriverStation.getInstance().getAlliance() == Alliance.Red) {
             colorVals = new int[] { 255, 0, 0 };
+        }
+    }
+
+    /***
+     * set colorVals to alliance color
+     */
+    private void getOppositeAllianceColor() {
+        if (DriverStation.getInstance().getAlliance() == Alliance.Blue) {
+            colorVals = new int[] { 255, 0, 0 };
+        } else if (DriverStation.getInstance().getAlliance() == Alliance.Red) {
+            colorVals = new int[] { 0, 0, 255 };
         }
     }
 

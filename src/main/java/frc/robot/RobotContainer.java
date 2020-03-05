@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.PATHS;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.ShootAndStay;
 import frc.robot.autos.TrenchPathAuto;
@@ -159,8 +160,7 @@ public class RobotContainer {
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
 		y.whenPressed(new AlignCommand(m_drive));
-		// b.whenPressed(new RotationCommand(m_wheel));
-		b.whenPressed(new TurnToDegrees(m_drive, -60));
+		b.whenPressed(new RotationCommand(m_wheel));
 
 		right_stick.whenPressed(new RotationCommand(m_wheel));
 		left_stick.whenPressed(
@@ -184,7 +184,8 @@ public class RobotContainer {
 		} else if (selection == 7) {
 			// Code for shoot and stay
 			m_drive.resetOdometry(Constants.PATHS.OFF_LINE.getInitialPose());
-			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.OFF_LINE);
+			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.OFF_LINE,
+					ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND);
 		} else if (selection > 7 && selection < 10) {
 			// Default Path Commands
 			m_drive.resetOdometry(paths[selection].getInitialPose());
