@@ -87,7 +87,7 @@ public final class Constants {
 
         public static final double AUTO_LINE_RPM = 4750;
         public static final double TRENCH_FAR_RPM = 5300;
-        public static final double TRENCH_END_RPM = 4800;
+        public static final double TRENCH_END_RPM = 4700;
 
         public static double TRENCH_RPM = TRENCH_END_RPM;
 
