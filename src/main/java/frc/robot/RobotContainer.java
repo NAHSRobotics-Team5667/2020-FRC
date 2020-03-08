@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -20,6 +19,7 @@ import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
@@ -28,21 +28,19 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.Button;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.PATHS;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.autos.RunPath;
 import frc.robot.autos.ShootAndStay;
 import frc.robot.autos.TrenchPathAuto;
 import frc.robot.autos.TrenchPathSide;
+import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
-import frc.robot.commands.actions.TurnToDegrees;
 import frc.robot.commands.intake.IntakeCommand;
-import frc.robot.commands.intake.ResetIndexCommand;
 import frc.robot.commands.shooter.ShooterCommand;
-import frc.robot.commands.wheel.PositionCommand;
 import frc.robot.commands.wheel.RotationCommand;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -74,6 +72,7 @@ public class RobotContainer {
 	private static ShooterSubsystem m_shooter;
 	private static WheelSubsystem m_wheel;
 	private static IntakeSubsystem m_intake;
+	private static ClimbSubsystem m_climb;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -94,6 +93,10 @@ public class RobotContainer {
 				new Solenoid(Constants.IntakeConstants.SOLENOID_2_PORT),
 				new WPI_TalonSRX(Constants.IntakeConstants.BELT_PORT),
 				new WPI_TalonFX(Constants.IntakeConstants.COLSON_PORT));
+		m_climb = new ClimbSubsystem(
+				new SpeedControllerGroup(new WPI_VictorSPX(Constants.ClimbConstants.WINCH_MOTOR_1),
+						new WPI_VictorSPX(Constants.ClimbConstants.WINCH_MOTOR_2)),
+				new Solenoid(Constants.ClimbConstants.HOOK_SOLENOID));
 
 		// Trigger to handle TOF sensor
 		m_intake.tof_sensor.trigger.whileActiveOnce(new InstantCommand(() -> {
@@ -105,33 +108,13 @@ public class RobotContainer {
 		m_drive.setDefaultCommand(new DriveTrainCommand(m_drive));
 		m_intake.setDefaultCommand(new IntakeCommand(m_intake));
 		m_shooter.setDefaultCommand(new ShooterCommand(m_shooter));
+		m_climb.setDefaultCommand(new ClimbCommand(m_climb));
 
 		// Configure the button bindings
 		configureButtonBindings();
 
 		// Output Telemetry
-		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return (double) ballCount;
-			}
-		});
-
-		Shuffleboard.getTab("Teleop").addNumber("Distance", new DoubleSupplier() {
-			@Override
-			public double getAsDouble() {
-				return LimeLight.getInstance().getDistance(Constants.VisionConstants.H1, Constants.VisionConstants.H2,
-						Constants.VisionConstants.A1, LimeLight.getInstance().getYAngle());
-			}
-		});
-		Shuffleboard.getTab("Teleop").addString("TRENCH RPMS", new Supplier<String>() {
-
-			@Override
-			public String get() {
-				return Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM ? "HIGH"
-						: "LOW";
-			}
-		});
+		outputTelemetry();
 	}
 
 	/**
@@ -141,17 +124,8 @@ public class RobotContainer {
 	 * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
 	 */
 	private void configureButtonBindings() {
-		Button a = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_A_PORT);
 		Button b = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_B_PORT);
-		Button x = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_X_PORT);
 		Button y = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_Y_PORT);
-
-		Trigger up_pad = new Trigger(new BooleanSupplier() {
-			@Override
-			public boolean getAsBoolean() {
-				return getController().getDPad() == 0;
-			}
-		});
 
 		Button left_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_LEFT);
 		Button right_stick = new JoystickButton(getController(), Constants.ControllerConstants.S_RIGHT);
@@ -187,17 +161,16 @@ public class RobotContainer {
 			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.OFF_LINE,
 					ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND);
 		} else if (selection > 7 && selection < 10) {
+			// Trench Side Autos
+			m_drive.resetOdometry(paths[selection].getInitialPose());
+			return TrenchPathSide.getAuto(paths[selection], Constants.PATHS.SIDE_FORWARD, m_drive, m_intake, m_shooter);
+		} else if (selection > 9 && selection <= paths.length) {
 			// Default Path Commands
 			m_drive.resetOdometry(paths[selection].getInitialPose());
 			return RunPath.getCommand(paths[selection], m_drive, false).andThen(new RunCommand(m_drive::stop));
-		} else if ((selection > 9 && selection <= paths.length) || selection == 0) {
-			m_drive.resetOdometry(paths[selection].getInitialPose());
-			return TrenchPathSide.getAuto(paths[selection], Constants.PATHS.SIDE_FORWARD, m_drive, m_intake, m_shooter);
 		} else {
-			m_drive.resetOdometry(paths[10].getInitialPose());
-			return RunPath.getCommand(paths[10], m_drive, false).andThen(new RunCommand(() -> {
-				m_drive.stop();
-			}));
+			// Do nothing
+			return null;
 		}
 	}
 
@@ -217,8 +190,41 @@ public class RobotContainer {
 		m_drive.feedMotorSafety();
 	}
 
+	/**
+	 * Set the drive train neutral mode
+	 * 
+	 * @param mode - The neutral mode to put on drive train
+	 */
 	public void setNeutralMode(NeutralMode mode) {
 		m_drive.setNeutralMode(mode);
+	}
+
+	/**
+	 * Send telemetry to Shuffleboard
+	 */
+	public void outputTelemetry() {
+		Shuffleboard.getTab("Teleop").addNumber("Count", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return (double) ballCount;
+			}
+		});
+
+		Shuffleboard.getTab("Teleop").addNumber("Distance", new DoubleSupplier() {
+			@Override
+			public double getAsDouble() {
+				return LimeLight.getInstance().getDistance(Constants.VisionConstants.H1, Constants.VisionConstants.H2,
+						Constants.VisionConstants.A1, LimeLight.getInstance().getYAngle());
+			}
+		});
+		Shuffleboard.getTab("Teleop").addString("TRENCH RPMS", new Supplier<String>() {
+
+			@Override
+			public String get() {
+				return Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM ? "HIGH"
+						: "LOW";
+			}
+		});
 	}
 
 }

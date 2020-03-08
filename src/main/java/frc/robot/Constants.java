@@ -7,9 +7,16 @@
 
 package frc.robot;
 
+import java.nio.file.Paths;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
@@ -17,16 +24,6 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
 import frc.robot.RobotState.States;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -118,7 +115,9 @@ public final class Constants {
     }
 
     public final static class ClimbConstants {
-        public static final int ENCODER_CONSTANT = 1;
+        public static final int WINCH_MOTOR_1 = 2;
+        public static final int WINCH_MOTOR_2 = 3;
+        public static final int HOOK_SOLENOID = 6;
     }
 
     public final static class VisionConstants {

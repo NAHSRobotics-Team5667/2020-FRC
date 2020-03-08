@@ -14,7 +14,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -36,9 +35,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	private PIDController m_controller = new PIDController(Constants.ShooterConstants.kP, Constants.ShooterConstants.kI,
 			Constants.ShooterConstants.kD);
-
-	public Timer rampTimer = new Timer();
-	public Timer shotTimer = new Timer();
 
 	public boolean justRamped = false;
 
@@ -105,8 +101,6 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public void stopFire() {
 		m_master.stopMotor();
-		rampTimer.reset();
-		rampTimer.start();
 		Constants.m_RobotState.setState(States.IDLE);
 	}
 
@@ -126,14 +120,27 @@ public class ShooterSubsystem extends SubsystemBase {
 		return -m_master.getSelectedSensorVelocity(0) * Constants.ShooterConstants.ENCODER_CONSTANT * 600.0;
 	}
 
+	/**
+	 * Reset the Shooter PID Integral Value
+	 */
 	public void resetIError() {
 		m_controller.reset();
 	}
 
+	/**
+	 * Get the Shooter PID Controller
+	 * 
+	 * @return - PID Controller for the shooter
+	 */
 	public PIDController getController() {
 		return m_controller;
 	}
 
+	/**
+	 * Get the current pulled by the motor
+	 * 
+	 * @return - The current pulled by the motor
+	 */
 	public double getOutputCurrent() {
 		return m_master.getStatorCurrent();
 	}

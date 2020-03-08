@@ -1,12 +1,9 @@
 package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.VictorSPXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -28,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	private WPI_VictorSPX m_intake;
 	private WPI_TalonSRX m_belt;
 	private WPI_TalonFX m_colson;
-	private Solenoid m_solenoid, m_solenoid2;
+	private Solenoid m_leftSolenoid, m_rightSolenoid;
 	public Rev2mTOF tof_sensor = new Rev2mTOF("Intake", Port.kMXP, Unit.kInches, RangeProfile.kHighAccuracy,
 			Constants.IntakeConstants.SENSOR_RANGE_INCHES);
 
@@ -37,12 +34,13 @@ public class IntakeSubsystem extends SubsystemBase {
 	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	/**
-	 * Subsystem that handles the intake functionality
+	 * /** Subsystem that handles the intake functionality
 	 * 
 	 * @param intake    - The intake motor
-	 * @param rSolenoid - The right solenoid
-	 * @param lSolenoid - The left solenoid
+	 * @param solenoid  - The piston for the left side
+	 * @param solenoid2 - The piston for the right side
 	 * @param belt      - The motor that controls the belt
+	 * @param colson    - The motor that controls the colson wheel on the index
 	 */
 	public IntakeSubsystem(WPI_VictorSPX intake, Solenoid solenoid, Solenoid solenoid2, WPI_TalonSRX belt,
 			WPI_TalonFX colson) {
@@ -55,8 +53,8 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_intake.setNeutralMode(NeutralMode.Brake);
 		m_belt.setNeutralMode(NeutralMode.Brake);
 
-		m_solenoid = solenoid;
-		m_solenoid2 = solenoid2;
+		m_leftSolenoid = solenoid;
+		m_rightSolenoid = solenoid2;
 
 		outputTelemetry();
 	}
@@ -70,8 +68,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Extends the intake outside of frame perimeter
 	 */
 	public void extendIntake() {
-		m_solenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
-		m_solenoid2.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_leftSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_rightSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.set(ControlMode.PercentOutput, Constants.IntakeConstants.INTAKE_MOTOR_SPEED);
 		m_colson.set(ControlMode.PercentOutput, .3);
 		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
@@ -82,8 +80,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Extends the intake outside of frame perimeter
 	 */
 	public void extendIntake(double speed) {
-		m_solenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
-		m_solenoid2.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_leftSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
+		m_rightSolenoid.set(Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.set(ControlMode.PercentOutput, speed);
 		m_colson.set(ControlMode.PercentOutput, .3);
 		m_status = Constants.IntakeConstants.SOLENOID_FIRED;
@@ -94,8 +92,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * Retracts the intake inside of frame perimeter
 	 */
 	public void retractIntake() {
-		m_solenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
-		m_solenoid2.set(!Constants.IntakeConstants.SOLENOID_FIRED);
+		m_leftSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
+		m_rightSolenoid.set(!Constants.IntakeConstants.SOLENOID_FIRED);
 		m_intake.stopMotor();
 		m_colson.stopMotor();
 		m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
@@ -125,10 +123,18 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_belt.stopMotor();
 	}
 
+	/**
+	 * Drive the intake at a set speed
+	 * 
+	 * @param speed - The speed for the intake
+	 */
 	public void driveIntake(double speed) {
 		m_intake.set(-speed);
 	}
 
+	/**
+	 * Stop the intake motor
+	 */
 	public void stopIntakeMotor() {
 		m_intake.stopMotor();
 	}
@@ -155,22 +161,45 @@ public class IntakeSubsystem extends SubsystemBase {
 		}
 	}
 
+	/**
+	 * Is the intake extended
+	 * 
+	 * @return is the intake extended
+	 */
 	public boolean isExtended() {
 		return m_status == Constants.IntakeConstants.SOLENOID_FIRED;
 	}
 
+	/**
+	 * Get the speed the belt is running at
+	 * 
+	 * @return - The speed the belt index is running at
+	 */
 	public double getBeltSpeed() {
 		return m_belt.getMotorOutputPercent();
 	}
 
+	/**
+	 * Set the colson wheel to a set speed
+	 * 
+	 * @param speed - The speed to set the colson wheel
+	 */
 	public void setColson(double speed) {
 		m_colson.set(ControlMode.PercentOutput, speed);
 	}
 
+	/**
+	 * Stop the colson wheel motor
+	 */
 	public void stopColson() {
 		m_colson.stopMotor();
 	}
 
+	/**
+	 * Get the colson motor output current
+	 * 
+	 * @return - The colson motor output current
+	 */
 	public double getColsonCurrent() {
 		return m_colson.getStatorCurrent();
 	}

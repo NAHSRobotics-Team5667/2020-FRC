@@ -41,11 +41,11 @@ public class IntakeCommand extends CommandBase {
 			m_intake.stopBelt();
 		}
 
-		if (RobotContainer.getController().getBumper(RobotContainer.getController().getRightHand())) {
+		if (RobotContainer.getController().getRightTrigger() > .1) {
 			m_intake.driveBelt(.8);
 			m_intake.driveIntake(-.3);
 			m_intake.setColson(.3);
-		} else if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
+		} else if (RobotContainer.getController().getLeftTrigger() > .1) {
 			m_intake.driveBelt(-.8);
 			m_intake.setColson(-.3);
 		} else {

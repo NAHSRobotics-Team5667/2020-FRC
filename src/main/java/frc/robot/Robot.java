@@ -7,8 +7,6 @@
 
 package frc.robot;
 
-import java.util.function.DoubleSupplier;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 import edu.wpi.cscore.UsbCamera;
@@ -23,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.RobotState.States;
 import frc.robot.utils.LED;
 import frc.robot.utils.LimeLight;
-import frc.robot.utils.LimeLight.LightMode.SnapMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -65,10 +62,10 @@ public class Robot extends TimedRobot {
 		m_chooser.addOption("Close Rendevous", 5);
 		m_chooser.addOption("Ball Theif", 6);
 		m_chooser.addOption("Shoot & Stay", 7);
-		m_chooser.addOption("Straight 2M", 8);
-		m_chooser.addOption("S Path", 9);
-		m_chooser.addOption("Middle Side Trench", 10);
-		m_chooser.addOption("Far Side Trench", 11);
+		m_chooser.addOption("Middle Side Trench", 8);
+		m_chooser.addOption("Far Side Trench", 9);
+		m_chooser.addOption("Straight 2M", 10);
+		m_chooser.addOption("S Path", 11);
 
 		m_chooser.addOption("Null", 99);
 
@@ -76,6 +73,7 @@ public class Robot extends TimedRobot {
 				.withSize(2, 1);
 
 		LimeLight.getInstance().turnLightOn();
+		LimeLight.getInstance().outputChoosers();
 
 	}
 
@@ -99,11 +97,7 @@ public class Robot extends TimedRobot {
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
 		LED.getLEDInstance().setColor();
-		// if (LimeLight.getInstance().hasValidTarget()) {
-		// LimeLight.getInstance().takeSnapshots(SnapMode.ENABLED);
-		// } else {
-		// LimeLight.getInstance().takeSnapshots(SnapMode.DISABLED);
-		// }
+		LimeLight.getInstance().updateChoosers();
 
 	}
 

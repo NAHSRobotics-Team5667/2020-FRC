@@ -40,7 +40,7 @@ public class ShooterCommand extends CommandBase {
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (spike_counter.update(m_shooter.getOutputCurrent())) {
+		if (spike_counter.update(m_shooter.getOutputCurrent(), true)) {
 			RobotContainer.ballCount -= 1;
 		}
 		if (RobotContainer.getController().getXButton()) {
@@ -57,15 +57,17 @@ public class ShooterCommand extends CommandBase {
 				}
 
 			} else {
+				// m_shooter.fireRPM(170.8 * Math.pow(LimeLight.getInstance().getArea(), 2)
+				// + -688.58 * LimeLight.getInstance().getArea() + 5339.53);
 				m_shooter.fireRPM(170.8 * Math.pow(LimeLight.getInstance().getArea(), 2)
-						+ -688.58 * LimeLight.getInstance().getArea() + 5339.53);
+						+ -688.58 * LimeLight.getInstance().getArea() + 5300);
 				if (m_shooter.getController().atSetpoint()
 						&& Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
 					Constants.m_RobotState.setState(States.REVED);
 				}
 			}
 		} else {
-			if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())) {
+			if (RobotContainer.getController().getLeftTrigger() > .1) {
 				m_shooter.fire(-1);
 			} else {
 				m_shooter.stopFire();

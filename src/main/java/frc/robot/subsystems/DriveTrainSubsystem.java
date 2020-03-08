@@ -331,6 +331,9 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		});
 	}
 
+	/**
+	 * Outputs for debugging
+	 */
 	public void debug() {
 
 		graphTab.addNumber("r_pos", new DoubleSupplier() {

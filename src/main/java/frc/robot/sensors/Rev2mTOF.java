@@ -122,6 +122,9 @@ public class Rev2mTOF {
 		sensor.setEnabled(false);
 	}
 
+	/**
+	 * Output telemtry
+	 */
 	public void outputTelemetry() {
 		tab.addNumber(name + "_REV", new DoubleSupplier() {
 			@Override

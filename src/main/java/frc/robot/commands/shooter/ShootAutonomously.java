@@ -64,7 +64,7 @@ public class ShootAutonomously extends CommandBase {
 			hasRamped = true;
 		}
 
-		if (spikeCounter.update(m_shooter.getOutputCurrent())) {
+		if (spikeCounter.update(m_shooter.getOutputCurrent(), true)) {
 			RobotContainer.ballCount -= 1;
 		}
 

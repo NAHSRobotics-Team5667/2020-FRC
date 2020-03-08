@@ -7,12 +7,13 @@
 
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimbSubsystem extends SubsystemBase {
-	private WPI_TalonFX m_winchFx, m_riserFx;
+	private SpeedControllerGroup m_winchFx;
+	private Solenoid m_delivery;
 
 	/**
 	 * The subsystem that manipulates the climb
@@ -20,11 +21,9 @@ public class ClimbSubsystem extends SubsystemBase {
 	 * @param winchFx - motor to drive the winch
 	 * @param riseFx  - motor to raise hook
 	 */
-	public ClimbSubsystem(WPI_TalonFX winchFx, WPI_TalonFX riserFx) {
+	public ClimbSubsystem(SpeedControllerGroup winchFx, Solenoid delivery) {
 		m_winchFx = winchFx;
-		m_riserFx = riserFx;
-		m_winchFx.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-		m_winchFx.setSelectedSensorPosition(0);
+		m_delivery = delivery;
 	}
 
 	/**
@@ -48,15 +47,15 @@ public class ClimbSubsystem extends SubsystemBase {
 	 * 
 	 * @param speed - the speed for the hook to move
 	 */
-	public void driveHook(double speed) {
-		m_riserFx.set(speed);
+	public void deliverHook() {
+		m_delivery.set(true);
 	}
 
 	/**
 	 * Stops the hook motor
 	 */
-	public void stopHook() {
-		m_riserFx.stopMotor();
+	public void lowerHook() {
+		m_delivery.set(false);
 	}
 
 	@Override
