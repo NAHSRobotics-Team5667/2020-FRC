@@ -41,7 +41,8 @@ public class RobotState {
 		 */
 		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.BLUE),
 		ALIGNING(2, Constants.LedConstants.Colors.RED), ALIGNED(3, Constants.LedConstants.Colors.YELLOW),
-		REVED(4, Constants.LedConstants.Colors.GREEN), INTAKING(5, Constants.LedConstants.Colors.PINK);
+		REVING(4, Constants.LedConstants.Colors.YELLOW), REVED(5, Constants.LedConstants.Colors.GREEN),
+		INTAKING(6, Constants.LedConstants.Colors.PINK), CLIMBING(7, Constants.LedConstants.Colors.RED);
 
 		private int state;
 		private int[] color;
@@ -81,13 +82,13 @@ public class RobotState {
 			case 3:
 				return "ALIGNED";
 			case 4:
-				return "REVED";
+				return "REVING";
 			case 5:
-				return "INTAKING";
+				return "REVED";
 			case 6:
-				return "POSITION";
-			case 7:
 				return "INTAKING";
+			case 7:
+				return "CLIMBING";
 			default:
 				return "IDLE";
 			}

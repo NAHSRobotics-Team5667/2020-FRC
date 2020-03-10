@@ -13,8 +13,6 @@ import frc.robot.subsystems.ClimbSubsystem;
 
 public class ClimbCommand extends CommandBase {
 	ClimbSubsystem m_climbSubsystem;
-	// private PIDFController winchController = new PIDFController("Hook height",
-	// .01, .01, .01, .01);
 
 	/**
 	 * Creates a new ClimbCommand.
@@ -37,13 +35,12 @@ public class ClimbCommand extends CommandBase {
 	@Override
 	public void execute() {
 		if (RobotContainer.getController().getRightBumperPressed()) {
-			m_climbSubsystem.deliverHook();
-		} else if (RobotContainer.getController().getLeftBumperPressed()) {
-			m_climbSubsystem.lowerHook();
+			m_climbSubsystem.toggle();
 		}
 
-		if (RobotContainer.getController().getDPad() == 0) {
-			m_climbSubsystem.driveWinch(.8);
+		if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())
+				&& m_climbSubsystem.hasDeployedHook()) {
+			m_climbSubsystem.driveWinch(0.8);
 		} else {
 			m_climbSubsystem.stopWinch();
 		}

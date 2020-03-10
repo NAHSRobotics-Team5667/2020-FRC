@@ -38,7 +38,9 @@ import frc.robot.commands.ClimbCommand;
 import frc.robot.commands.DriveTrainCommand;
 import frc.robot.commands.actions.AlignCommand;
 import frc.robot.commands.intake.IntakeCommand;
+import frc.robot.commands.shooter.ShootAutomatically;
 import frc.robot.commands.shooter.ShooterCommand;
+import frc.robot.commands.wheel.PositionCommand;
 import frc.robot.commands.wheel.RotationCommand;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem;
@@ -63,8 +65,8 @@ public class RobotContainer {
 			PATHS.PathWeaver.getTrajectory("FAR_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("MIDDLE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("CLOSE_TRENCH"),
 			PATHS.PathWeaver.getTrajectory("CLOSE_RENDEVOUS"), PATHS.PathWeaver.getTrajectory("BALL_THIEF"), null,
-			PATHS.STRAIGHT_TRAJECTORY_2M, PATHS.S_TRAJECTORY, PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH_SIDE"),
-			null };
+			PATHS.PathWeaver.getTrajectory("MIDDLE_TRENCH_SIDE"), null, PATHS.STRAIGHT_TRAJECTORY_2M,
+			PATHS.S_TRAJECTORY };
 
 	public static int ballCount = Constants.IntakeConstants.START_BALL_COUNT;
 
@@ -134,16 +136,14 @@ public class RobotContainer {
 		Button menu = new JoystickButton(getController(), Constants.ControllerConstants.BUTTON_MENU_PORT);
 
 		y.whenPressed(new AlignCommand(m_drive));
-		b.whenPressed(new RotationCommand(m_wheel));
 
-		right_stick.whenPressed(new RotationCommand(m_wheel));
 		left_stick.whenPressed(
-				() -> Constants.ShooterConstants.TRENCH_RPM = (Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM
-						? Constants.ShooterConstants.TRENCH_FAR_RPM
-						: Constants.ShooterConstants.TRENCH_END_RPM));
+				() -> LimeLight.getInstance().setPipeline(LimeLight.getInstance().getPipeIndex() == 0 ? 1 : 0));
+		right_stick.whenPressed(() -> toggleRPMS());
+		b.whenPressed(new ShootAutomatically(m_shooter, m_intake));
 
-		start.whenPressed(() -> LimeLight.getInstance().setPipeline(1));
-		menu.whenPressed(() -> LimeLight.getInstance().setPipeline(0));
+		menu.whenPressed(new RotationCommand(m_wheel));
+		start.whenPressed(new PositionCommand(m_wheel));
 	}
 
 	/**
@@ -152,11 +152,19 @@ public class RobotContainer {
 	 * @return the command to run during autonomous
 	 */
 	public Command getAutonomousCommand(int selection) {
-		if (selection > 1 && selection <= 6) {
+		if (selection < 6) {
 			// Trench Autos
-			return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake, m_shooter);
+			if (selection % 2 == 0)
+				return TrenchPathAuto.getAuto(paths[selection], Constants.PATHS.TRENCH_LINE, m_drive, m_intake,
+						m_shooter);
+			// Rendevous Autos
+			else
+				return null;
+		} else if (selection == 6) {
+			// Ball Thief
+			return null;
 		} else if (selection == 7) {
-			// Code for shoot and stay
+			// Code for shoot and cross
 			m_drive.resetOdometry(Constants.PATHS.OFF_LINE.getInitialPose());
 			return new ShootAndStay(m_shooter, m_drive, m_intake, Constants.PATHS.OFF_LINE,
 					ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND);
@@ -197,6 +205,12 @@ public class RobotContainer {
 	 */
 	public void setNeutralMode(NeutralMode mode) {
 		m_drive.setNeutralMode(mode);
+	}
+
+	public void toggleRPMS() {
+		Constants.ShooterConstants.TRENCH_RPM = (Constants.ShooterConstants.TRENCH_RPM == Constants.ShooterConstants.TRENCH_END_RPM
+				? Constants.ShooterConstants.TRENCH_FAR_RPM
+				: Constants.ShooterConstants.TRENCH_END_RPM);
 	}
 
 	/**

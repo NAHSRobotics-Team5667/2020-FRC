@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = .5;
+		configuration.openloopRamp = .8; // .5;
 		m_master.configAllSettings(configuration);
 
 		m_master.setSelectedSensorPosition(0);
@@ -68,8 +68,23 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	}
 
+	/**
+	 * Set the neutral mode of the shooter motor
+	 * 
+	 * @param mode - The neutral mode
+	 */
 	public void setNeutralMode(NeutralMode mode) {
 		m_master.setNeutralMode(mode);
+	}
+
+	/**
+	 * Shoot based on a curve using limelight area
+	 * 
+	 * @param area - Target area
+	 */
+	public void curveFire(double area) {
+		// fireRPM(170.8 * Math.pow(area, 2) + -688.58 * area + 5300);
+		fireRPM(155 * Math.pow(area, 2) + -688.58 * area + 5000);
 	}
 
 	/**
@@ -101,7 +116,6 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public void stopFire() {
 		m_master.stopMotor();
-		Constants.m_RobotState.setState(States.IDLE);
 	}
 
 	/**

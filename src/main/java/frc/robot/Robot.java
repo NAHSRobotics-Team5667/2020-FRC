@@ -54,14 +54,15 @@ public class Robot extends TimedRobot {
 
 		m_robotContainer = new RobotContainer();
 		m_robotContainer.setNeutralMode(NeutralMode.Coast);
-		m_chooser.setDefaultOption("Far Side Trench", 0);
+		m_chooser.setDefaultOption("Shoot & Cross", 7);
+		m_chooser.addOption("Far Trench", 0);
 		m_chooser.addOption("Far Rendevous", 1);
 		m_chooser.addOption("Middle Trench", 2);
 		m_chooser.addOption("Middle Rendevous", 3);
 		m_chooser.addOption("Close Trench", 4);
 		m_chooser.addOption("Close Rendevous", 5);
-		m_chooser.addOption("Ball Theif", 6);
-		m_chooser.addOption("Shoot & Stay", 7);
+		m_chooser.addOption("Ball Thief", 6);
+		m_chooser.addOption("Shoot & Cross", 7);
 		m_chooser.addOption("Middle Side Trench", 8);
 		m_chooser.addOption("Far Side Trench", 9);
 		m_chooser.addOption("Straight 2M", 10);

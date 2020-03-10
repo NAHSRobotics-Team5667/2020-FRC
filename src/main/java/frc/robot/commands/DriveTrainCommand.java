@@ -61,8 +61,10 @@ public class DriveTrainCommand extends CommandBase {
 		if (Constants.m_RobotState.getCurrentState() != States.INTAKING
 				&& Constants.m_RobotState.getCurrentState() != States.ALIGNED
 				&& Constants.m_RobotState.getCurrentState() != States.ALIGNING
-				&& Constants.m_RobotState.getCurrentState() != States.REVED) {
-			// Constants.m_RobotState.setState(States.DRIVE);
+				&& Constants.m_RobotState.getCurrentState() != States.REVED
+				&& Constants.m_RobotState.getCurrentState() != States.REVING
+				&& Constants.m_RobotState.getCurrentState() != States.CLIMBING) {
+			Constants.m_RobotState.setState(States.DRIVE);
 		}
 	}
 

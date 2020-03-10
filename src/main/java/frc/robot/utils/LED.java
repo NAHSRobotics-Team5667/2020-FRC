@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
+import frc.robot.Constants.LedConstants;
 import frc.robot.RobotState.States;
 
 /**
@@ -31,6 +32,8 @@ public class LED {
     private double cycle = 0;
 
     private boolean shouldAlternate = false;
+
+    private int m_rainbowFirstPixelHue;
 
     public LED() {
         m_adressableLed.setLength(Constants.LedConstants.LED_AMOUNT);
@@ -72,17 +75,25 @@ public class LED {
             getAllianceColor();
             oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.DRIVE) {
-            getAllianceColor();
+            if (LimeLight.getInstance().getPipeIndex() == 0) {
+                getAllianceColor();
+            } else {
+                colorVals = LedConstants.Colors.PURPLE.getColor();
+            }
             breatheColor(1);
         } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNING) {
             getOppositeAllianceColor();
             oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
             oneColor();
+        } else if (Constants.m_RobotState.getCurrentState() == States.REVING) {
+            oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.REVED) {
             oneColor();
         } else if (Constants.m_RobotState.getCurrentState() == States.INTAKING) {
             oneColor();
+        } else if (Constants.m_RobotState.getCurrentState() == States.CLIMBING) {
+            rainbow();
         } else {
             getAllianceColor();
             oneColor();
@@ -164,6 +175,23 @@ public class LED {
             int b = (int) Math.abs(Math.round((i % spacing != 0 ? colorVals[2] : alternateColor[2])));
             m_ledBuffer.setRGB(i, r, g, b);
         }
+        m_adressableLed.setData(m_ledBuffer);
+    }
+
+    private void rainbow() {
+        // For every pixel
+        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            // Calculate the hue - hue is easier for rainbows because the color
+            // shape is a circle so only one value needs to precess
+            final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+            // Set the value
+            m_ledBuffer.setHSV(i, hue, 255, 128);
+        }
+        // Increase by to make the rainbow "move"
+        m_rainbowFirstPixelHue += 3;
+        // Check bounds
+        m_rainbowFirstPixelHue %= 180;
+
         m_adressableLed.setData(m_ledBuffer);
     }
 

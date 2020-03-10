@@ -44,7 +44,7 @@ public class TrenchPathSide {
 
 		SequentialCommandGroup phase1 = new ShootAndAlignCommand(drive,
 				new ShootAutonomously(shooter, intake, ShooterConstants.AUTO_LINE_RPM, RobotContainer.ballCount,
-						ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND)).withTimeout(4)
+						ShooterConstants.AUTO_LINE_THRESHOLD, ShooterConstants.AUTO_LINE_DEADBAND)).withTimeout(8)
 								.andThen(new InstantCommand(() -> {
 									drive.stop();
 									shooter.stopFire();

@@ -37,7 +37,7 @@ import frc.robot.RobotState.States;
  */
 public final class Constants {
 
-    public static RobotState m_RobotState = new RobotState(States.IDLE);
+    public static RobotState m_RobotState = new RobotState(States.CLIMBING);
 
     public final static class LedConstants {
         public static final int LED_PORT = 9;
@@ -93,7 +93,7 @@ public final class Constants {
         public static final double ksVolts = 1;
         public static final double kvVoltSecondsPerMeter = 0.0613 / 70;
         public static final double kaVoltSecondsSquaredPerMeter = 0.00831 / 100;
-        public static final double kP = 0.9 / 120;
+        public static final double kP = 0.9 / 200;// 0.9 / 120;
         public static final double kI = kP / 4;
         public static final double kD = 0;
         public static final double ENCODER_CONSTANT = (2.0 / 2048.0);

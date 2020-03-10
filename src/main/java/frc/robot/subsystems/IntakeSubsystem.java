@@ -97,7 +97,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		m_intake.stopMotor();
 		m_colson.stopMotor();
 		m_status = !Constants.IntakeConstants.SOLENOID_FIRED;
-		Constants.m_RobotState.setState(States.DRIVE);
+		Constants.m_RobotState.setState(States.IDLE);
 	}
 
 	/**
@@ -202,6 +202,19 @@ public class IntakeSubsystem extends SubsystemBase {
 	 */
 	public double getColsonCurrent() {
 		return m_colson.getStatorCurrent();
+	}
+
+	public void reset() {
+		stopColson();
+		retractIntake();
+		stopBelt();
+		stopIntakeMotor();
+	}
+
+	public void stopMotors() {
+		stopColson();
+		stopBelt();
+		stopIntakeMotor();
 	}
 
 	/**

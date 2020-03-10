@@ -10,10 +10,15 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+import frc.robot.RobotState.States;
 
 public class ClimbSubsystem extends SubsystemBase {
 	private SpeedControllerGroup m_winchFx;
 	private Solenoid m_delivery;
+
+	private boolean m_deployed = false;
+	private boolean m_status = false;
 
 	/**
 	 * The subsystem that manipulates the climb
@@ -33,6 +38,7 @@ public class ClimbSubsystem extends SubsystemBase {
 	 */
 	public void driveWinch(double speed) {
 		m_winchFx.set(speed);
+		Constants.m_RobotState.setState(States.CLIMBING);
 	}
 
 	/**
@@ -49,6 +55,8 @@ public class ClimbSubsystem extends SubsystemBase {
 	 */
 	public void deliverHook() {
 		m_delivery.set(true);
+		m_deployed = true;
+		m_status = true;
 	}
 
 	/**
@@ -56,6 +64,23 @@ public class ClimbSubsystem extends SubsystemBase {
 	 */
 	public void lowerHook() {
 		m_delivery.set(false);
+		m_status = false;
+	}
+
+	public void toggle() {
+		if (m_status == true)
+			lowerHook();
+		else
+			deliverHook();
+	}
+
+	/**
+	 * Check if the hook has been deployed
+	 * 
+	 * @return - Has the hook piston been extended
+	 */
+	public boolean hasDeployedHook() {
+		return m_deployed;
 	}
 
 	@Override
