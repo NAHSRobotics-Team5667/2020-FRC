@@ -5,50 +5,57 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands.actions;
+package frc.robot.commands.intake;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
-import frc.robot.subsystems.DriveTrainSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
 
-public class HoldPositionCommand extends CommandBase {
-	private DriveTrainSubsystem m_drive;
+public class ResetIndexCommand extends CommandBase {
+	private IntakeSubsystem m_intake;
+	private ShooterSubsystem m_shooter;
+	private Timer timer;
 
 	/**
-	 * Creates a new HoldPositionCommand.
+	 * Creates a new ResetIndexCommand.
 	 */
-	public HoldPositionCommand(DriveTrainSubsystem drive) {
+	public ResetIndexCommand(IntakeSubsystem intake, ShooterSubsystem shooter) {
 		// Use addRequirements() here to declare subsystem dependencies.
-		m_drive = drive;
-		addRequirements(m_drive);
-		System.out.println("START HOLD");
+		m_intake = intake;
+		m_shooter = shooter;
+		addRequirements(m_intake, m_shooter);
+		timer = new Timer();
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
-		Constants.AutoConstants.L_CONTROLLER.setSetpoint(m_drive.getLeftEncoderPosition());
-		Constants.AutoConstants.R_CONTROLLER.setSetpoint(m_drive.getRightEncoderPosition());
-
+		m_intake.stopBelt();
+		m_shooter.stopFire();
+		timer.reset();
+		timer.start();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		m_drive.tankDriveVolts(Constants.AutoConstants.L_CONTROLLER.calculate(m_drive.getLeftEncoderPosition()),
-				Constants.AutoConstants.R_CONTROLLER.calculate(m_drive.getRightEncoderPosition()));
+		m_intake.driveBelt(-.4);
+		m_shooter.fire(-1);
+
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
-		m_drive.stop();
-		System.out.println("END HOLD");
+		m_intake.stopBelt();
+		m_intake.stopIntakeMotor();
+		m_shooter.stopFire();
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return false;
+		return timer.hasPeriodPassed(.25) && m_intake.tof_sensor.isDetecting();
 	}
 }

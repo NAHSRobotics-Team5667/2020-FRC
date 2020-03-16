@@ -7,7 +7,15 @@
 
 package frc.robot;
 
+import java.nio.file.Paths;
+import java.util.List;
+
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
@@ -15,16 +23,7 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
 import edu.wpi.first.wpilibj.util.Units;
-
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
-
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import frc.robot.RobotState.States;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -38,10 +37,10 @@ import edu.wpi.first.wpilibj.geometry.Translation2d;
  */
 public final class Constants {
 
-    public static RobotState m_RobotState = new RobotState(null);
+    public static RobotState m_RobotState = new RobotState(States.CLIMBING);
 
     public final static class LedConstants {
-        public static final int LED_PORT = 0;
+        public static final int LED_PORT = 9;
         public static final int LED_AMOUNT = 178;
         public static final double FLASH_TIME = 2;
 
@@ -60,51 +59,79 @@ public final class Constants {
             public int[] getColor() {
                 return new int[] { r, g, b };
             }
+
         }
     }
 
     public final static class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = 1;
-        public static final double BELT_MOTOR_SPEED = .5;
+        public static final double INTAKE_MOTOR_SPEED = .9;
+        public static final double BELT_MOTOR_SPEED = .25;
 
         public static final boolean SOLENOID_FIRED = true;
-        public static final double SENSOR_RANGE_INCHES = 6;
+        public static final double SENSOR_RANGE_INCHES = 5;
         public static final int START_BALL_COUNT = 3;
 
         public static final int MOTOR_PORT = 1;
-        public static final int BELT_PORT = 2;
+        public static final int BELT_PORT = 6;
+        public static final int COLSON_PORT = 7;
 
-        public static final int SOLENOID = 7;
+        public static final int SOLENOID_PORT = 0;
+        public static final int SOLENOID_2_PORT = 7;
     }
 
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final int AUTO_LINE_RPM = 4000;
-        public static final int TRENCH_RPM = 7000;
+        public static final double AUTO_LINE_RPM = 4750;
+        public static final double TRENCH_FAR_RPM = 5300;
+        public static final double TRENCH_END_RPM = 4700;
+
+        public static double TRENCH_RPM = TRENCH_END_RPM;
 
         public static final int IDLE_VOLTAGE = 3;
 
-        public static final double ksVolts = 0;
-        public static final double kP = 0.0001;
+        public static final double ksVolts = 1;
+        public static final double kvVoltSecondsPerMeter = 0.0613 / 70;
+        public static final double kaVoltSecondsSquaredPerMeter = 0.00831 / 100;
+        public static final double kP = 0.9 / 200;// 0.9 / 120;
+        public static final double kI = kP / 4;
         public static final double kD = 0;
-        public static final double ENCODER_CONSTANT = (1.0 / 2048.0);
+        public static final double ENCODER_CONSTANT = (2.0 / 2048.0);
+
+        public static final double AUTO_LINE_THRESHOLD = 65;
+        public static final double AUTO_LINE_DEADBAND = 15;
+
+        public static final double TRENCH_THRESHOLD = 65;
+        public static final double TRENCH_DEADBAND = 15;
+
+        public static final double RAMP_SPIKE_TIME = 1;
+        public static final double SHOT_SPIKE_TIME = .1;
     }
 
     public final static class WheelConstants {
         public static final double ROTATIONS = 2.7 * 3;
-        public static final int MOTOR = 4;
+        public static final int MOTOR = 5;
         public static final I2C.Port COLOR_SENSOR_PORT = I2C.Port.kOnboard; // I2C Port value for colorSensor
     }
 
     public final static class ClimbConstants {
-        public static final int ENCODER_CONSTANT = 1;
+        public static final int WINCH_MOTOR_1 = 2;
+        public static final int WINCH_MOTOR_2 = 3;
+        public static final int HOOK_SOLENOID = 6;
     }
 
     public final static class VisionConstants {
         public static final double H1 = Units.inchesToMeters(36); // Height of limelight from the ground
         public static final double H2 = Units.inchesToMeters(98.25); // Height of target
-        public static final double A1 = 27.43; // Limelight mounting angle
+        public static final double A1 = 10; // Limelight mounting angle
+        public static final double kP = 0.019;
+        public static final double kI = kP / 3.7;
+        public static final double kD = 0.01;
+
+        public static final double kP_far = 0.03;
+        public static final double kI_far = kP_far / 4;
+        public static final double kD_far = kD;
+
     }
 
     public final static class DriveConstants {
@@ -112,7 +139,8 @@ public final class Constants {
         public static final double WHEEL_CIRCUMFERENCE_METERS = WHEEL_DIAMETER * Math.PI;
         public static final double ENCODER_EDGES_PER_REV = 21934;
         public static final double GEAR_RATIO = 10.71;
-        public static final double ENCODER_CONSTANT = (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
+        public static double MAG = -1;
+        public static final double ENCODER_CONSTANT = MAG * (1 / ENCODER_EDGES_PER_REV) * WHEEL_DIAMETER * Math.PI;
         public static final boolean kGyroReversed = true;
 
         public static final double MAX_SPEED_TELE = 3.25;
@@ -140,8 +168,8 @@ public final class Constants {
     public final static class AutoConstants {
         public static final double kRamseteB = 2;
         public static final double kRamseteZeta = 0.7;
-        public static final double kMaxSpeedMetersPerSecond = 1;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final double kMaxSpeedMetersPerSecond = .8;
+        public static final double kMaxAccelerationMetersPerSecondSquared = .5;
         public static final PIDController L_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kI,
                 DriveConstants.kD);
         public static final PIDController R_CONTROLLER = new PIDController(DriveConstants.kP, DriveConstants.kD,
@@ -186,13 +214,42 @@ public final class Constants {
                 // Pass config
                 config);
 
+        public static final Trajectory OFF_LINE = TrajectoryGenerator.generateTrajectory(
+                // Start at the origin facing the +X direction
+                new Pose2d(0, 0, new Rotation2d(0)),
+                // Pass through these two interior waypoints
+                List.of(new Translation2d(1, 0)),
+                // End 3 meters straight ahead of where we started, facing forward
+                new Pose2d(2, 0, new Rotation2d(0)),
+                // Pass config
+                config);
+
+        public static final Trajectory TRENCH_LINE = TrajectoryGenerator.generateTrajectory(
+                // Start
+                new Pose2d(5.2, -0.7, new Rotation2d(0)),
+                // Pass through balls
+                List.of(new Translation2d(5.885, -0.7)),
+                // End at the end of the color wheel
+                new Pose2d(6.57, -0.7, new Rotation2d(0)), config);
+
+        public static final Trajectory SIDE_TRENCH = TrajectoryGenerator.generateTrajectory(
+                // Start
+                new Pose2d(6.244, -1.463, new Rotation2d(90)),
+                // Pass through balls
+                List.of(new Translation2d(6.244, -1.1)),
+                // End at the end of the color wheel
+                new Pose2d(6.244, -1, new Rotation2d(90)), config);
+
+        public static final Trajectory SIDE_FORWARD = PathWeaver.getTrajectory("TRENCH_LINE");
+
         public static final class PathWeaver {
             public static Trajectory getTrajectory(String path) {
                 try {
                     return TrajectoryUtil
                             .fromPathweaverJson(Paths.get("/home/lvuser/deploy/output/" + path + ".wpilib.json"));
-                } catch (IOException e) {
-                    System.out.println("CANNOT READ Trajectory");
+                } catch (Exception e) {
+                    System.out.println("CANNOT READ Trajectory - " + path);
+                    System.out.println("WITH ERROR: " + e.toString());
                     return null;
                 }
             }
@@ -207,6 +264,9 @@ public final class Constants {
         public static final int S_RIGHT_Y_PORT = 5; // Right stick y
         public static final int S_LEFT_X_PORT = 0; // Left stick x
         public static final int S_LEFT_Y_PORT = 1; // Left stick y
+
+        public static final int S_LEFT = 9; // Left stick button
+        public static final int S_RIGHT = 10; // Right stick button
 
         // Triggers
         public static final int TRIGGER_RIGHT_PORT = 3; // Right trigger

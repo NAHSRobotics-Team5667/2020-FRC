@@ -52,6 +52,9 @@ public class Rev2mTOF {
 		sensor = new Rev2mDistanceSensor(port, units, rangeProfile);
 		this.threshold = threshold;
 		this.name = name;
+		this.sensor.setAutomaticMode(true);
+		this.sensor.setEnabled(true);
+		outputTelemetry();
 	}
 
 	/**
@@ -119,6 +122,9 @@ public class Rev2mTOF {
 		sensor.setEnabled(false);
 	}
 
+	/**
+	 * Output telemtry
+	 */
 	public void outputTelemetry() {
 		tab.addNumber(name + "_REV", new DoubleSupplier() {
 			@Override

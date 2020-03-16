@@ -12,7 +12,10 @@ import java.util.Arrays;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.utils.LimeLight.LightMode.SnapMode;
 
 /**
  * The Lime Light Subsystem Singleton
@@ -117,6 +120,9 @@ public class LimeLight {
     private final LightMode LIGHT_ON = LightMode.ON;
     private final LightMode LIGHT_OFF = LightMode.OFF;
 
+    public SendableChooser<Boolean> m_snapshot_chooser = new SendableChooser<>();
+    public SendableChooser<Boolean> m_light_chooser = new SendableChooser<>();
+
     /**
      * Lime Light Driver Singleton
      */
@@ -127,6 +133,12 @@ public class LimeLight {
         ty = table.getEntry("ty");
         ta = table.getEntry("ta");
         setLightState(LIGHT_OFF);
+
+        m_snapshot_chooser.setDefaultOption("Disabled", false);
+        m_snapshot_chooser.addOption("Enabled", true);
+
+        m_light_chooser.setDefaultOption("On", true);
+        m_light_chooser.addOption("Off", false);
     }
 
     /**
@@ -345,7 +357,7 @@ public class LimeLight {
      * @return The distance between the robot and the limelight
      */
     public double getDistance(double h1, double h2, double a1, double a2) {
-        return (h2 - h1) / Math.abs(Math.atan(a1 + a2));
+        return (h2 - h1) / Math.abs(Math.tan(Math.toRadians(a1) + Math.toRadians(a2)));
     }
 
     /**
@@ -359,6 +371,26 @@ public class LimeLight {
         SmartDashboard.putNumber("Skew", getSkew());
         SmartDashboard.putString("XCorners", Arrays.toString(getXCorners()));
         SmartDashboard.putString("YCorners", Arrays.toString(getYCorners()));
+    }
+
+    /**
+     * Send the custom choosers to Shuffleboard
+     */
+    public void outputChoosers() {
+        Shuffleboard.getTab("Teleop").add("Snapshot", m_snapshot_chooser);
+        Shuffleboard.getTab("Teleop").add("Light Mode", m_light_chooser);
+    }
+
+    public void updateChoosers() {
+        if (m_light_chooser.getSelected())
+            turnLightOn();
+        else
+            turnLightOff();
+
+        if (m_snapshot_chooser.getSelected())
+            takeSnapshots(SnapMode.ENABLED);
+        else
+            takeSnapshots(SnapMode.DISABLED);
     }
 
 }

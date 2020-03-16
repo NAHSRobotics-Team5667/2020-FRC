@@ -59,7 +59,6 @@ public class PIDFController extends PIDController {
 
     public void debug() {
         SmartDashboard.putData(this);
-
     }
 
 }

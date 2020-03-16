@@ -7,6 +7,9 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.robot.Constants.LedConstants.Colors;
 
 /**
@@ -36,11 +39,11 @@ public class RobotState {
 		 * 
 		 * INTAKE - The robot is currently intaking
 		 */
-		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.PURPLE),
-		AUTO(2, Constants.LedConstants.Colors.PINK), VISION(3, Constants.LedConstants.Colors.GREEN),
-		SHOOTING(4, Constants.LedConstants.Colors.PURPLE), CLIMBING(5, Constants.LedConstants.Colors.RED),
-		ROTATION(6, Constants.LedConstants.Colors.RED), POSITION(7, Constants.LedConstants.Colors.RED),
-		INTAKING(8, Constants.LedConstants.Colors.YELLOW);
+		IDLE(0, Constants.LedConstants.Colors.RED), DRIVE(1, Constants.LedConstants.Colors.BLUE),
+		ALIGNING(2, Constants.LedConstants.Colors.RED), ALIGNED(3, Constants.LedConstants.Colors.YELLOW),
+		REVING(4, Constants.LedConstants.Colors.YELLOW), REVED(5, Constants.LedConstants.Colors.GREEN),
+		INTAKING(6, Constants.LedConstants.Colors.PINK), CLIMBING(7, Constants.LedConstants.Colors.RED);
+
 		private int state;
 		private int[] color;
 
@@ -67,6 +70,29 @@ public class RobotState {
 		public int[] getColor() {
 			return color;
 		}
+
+		public String getString() {
+			switch (state) {
+			case 0:
+				return "IDLE";
+			case 1:
+				return "DRIVE";
+			case 2:
+				return "AlIGNING";
+			case 3:
+				return "ALIGNED";
+			case 4:
+				return "REVING";
+			case 5:
+				return "REVED";
+			case 6:
+				return "INTAKING";
+			case 7:
+				return "CLIMBING";
+			default:
+				return "IDLE";
+			}
+		}
 	}
 
 	public RobotState(States state) {
@@ -74,6 +100,13 @@ public class RobotState {
 			currentState = state;
 		else
 			currentState = States.IDLE;
+
+		Shuffleboard.getTab("Teleop").addString("Robot State", new Supplier<String>() {
+			@Override
+			public String get() {
+				return currentState.getString();
+			}
+		});
 	}
 
 	/**

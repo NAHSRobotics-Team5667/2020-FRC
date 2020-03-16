@@ -7,34 +7,37 @@
 
 package frc.robot.commands.shooter;
 
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.RobotState.States;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.utils.CurrentSpikeCounter;
 import frc.robot.utils.LimeLight;
 
-public class ShooterCommand extends CommandBase {
+public class ShootAutomatically extends CommandBase {
 	private ShooterSubsystem m_shooter;
+	private IntakeSubsystem m_index;
 	private CurrentSpikeCounter spike_counter = new CurrentSpikeCounter(Constants.ShooterConstants.AUTO_LINE_THRESHOLD,
 			Constants.ShooterConstants.AUTO_LINE_DEADBAND);
 
 	/**
-	 * Creates a new ShooterCommand.
+	 * Shoot during teleop and handle index rise
 	 */
-	public ShooterCommand(ShooterSubsystem shooter) {
+	public ShootAutomatically(ShooterSubsystem shooter, IntakeSubsystem index) {
 		// Use addRequirements() here to declare subsystem dependencies.
 		m_shooter = shooter;
-		addRequirements(m_shooter);
+		m_index = index;
+		addRequirements(m_shooter, m_index);
+
 	}
 
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
 		m_shooter.stopFire();
-		m_shooter.resetIError();
+		m_index.reset();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
@@ -43,58 +46,54 @@ public class ShooterCommand extends CommandBase {
 		if (spike_counter.update(m_shooter.getOutputCurrent(), true)) {
 			RobotContainer.ballCount -= 1;
 		}
-		if (RobotContainer.getController().getXButton()) {
-			if (!LimeLight.getInstance().hasValidTarget()) {
-				if (m_shooter.getController().atSetpoint()
-						&& Constants.m_RobotState.getCurrentState() == States.ALIGNED) {
-					Constants.m_RobotState.setState(States.REVED);
-				} else {
-					Constants.m_RobotState.setState(States.REVING);
-				}
 
-				if (LimeLight.getInstance().getPipeIndex() == 0) {
-					m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
-				} else {
-					m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
-				}
-
-			} else {
-				// m_shooter.fireRPM(170.8 * Math.pow(LimeLight.getInstance().getArea(), 2)
-				// + -688.58 * LimeLight.getInstance().getArea() + 5339.53);
+		if (LimeLight.getInstance().getPipeIndex() == 0) {
+			// In front of color wheel
+			// Shoot using curve if we have a target otherwise assume AUTO Line RPMs
+			if (LimeLight.getInstance().hasValidTarget()) {
 				m_shooter.curveFire(LimeLight.getInstance().getArea());
-				if (!m_shooter.getController().atSetpoint()
-						&& (Constants.m_RobotState.getCurrentState() == States.ALIGNED
-								|| Constants.m_RobotState.getCurrentState() == States.REVING)) {
-					Constants.m_RobotState.setState(States.REVING);
-				} else if (m_shooter.getController().atSetpoint()) {
-					Constants.m_RobotState.setState(States.REVED);
-				}
-			}
-		} else {
-			if (RobotContainer.getController().getLeftTrigger() > .1) {
-				m_shooter.fire(-1);
 			} else {
-				m_shooter.stopFire();
-				if ((Constants.m_RobotState.getCurrentState() == States.REVING
-						|| Constants.m_RobotState.getCurrentState() == States.REVED)
-						&& Constants.m_RobotState.getCurrentState() != States.CLIMBING) {
-					Constants.m_RobotState.setState(States.IDLE);
-				}
+				m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
 			}
+		} else if (LimeLight.getInstance().getPipeIndex() == 1) {
+			// Behind the color wheel
+			m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
 		}
 
+		// Handle index
+		if (Constants.m_RobotState.getCurrentState() == States.REVED
+				|| RobotContainer.getController().getRightTrigger() >= .1) {
+			if (RobotContainer.getController().getLeftTrigger() >= .1) {
+				m_index.driveBelt(-.8);
+				m_index.setColson(-.3);
+			} else {
+				m_index.driveBelt(1);
+				m_index.setColson(.3);
+			}
+		} else {
+			m_index.stopMotors();
+		}
+
+		if (m_shooter.getController().atSetpoint()) {
+			Constants.m_RobotState.setState(States.REVED);
+		} else {
+			if (!(Constants.m_RobotState.getCurrentState() == States.ALIGNING)) {
+				Constants.m_RobotState.setState(States.REVING);
+			}
+		}
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
 		m_shooter.stopFire();
+		m_index.reset();
 		Constants.m_RobotState.setState(States.IDLE);
 	}
 
 	// Returns true when the command should end.
 	@Override
 	public boolean isFinished() {
-		return false;
+		return RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getRightHand());
 	}
 }

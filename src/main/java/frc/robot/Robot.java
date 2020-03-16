@@ -9,6 +9,7 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
@@ -17,6 +18,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.RobotState.States;
 import frc.robot.utils.LED;
 import frc.robot.utils.LimeLight;
 
@@ -31,7 +33,7 @@ public class Robot extends TimedRobot {
 	private Command m_autonomousCommand = null;
 	private RobotContainer m_robotContainer;
 
-	private ShuffleboardTab compTab = Shuffleboard.getTab("Auto");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	private SendableChooser<Integer> m_chooser = new SendableChooser<>();
 
@@ -44,25 +46,35 @@ public class Robot extends TimedRobot {
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
-		Shuffleboard.selectTab("Auto");
-		CameraServer.getInstance().startAutomaticCapture();
+		Shuffleboard.selectTab("Teleop");
+		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+		camera.setResolution(240, 180);
+		camera.setFPS(18);
+		Shuffleboard.getTab("Teleop").add("Intake Cam", camera).withPosition(2, 0);
 
 		m_robotContainer = new RobotContainer();
-		m_chooser.setDefaultOption("Far Trench", 0);
+		m_robotContainer.setNeutralMode(NeutralMode.Coast);
+		m_chooser.setDefaultOption("Shoot & Cross", 7);
+		m_chooser.addOption("Far Trench", 0);
 		m_chooser.addOption("Far Rendevous", 1);
 		m_chooser.addOption("Middle Trench", 2);
 		m_chooser.addOption("Middle Rendevous", 3);
 		m_chooser.addOption("Close Trench", 4);
 		m_chooser.addOption("Close Rendevous", 5);
-		m_chooser.addOption("Ball Theif", 6);
-		m_chooser.addOption("Shoot & Stay", 7);
-		m_chooser.addOption("Straight 2M", 8);
-		m_chooser.addOption("S Path", 9);
+		m_chooser.addOption("Ball Thief", 6);
+		m_chooser.addOption("Shoot & Cross", 7);
+		m_chooser.addOption("Middle Side Trench", 8);
+		m_chooser.addOption("Far Side Trench", 9);
+		m_chooser.addOption("Straight 2M", 10);
+		m_chooser.addOption("S Path", 11);
+
 		m_chooser.addOption("Null", 99);
 
-		compTab.add(m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser);
+		compTab.add("Auto Chooser", m_chooser).withWidget(BuiltInWidgets.kComboBoxChooser).withPosition(0, 2)
+				.withSize(2, 1);
 
 		LimeLight.getInstance().turnLightOn();
+		LimeLight.getInstance().outputChoosers();
 
 	}
 
@@ -86,6 +98,7 @@ public class Robot extends TimedRobot {
 		// block in order for anything in the Command-based framework to work.
 		CommandScheduler.getInstance().run();
 		LED.getLEDInstance().setColor();
+		LimeLight.getInstance().updateChoosers();
 
 	}
 
@@ -94,11 +107,13 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		m_robotContainer.setNeutralMode(NeutralMode.Brake);
+		LimeLight.getInstance().setPipeline(0);
+		Constants.m_RobotState.setState(States.IDLE);
 	}
 
 	@Override
 	public void disabledPeriodic() {
-		// LimeLight.getInstance().turnLightOff();
 	}
 
 	/**
@@ -107,7 +122,7 @@ public class Robot extends TimedRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		Shuffleboard.selectTab("Auto");
+		Shuffleboard.selectTab("Teleop");
 		m_autonomousCommand = m_robotContainer.getAutonomousCommand(m_chooser.getSelected());
 
 		// schedule the autonomous command (example)

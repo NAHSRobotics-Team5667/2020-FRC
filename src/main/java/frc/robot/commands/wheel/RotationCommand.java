@@ -33,8 +33,7 @@ public class RotationCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    Constants.m_RobotState.setState(States.ROTATION);
-    wheelSubsystem.rotateSpeed(0.2);
+    wheelSubsystem.rotateSpeed(0.1);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -46,7 +45,8 @@ public class RotationCommand extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     Constants.m_RobotState.setState(States.IDLE);
-    wheelSubsystem.rotateSpeed(0);
+    wheelSubsystem.turnOffMotor();
+    wheelSubsystem.resetEncoder();
   }
 
   // Returns true when the command should end.

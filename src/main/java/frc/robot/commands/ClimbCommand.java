@@ -7,15 +7,12 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.RobotContainer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.utils.PIDFController;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.ClimbSubsystem;
 
 public class ClimbCommand extends CommandBase {
 	ClimbSubsystem m_climbSubsystem;
-	// private PIDFController winchController = new PIDFController("Hook height",
-	// .01, .01, .01, .01);
 
 	/**
 	 * Creates a new ClimbCommand.
@@ -29,26 +26,32 @@ public class ClimbCommand extends CommandBase {
 	// Called when the command is initially scheduled.
 	@Override
 	public void initialize() {
+		m_climbSubsystem.lowerHook();
+		m_climbSubsystem.stopWinch();
 
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		/*
-		 * 
-		 * Haikus with Olu 2:
-		 * 
-		 * When a trigger's pressed, the motor moves up or down to the target height.
-		 * This has been Haikus with Olu.
-		 */
-		m_climbSubsystem.driveWinch(RobotContainer.getController().getLeftY());
-		m_climbSubsystem.driveHook(RobotContainer.getController().getRightY());
+		if (RobotContainer.getController().getRightBumperPressed()) {
+			m_climbSubsystem.toggle();
+		}
+
+		if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand())
+				&& m_climbSubsystem.hasDeployedHook()) {
+			m_climbSubsystem.driveWinch(0.8);
+		} else {
+			m_climbSubsystem.stopWinch();
+		}
+
 	}
 
 	// Called once the command ends or is interrupted.
 	@Override
 	public void end(boolean interrupted) {
+		m_climbSubsystem.lowerHook();
+		m_climbSubsystem.stopWinch();
 	}
 
 	// Returns true when the command should end.

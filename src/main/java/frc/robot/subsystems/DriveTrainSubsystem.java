@@ -8,6 +8,7 @@
 package frc.robot.subsystems;
 
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -29,6 +30,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 
 public class DriveTrainSubsystem extends SubsystemBase {
 
@@ -43,7 +45,7 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	private DriveModes m_driveMode = DriveModes.MANUAL;
 
 	private ShuffleboardTab graphTab = Shuffleboard.getTab("Graphs");
-	private ShuffleboardTab autoTab = Shuffleboard.getTab("Auto");
+	private ShuffleboardTab compTab = Shuffleboard.getTab("Teleop");
 
 	private NetworkTable live_dashboard = NetworkTableInstance.getDefault().getTable("Live_Dashboard");
 	private NetworkTableEntry robotX = live_dashboard.getEntry("robotX");
@@ -89,11 +91,12 @@ public class DriveTrainSubsystem extends SubsystemBase {
 
 		TalonFXConfiguration falconConfig = new TalonFXConfiguration();
 		falconConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+		falconConfig.openloopRamp = .8;
 
 		m_leftMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		m_rightMaster.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 
-		setNeutralMode(NeutralMode.Brake);
+		setNeutralMode(NeutralMode.Coast);
 
 		m_rightMaster.configAllSettings(falconConfig);
 		m_leftMaster.configAllSettings(falconConfig);
@@ -107,16 +110,16 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_gyro = gyro;
 
 		m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()));
+		reverseEncoders();
 		resetOdometry(new Pose2d());
-
-		outputTelemetry();
-
+		// outputTelemetry();
 	}
 
 	@Override
 	public void periodic() {
 		// Update the odometry in the periodic block
 		m_odometry.update(Rotation2d.fromDegrees(getHeading()), getLeftEncoderPosition(), getRightEncoderPosition());
+
 		robotX.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getX()));
 		robotY.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getTranslation().getY()));
 		robotHeading.setDouble(Units.metersToFeet(m_odometry.getPoseMeters().getRotation().getRadians()));
@@ -142,7 +145,10 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 */
 	public void drive(double throttle, double angle, boolean isQuickTurn) {
 		m_drive.arcadeDrive(throttle, angle);
-		// m_drive.curvatureDrive(throttle, angle, isQuickTurn);
+	}
+
+	public void driveCheese(double throttle, double angle, boolean isQuickTurn) {
+		m_drive.curvatureDrive(throttle, angle, isQuickTurn);
 	}
 
 	/**
@@ -214,6 +220,20 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	}
 
 	/**
+	 * Controls the left and right sides of the drive directly with voltages.
+	 *
+	 * @param leftVolts  the commanded left output
+	 * @param rightVolts the commanded right output
+	 */
+	public void tankDriveVoltsReverse(double leftVolts, double rightVolts) {
+		SmartDashboard.putNumber("raw_lv", leftVolts);
+		SmartDashboard.putNumber("raw_rv", -rightVolts);
+
+		m_leftMaster.set(-rightVolts);
+		m_rightMaster.set(leftVolts);
+	}
+
+	/**
 	 * Resets the drive encoders to currently read a position of 0.
 	 */
 	public void zeroDriveTrainEncoders() {
@@ -243,7 +263,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return left encoder position
 	 */
 	public double getLeftEncoderPosition() {
-		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
+		return m_leftMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT
+				* DriveConstants.MAG;
 	}
 
 	/**
@@ -252,7 +273,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return right encoder position
 	 */
 	public double getRightEncoderPosition() {
-		return -m_rightMaster.getSelectedSensorPosition(0) * Constants.DriveConstants.ENCODER_CONSTANT;
+		return -m_rightMaster.getSelectedSensorPosition(0) * DriveConstants.ENCODER_CONSTANT
+				* Constants.DriveConstants.MAG;
 	}
 
 	/**
@@ -261,7 +283,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the left encoder velocity in m/s
 	 */
 	public double getLeftEncoderRate() {
-		return m_leftMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
+		return m_leftMaster.getSelectedSensorVelocity(0) * DriveConstants.ENCODER_CONSTANT * 10
+				* Constants.DriveConstants.MAG;
 	}
 
 	/**
@@ -270,7 +293,8 @@ public class DriveTrainSubsystem extends SubsystemBase {
 	 * @return Get the right encoder velocity in m/s
 	 */
 	public double getRightEncoderRate() {
-		return m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10;
+		return -m_rightMaster.getSelectedSensorVelocity(0) * Constants.DriveConstants.ENCODER_CONSTANT * 10
+				* DriveConstants.MAG;
 	}
 
 	/**
@@ -290,34 +314,50 @@ public class DriveTrainSubsystem extends SubsystemBase {
 		m_drive.feed();
 	}
 
+	public void reverseEncoders() {
+		Constants.DriveConstants.MAG *= -1;
+		resetOdometry(new Pose2d());
+	}
+
 	/**
 	 * Output the Drive Train telemtry
 	 */
 	public void outputTelemetry() {
-		autoTab.add("Pose", m_odometry.getPoseMeters().toString());
+		compTab.addString("Pose", new Supplier<String>() {
+			@Override
+			public String get() {
+				return m_odometry.getPoseMeters().toString();
+			}
+		});
+	}
 
-		autoTab.addNumber("r_pos", new DoubleSupplier() {
+	/**
+	 * Outputs for debugging
+	 */
+	public void debug() {
+
+		graphTab.addNumber("r_pos", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getRightEncoderPosition();
 			}
 		});
 
-		autoTab.addNumber("l_pos", new DoubleSupplier() {
+		graphTab.addNumber("l_pos", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getLeftEncoderPosition();
 			}
 		});
 
-		autoTab.addNumber("r_vel", new DoubleSupplier() {
+		graphTab.addNumber("r_vel", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getRightEncoderRate();
 			}
 		});
 
-		autoTab.addNumber("l_vel", new DoubleSupplier() {
+		graphTab.addNumber("l_vel", new DoubleSupplier() {
 			@Override
 			public double getAsDouble() {
 				return getLeftEncoderRate();
@@ -351,7 +391,6 @@ public class DriveTrainSubsystem extends SubsystemBase {
 				return Constants.AutoConstants.L_CONTROLLER.getSetpoint();
 			}
 		}).withWidget("Graph");
-
 	}
 
 }

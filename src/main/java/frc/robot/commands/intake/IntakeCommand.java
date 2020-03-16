@@ -9,6 +9,7 @@ package frc.robot.commands.intake;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.IntakeSubsystem;
 
@@ -28,19 +29,39 @@ public class IntakeCommand extends CommandBase {
 	@Override
 	public void initialize() {
 		m_intake.retractIntake();
-		m_intake.startBelt();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (RobotContainer.getController().getBumper(RobotContainer.getController().getRightHand()))
-			m_intake.driveBelt(Constants.IntakeConstants.BELT_MOTOR_SPEED);
-		else if (RobotContainer.getController().getBumper(RobotContainer.getController().getLeftHand()))
-			m_intake.driveBelt(-Constants.IntakeConstants.BELT_MOTOR_SPEED);
-		else
-			m_intake.stopBelt();
 
+		if (m_intake.getColsonCurrent() > 20) {
+			m_intake.driveBelt(Constants.IntakeConstants.BELT_MOTOR_SPEED);
+		} else {
+			m_intake.stopBelt();
+		}
+
+		if (RobotContainer.getController().getRightTrigger() > .1) {
+			m_intake.driveBelt(.8);
+			m_intake.driveIntake(-.3);
+			m_intake.setColson(.3);
+		} else if (RobotContainer.getController().getLeftTrigger() > .1) {
+			m_intake.driveBelt(-.8);
+			m_intake.setColson(-.3);
+		} else {
+			if (m_intake.isExtended()) {
+				m_intake.setColson(.3);
+			} else {
+				m_intake.stopBelt();
+				m_intake.stopColson();
+			}
+			if (!m_intake.isExtended())
+				m_intake.stopIntakeMotor();
+		}
+
+		if (RobotContainer.getController().getAButtonPressed()) {
+			m_intake.toggle();
+		}
 	}
 
 	// Called once the command ends or is interrupted.

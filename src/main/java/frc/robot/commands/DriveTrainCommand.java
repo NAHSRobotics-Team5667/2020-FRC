@@ -9,9 +9,11 @@ package frc.robot.commands;
 
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.Constants.VisionConstants;
 import frc.robot.RobotState.States;
 import frc.robot.subsystems.DriveTrainSubsystem;
 import frc.robot.subsystems.DriveTrainSubsystem.DriveModes;
@@ -21,7 +23,8 @@ import frc.robot.utils.PIDFController;
 public class DriveTrainCommand extends CommandBase {
 
 	private DriveTrainSubsystem m_drive;
-	private PIDFController angleController = new PIDFController("Angle", 0.01, 0, 0.0001, 0);
+	private PIDFController angleController = new PIDFController("Angle", VisionConstants.kP, VisionConstants.kI,
+			VisionConstants.kD, 0);
 
 	/**
 	 * Create a Drive Train Subsystem
@@ -38,39 +41,29 @@ public class DriveTrainCommand extends CommandBase {
 	@Override
 	public void initialize() {
 		m_drive.stop();
+		LimeLight.getInstance().turnLightOn();
 	}
 
 	// Called every time the scheduler runs while the command is scheduled.
 	@Override
 	public void execute() {
-		if (RobotContainer.getController().getYButton()) {
-			m_drive.setDriveMode(DriveModes.AUTO);
-			LimeLight.getInstance().turnLightOn();
-		} else {
-			m_drive.setDriveMode(DriveModes.MANUAL);
-			LimeLight.getInstance().turnLightOff();
-		}
 
 		Map<String, Double> sticks = RobotContainer.getController().getSticks();
 		if (m_drive.getDriveMode() == DriveModes.MANUAL) {
 			m_drive.setDriveMode(DriveTrainSubsystem.DriveModes.MANUAL);
 			// Drive using joysticks
+
 			m_drive.drive(sticks.get("LSY"), sticks.get("RSX"),
 					RobotContainer.getController().getStickButtonPressed(RobotContainer.getController().getLeftHand()));
-		} else if (m_drive.getDriveMode() == DriveTrainSubsystem.DriveModes.AUTO
-				&& LimeLight.getInstance().hasValidTarget()) {
-
-			double angle = -angleController.calculate(LimeLight.getInstance().getXAngle());
-			double output = (Constants.DriveConstants.ksVolts * Math.signum(angle)) + angle;
-			m_drive.tankDriveVolts(output, -output);
-			m_drive.feedMotorSafety();
 
 		}
 
-		if (Constants.m_RobotState.getCurrentState() != States.ROTATION
-				&& Constants.m_RobotState.getCurrentState() != States.SHOOTING
-				&& Constants.m_RobotState.getCurrentState() != States.POSITION
-				&& Constants.m_RobotState.getCurrentState() != States.AUTO) {
+		if (Constants.m_RobotState.getCurrentState() != States.INTAKING
+				&& Constants.m_RobotState.getCurrentState() != States.ALIGNED
+				&& Constants.m_RobotState.getCurrentState() != States.ALIGNING
+				&& Constants.m_RobotState.getCurrentState() != States.REVED
+				&& Constants.m_RobotState.getCurrentState() != States.REVING
+				&& Constants.m_RobotState.getCurrentState() != States.CLIMBING) {
 			Constants.m_RobotState.setState(States.DRIVE);
 		}
 	}
