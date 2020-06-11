@@ -55,13 +55,16 @@ public class ShooterCommand extends CommandBase {
 				if (LimeLight.getInstance().getPipeIndex() == 0) {
 					m_shooter.fireRPM(Constants.ShooterConstants.AUTO_LINE_RPM);
 				} else {
-					m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
+					m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_FAR_RPM);
 				}
 
 			} else {
-				// m_shooter.fireRPM(170.8 * Math.pow(LimeLight.getInstance().getArea(), 2)
-				// + -688.58 * LimeLight.getInstance().getArea() + 5339.53);
-				m_shooter.curveFire(LimeLight.getInstance().getArea());
+				if (LimeLight.getInstance().getPipeIndex() == 0) {
+					double x = LimeLight.getInstance().getArea();
+					m_shooter.curveFire(x);
+				} else {
+					m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_FAR_RPM);
+				}
 				if (!m_shooter.getController().atSetpoint()
 						&& (Constants.m_RobotState.getCurrentState() == States.ALIGNED
 								|| Constants.m_RobotState.getCurrentState() == States.REVING)) {

@@ -69,7 +69,7 @@ public class ShootAutonomously extends CommandBase {
 		}
 
 		m_shooter.fireRPM(targetRPM);
-		if (m_shooter.getController().atSetpoint()) {
+		if (Math.abs(m_shooter.getController().getSetpoint() - m_shooter.getCurrentRPM()) <= 50) {
 			m_intake.driveBelt(1);
 			m_intake.driveIntake(-0.8);
 			m_intake.setColson(.3);
@@ -79,7 +79,6 @@ public class ShootAutonomously extends CommandBase {
 			m_intake.stopIntakeMotor();
 		}
 
-		System.out.println("SHOOTER AT RPMS + " + m_shooter.getController().atSetpoint());
 	}
 
 	// Called once the command ends or is interrupted.

@@ -49,7 +49,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		m_master.configFactoryDefault();
 		m_master.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor, 0, 10);
 		TalonFXConfiguration configuration = new TalonFXConfiguration();
-		configuration.openloopRamp = .8; // .5;
+		configuration.openloopRamp = .5; // .5;
 		m_master.configAllSettings(configuration);
 
 		m_master.setSelectedSensorPosition(0);
@@ -84,7 +84,8 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public void curveFire(double area) {
 		// fireRPM(170.8 * Math.pow(area, 2) + -688.58 * area + 5300);
-		fireRPM(155 * Math.pow(area, 2) + -688.58 * area + 5000);
+		fireRPM(Constants.ShooterConstants.a * Math.pow(area, 2) + Constants.ShooterConstants.b * area
+				+ Constants.ShooterConstants.c);
 	}
 
 	/**
@@ -168,7 +169,7 @@ public class ShooterSubsystem extends SubsystemBase {
 			public double getAsDouble() {
 				return getCurrentRPM();
 			}
-		}).withWidget(BuiltInWidgets.kGraph);
+		}).withWidget(BuiltInWidgets.kGraph).withPosition(0, 0).withSize(2, 2);
 
 		compTab.addNumber("Shooter Temp", new DoubleSupplier() {
 

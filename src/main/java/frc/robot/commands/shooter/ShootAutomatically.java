@@ -57,29 +57,17 @@ public class ShootAutomatically extends CommandBase {
 			}
 		} else if (LimeLight.getInstance().getPipeIndex() == 1) {
 			// Behind the color wheel
-			m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_RPM);
+			m_shooter.fireRPM(Constants.ShooterConstants.TRENCH_FAR_RPM);
 		}
 
-		// Handle index
-		if (Constants.m_RobotState.getCurrentState() == States.REVED
-				|| RobotContainer.getController().getRightTrigger() >= .1) {
-			if (RobotContainer.getController().getLeftTrigger() >= .1) {
-				m_index.driveBelt(-.8);
-				m_index.setColson(-.3);
-			} else {
-				m_index.driveBelt(1);
-				m_index.setColson(.3);
-			}
+		if (Math.abs(m_shooter.getController().getSetpoint() - m_shooter.getCurrentRPM()) <= 50) {
+			m_index.driveBelt(1);
+			m_index.driveIntake(-0.8);
+			m_index.setColson(.3);
 		} else {
-			m_index.stopMotors();
-		}
-
-		if (m_shooter.getController().atSetpoint()) {
-			Constants.m_RobotState.setState(States.REVED);
-		} else {
-			if (!(Constants.m_RobotState.getCurrentState() == States.ALIGNING)) {
-				Constants.m_RobotState.setState(States.REVING);
-			}
+			m_index.stopBelt();
+			m_index.stopColson();
+			m_index.stopIntakeMotor();
 		}
 	}
 

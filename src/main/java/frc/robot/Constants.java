@@ -64,7 +64,7 @@ public final class Constants {
     }
 
     public final static class IntakeConstants {
-        public static final double INTAKE_MOTOR_SPEED = .9;
+        public static final double INTAKE_MOTOR_SPEED = .7;
         public static final double BELT_MOTOR_SPEED = .25;
 
         public static final boolean SOLENOID_FIRED = true;
@@ -82,9 +82,13 @@ public final class Constants {
     public final static class ShooterConstants {
         public static final int PORT = 4;
 
-        public static final double AUTO_LINE_RPM = 4750;
-        public static final double TRENCH_FAR_RPM = 5300;
+        public static final double AUTO_LINE_RPM = 4650;
+        public static final double TRENCH_FAR_RPM = 8500; // 6400;
         public static final double TRENCH_END_RPM = 4700;
+
+        public static final double a = 100;
+        public static final double b = -450;
+        public static final double c = 5000;
 
         public static double TRENCH_RPM = TRENCH_END_RPM;
 

@@ -9,9 +9,11 @@ package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
+import edu.wpi.cscore.HttpCamera;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -51,6 +53,10 @@ public class Robot extends TimedRobot {
 		camera.setResolution(240, 180);
 		camera.setFPS(18);
 		Shuffleboard.getTab("Teleop").add("Intake Cam", camera).withPosition(2, 0);
+		HttpCamera limelight = new HttpCamera("limelight", "http://limelight.local:5800");
+		CameraServer.getInstance().addCamera(limelight);
+		Shuffleboard.getTab("Teleop").add("limelight", limelight).withPosition(5, 0);
+		LiveWindow.disableAllTelemetry();
 
 		m_robotContainer = new RobotContainer();
 		m_robotContainer.setNeutralMode(NeutralMode.Coast);
